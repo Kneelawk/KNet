@@ -23,11 +23,43 @@
  *
  */
 
-package com.kneelawk.knet.api;
+package com.kneelawk.knet.api.handling;
 
 /**
- * KNet xplat public interface.
+ * Thrown to indicate that payload handling failed and that an error should be logged.
  */
-public class KNet {
-    private KNet() {}
+public class PayloadHandlingErrorException extends PayloadHandlingException {
+    /**
+     * Creates an empty payload handling error exception.
+     */
+    public PayloadHandlingErrorException() {
+    }
+
+    /**
+     * Creates a payload handling error exception with a message.
+     *
+     * @param message the message.
+     */
+    public PayloadHandlingErrorException(String message) {
+        super(message);
+    }
+
+    /**
+     * Creates a payload handling error exception with a message and a cause.
+     *
+     * @param message the message.
+     * @param cause   the cause.
+     */
+    public PayloadHandlingErrorException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Creates a payload handling error exception with a cause.
+     *
+     * @param cause the cause.
+     */
+    public PayloadHandlingErrorException(Throwable cause) {
+        super(cause);
+    }
 }

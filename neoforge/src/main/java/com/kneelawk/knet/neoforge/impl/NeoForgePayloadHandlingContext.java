@@ -23,11 +23,24 @@
  *
  */
 
-package com.kneelawk.knet.api;
+package com.kneelawk.knet.neoforge.impl;
 
-/**
- * KNet xplat public interface.
- */
-public class KNet {
-    private KNet() {}
+import java.util.concurrent.Executor;
+
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.entity.player.PlayerEntity;
+
+import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+
+public record NeoForgePayloadHandlingContext(Executor executor, PlayerEntity player) implements PayloadHandlingContext {
+    @Override
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    @Override
+    public @Nullable PlayerEntity getPlayer() {
+        return player;
+    }
 }

@@ -23,11 +23,8 @@
  *
  */
 
-package com.kneelawk.knet.api;
+package com.kneelawk.knet.impl;
 
-/**
- * KNet xplat public interface.
- */
-public class KNet {
-    private KNet() {}
+public class KNetImpl {
+    public static final String MOD_ID = "knet";
 }

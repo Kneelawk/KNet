@@ -23,11 +23,11 @@
  *
  */
 
-package com.kneelawk.knet.api;
+package com.kneelawk.knet.impl;
 
-/**
- * KNet xplat public interface.
- */
-public class KNet {
-    private KNet() {}
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class KNetLog {
+    public static final Logger LOG = LoggerFactory.getLogger(KNetImpl.MOD_ID);
 }

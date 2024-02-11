@@ -23,11 +23,25 @@
  *
  */
 
-package com.kneelawk.knet.api;
+package com.kneelawk.knet.fabric.api;
+
+import com.kneelawk.knet.api.channel.Channel;
+import com.kneelawk.knet.fabric.impl.proxy.CommonProxy;
 
 /**
- * KNet xplat public interface.
+ * Fabric-specific KNet public interface.
+ * <p>
+ * This is primarily used for registering channels.
  */
-public class KNet {
-    private KNet() {}
+public class KNetFabric {
+    private KNetFabric() {}
+
+    /**
+     * Registers a channel for receiving packets during play state.
+     *
+     * @param channel the channel to register.
+     */
+    public static void registerPlay(Channel channel) {
+        CommonProxy.getInstance().registerPlayChannel(channel);
+    }
 }

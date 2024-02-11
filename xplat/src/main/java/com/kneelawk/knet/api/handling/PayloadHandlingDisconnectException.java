@@ -23,11 +23,43 @@
  *
  */
 
-package com.kneelawk.knet.api;
+package com.kneelawk.knet.api.handling;
 
 /**
- * KNet xplat public interface.
+ * Thrown to indicate that payload handling failed and that the client should be disconnected.
  */
-public class KNet {
-    private KNet() {}
+public class PayloadHandlingDisconnectException extends PayloadHandlingException {
+    /**
+     * Creates an empty payload handling disconnect exception.
+     */
+    public PayloadHandlingDisconnectException() {
+    }
+
+    /**
+     * Creates a payload handling disconnect exception with a message.
+     *
+     * @param message the message.
+     */
+    public PayloadHandlingDisconnectException(String message) {
+        super(message);
+    }
+
+    /**
+     * Creates a payload handling disconnect exception with a message and a cause.
+     *
+     * @param message the message.
+     * @param cause   the cause.
+     */
+    public PayloadHandlingDisconnectException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Creates a payload handling disconnect exception with a cause.
+     *
+     * @param cause the cause.
+     */
+    public PayloadHandlingDisconnectException(Throwable cause) {
+        super(cause);
+    }
 }

@@ -23,11 +23,15 @@
  *
  */
 
-package com.kneelawk.knet.api;
+package com.kneelawk.knet.fabric.impl.client;
 
-/**
- * KNet xplat public interface.
- */
-public class KNet {
-    private KNet() {}
+import net.fabricmc.api.ClientModInitializer;
+
+import com.kneelawk.knet.fabric.impl.proxy.ClientProxy;
+
+public class KNetModClientFabric implements ClientModInitializer {
+    @Override
+    public void onInitializeClient() {
+        ClientProxy.init();
+    }
 }

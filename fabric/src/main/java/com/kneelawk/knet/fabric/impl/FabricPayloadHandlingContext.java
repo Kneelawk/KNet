@@ -23,11 +23,22 @@
  *
  */
 
-package com.kneelawk.knet.api;
+package com.kneelawk.knet.fabric.impl;
 
-/**
- * KNet xplat public interface.
- */
-public class KNet {
-    private KNet() {}
+import java.util.concurrent.Executor;
+
+import net.minecraft.entity.player.PlayerEntity;
+
+import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+
+public record FabricPayloadHandlingContext(Executor executor, PlayerEntity player) implements PayloadHandlingContext {
+    @Override
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    @Override
+    public PlayerEntity getPlayer() {
+        return player;
+    }
 }

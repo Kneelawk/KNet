@@ -23,11 +23,24 @@
  *
  */
 
-package com.kneelawk.knet.api;
+package com.kneelawk.knet.api.channel;
+
+import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PayloadHandlingException;
 
 /**
- * KNet xplat public interface.
+ * Used for handling a payload.
+ *
+ * @param <P> the type of payload handled.
  */
-public class KNet {
-    private KNet() {}
+@FunctionalInterface
+public interface NoContextPayloadHandler<P> {
+    /**
+     * Handle a payload.
+     *
+     * @param payload the payload.
+     * @param ctx     the associated context.
+     * @throws PayloadHandlingException if an error occurred while handling the payload.
+     */
+    void handle(P payload, PayloadHandlingContext ctx) throws PayloadHandlingException;
 }
