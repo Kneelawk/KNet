@@ -1,0 +1,18 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "knet"
+version = "${version}"
+displayName = "KNet"
+authors = "Kneelawk"
+description = "Kneelawk's networking abstraction and utilities."
+logoFile = "assets/knet/icon.png"
+
+[[dependencies.knet]]
+modId = "neoforge"
+type = "REQUIRED"
+versionRange = "[20.4.148-beta,)"
+ordering = "NONE"
+side = "BOTH"
