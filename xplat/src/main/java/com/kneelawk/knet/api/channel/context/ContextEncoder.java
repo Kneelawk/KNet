@@ -23,31 +23,23 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl;
-
-import java.util.concurrent.Executor;
-import java.util.function.Consumer;
+package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
-
-public record FabricPayloadHandlingContext(Executor executor, PlayerEntity player, Consumer<Text> disconnector) implements PayloadHandlingContext {
-    @Override
-    public @NotNull Executor getExecutor() {
-        return executor;
-    }
-
-    @Override
-    public PlayerEntity getPlayer() {
-        return player;
-    }
-
-    @Override
-    public void disconnect(@NotNull Text message) {
-        disconnector.accept(message);
-    }
+/**
+ * Encodes context into a payload.
+ *
+ * @param <C> the context to encode.
+ * @param <P> the payload that represents the context.
+ */
+@FunctionalInterface
+public interface ContextEncoder<C, P> {
+    /**
+     * Encodes context into a payload.
+     *
+     * @param context the context to encode.
+     * @return a payload that represents the context.
+     */
+    @NotNull P encode(@NotNull C context);
 }

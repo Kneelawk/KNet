@@ -23,31 +23,19 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl;
-
-import java.util.concurrent.Executor;
-import java.util.function.Consumer;
+package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.network.PacketByteBuf;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
-
-public record FabricPayloadHandlingContext(Executor executor, PlayerEntity player, Consumer<Text> disconnector) implements PayloadHandlingContext {
-    @Override
-    public @NotNull Executor getExecutor() {
-        return executor;
-    }
-
-    @Override
-    public PlayerEntity getPlayer() {
-        return player;
-    }
-
-    @Override
-    public void disconnect(@NotNull Text message) {
-        disconnector.accept(message);
-    }
+/**
+ * A codec for a contextual payload.
+ *
+ * @param encoder the encoder for the payload.
+ * @param decoder the decoder for the payload.
+ * @param <P>     the type of payload.
+ */
+public record PayloadCodec<P>(@NotNull PacketByteBuf.PacketWriter<P> encoder,
+                              @NotNull PacketByteBuf.PacketReader<P> decoder) {
 }

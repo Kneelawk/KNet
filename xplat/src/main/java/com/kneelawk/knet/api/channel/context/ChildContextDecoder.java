@@ -23,31 +23,31 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl;
-
-import java.util.concurrent.Executor;
-import java.util.function.Consumer;
+package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PayloadHandlingException;
 
-public record FabricPayloadHandlingContext(Executor executor, PlayerEntity player, Consumer<Text> disconnector) implements PayloadHandlingContext {
-    @Override
-    public @NotNull Executor getExecutor() {
-        return executor;
-    }
-
-    @Override
-    public PlayerEntity getPlayer() {
-        return player;
-    }
-
-    @Override
-    public void disconnect(@NotNull Text message) {
-        disconnector.accept(message);
-    }
+/**
+ * Used for finding a child in a parent given the information in a payload.
+ *
+ * @param <CHILD>   the child to find.
+ * @param <PARENT>  the parent.
+ * @param <PAYLOAD> the payload.
+ */
+@FunctionalInterface
+public interface ChildContextDecoder<PARENT, CHILD, PAYLOAD> {
+    /**
+     * Finds a child in a parent based on the information in the given payload.
+     *
+     * @param parent  the parent to find the child in.
+     * @param payload the payload describing how to find the child.
+     * @param ctx     the default payload handling context.
+     * @return the found child.
+     * @throws PayloadHandlingException if an error occurs while finding the child.
+     */
+    @NotNull CHILD decode(@NotNull PARENT parent, @NotNull PAYLOAD payload, @NotNull PayloadHandlingContext ctx)
+        throws PayloadHandlingException;
 }

@@ -58,13 +58,14 @@ public class KNetNeoForge {
                 handler.server((payload, ctx) -> {
                     try {
                         channel.handleServerPayload(payload,
-                            new NeoForgePayloadHandlingContext(ctx.workHandler()::execute, ctx.player().orElse(null)));
+                            new NeoForgePayloadHandlingContext(ctx.workHandler()::execute, ctx.player().orElse(null),
+                                ctx.packetHandler()::disconnect));
                     } catch (PayloadHandlingSilentException e) {
                         // do nothing
                     } catch (PayloadHandlingDisconnectException e) {
                         ctx.packetHandler()
                             .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
-                    } catch (PayloadHandlingException e) {
+                    } catch (Exception e) {
                         // just log as an error by default
                         KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
                     }
@@ -74,13 +75,14 @@ public class KNetNeoForge {
                 handler.client((payload, ctx) -> {
                     try {
                         channel.handleClientPayload(payload,
-                            new NeoForgePayloadHandlingContext(ctx.workHandler()::execute, ctx.player().orElse(null)));
+                            new NeoForgePayloadHandlingContext(ctx.workHandler()::execute, ctx.player().orElse(null),
+                                ctx.packetHandler()::disconnect));
                     } catch (PayloadHandlingSilentException e) {
                         // do nothing
                     } catch (PayloadHandlingDisconnectException e) {
                         ctx.packetHandler()
                             .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
-                    } catch (PayloadHandlingException e) {
+                    } catch (Exception e) {
                         // just log as an error by default
                         KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
                     }

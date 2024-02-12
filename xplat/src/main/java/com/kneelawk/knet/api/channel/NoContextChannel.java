@@ -69,7 +69,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvClient(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvOffThreadClient(NoContextPayloadHandler<P> handler) {
         clientHandler = handler;
         return this;
     }
@@ -82,7 +82,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvServer(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvOffThreadServer(NoContextPayloadHandler<P> handler) {
         serverHandler = handler;
         return this;
     }
@@ -95,7 +95,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recv(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvOffThreadBoth(NoContextPayloadHandler<P> handler) {
         clientHandler = handler;
         serverHandler = handler;
         return this;
@@ -109,7 +109,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvSyncClient(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvClient(NoContextPayloadHandler<P> handler) {
         clientHandler = sync(handler);
         return this;
     }
@@ -122,7 +122,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvSyncServer(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvServer(NoContextPayloadHandler<P> handler) {
         serverHandler = sync(handler);
         return this;
     }
@@ -135,7 +135,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvSync(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvBoth(NoContextPayloadHandler<P> handler) {
         serverHandler = clientHandler = sync(handler);
         return this;
     }
@@ -148,7 +148,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
                 // do nothing
             } catch (PayloadHandlingDisconnectException e) {
                 ctx.disconnect(Text.literal("Channel " + id + " error: " + e.getMessage()));
-            } catch (PayloadHandlingException e) {
+            } catch (Exception e) {
                 // just log as an error by default
                 KNetLog.LOG.error("Channel {} error:", id, e);
             }
@@ -162,6 +162,8 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlay(PlayerEntity player, P payload) {
+        if (payload.id() != id) throw new IllegalStateException("Payload id does not match channel id");
+
         KNetPlatform.INSTANCE.sendPlay(player, payload);
     }
 
@@ -171,6 +173,8 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlayToServer(P payload) {
+        if (payload.id() != id) throw new IllegalStateException("Payload id does not match channel id");
+
         KNetPlatform.INSTANCE.sendPlayToServer(payload);
     }
 
@@ -187,7 +191,6 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
     @SuppressWarnings("unchecked")
     @Override
     public void handleClientPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException {
-        NoContextPayloadHandler<P> clientHandler = this.clientHandler;
         if (clientHandler != null) {
             clientHandler.handle((P) payload, ctx);
         }
@@ -196,7 +199,6 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
     @SuppressWarnings("unchecked")
     @Override
     public void handleServerPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException {
-        NoContextPayloadHandler<P> serverHandler = this.serverHandler;
         if (serverHandler != null) {
             serverHandler.handle((P) payload, ctx);
         }

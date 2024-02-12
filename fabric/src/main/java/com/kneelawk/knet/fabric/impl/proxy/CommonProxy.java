@@ -53,12 +53,12 @@ public class CommonProxy {
                 (server, player, handler, buf, responseSender) -> {
                     try {
                         channel.handleServerPayload(channel.getReader().apply(buf),
-                            new FabricPayloadHandlingContext(server, player));
+                            new FabricPayloadHandlingContext(server, player, handler::disconnect));
                     } catch (PayloadHandlingSilentException e) {
                         // do nothing
                     } catch (PayloadHandlingDisconnectException e) {
                         handler.disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
-                    } catch (PayloadHandlingException e) {
+                    } catch (Exception e) {
                         // just log as an error by default
                         KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
                     }

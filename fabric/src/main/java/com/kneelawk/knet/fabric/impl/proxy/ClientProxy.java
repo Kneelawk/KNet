@@ -53,13 +53,13 @@ public class ClientProxy extends CommonProxy {
             ClientPlayNetworking.registerGlobalReceiver(channel.getId(), (client, handler, buf, responseSender) -> {
                 try {
                     channel.handleClientPayload(channel.getReader().apply(buf),
-                        new FabricPayloadHandlingContext(client, client.player));
+                        new FabricPayloadHandlingContext(client, client.player, handler.getConnection()::disconnect));
                 } catch (PayloadHandlingSilentException e) {
                     // do nothing
                 } catch (PayloadHandlingDisconnectException e) {
                     handler.getConnection()
                         .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
-                } catch (PayloadHandlingException e) {
+                } catch (Exception e) {
                     // just log as an error by default
                     KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
                 }

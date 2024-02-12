@@ -26,21 +26,30 @@
 package com.kneelawk.knet.neoforge.impl;
 
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 
-public record NeoForgePayloadHandlingContext(Executor executor, PlayerEntity player) implements PayloadHandlingContext {
+public record NeoForgePayloadHandlingContext(Executor executor, PlayerEntity player, Consumer<Text> disconnector)
+    implements PayloadHandlingContext {
     @Override
-    public Executor getExecutor() {
+    public @NotNull Executor getExecutor() {
         return executor;
     }
 
     @Override
     public @Nullable PlayerEntity getPlayer() {
         return player;
+    }
+
+    @Override
+    public void disconnect(@NotNull Text message) {
+        disconnector.accept(message);
     }
 }

@@ -27,10 +27,12 @@ package com.kneelawk.knet.api.handling;
 
 import java.util.concurrent.Executor;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.world.World;
 
 /**
  * Context used for applying a payload.
@@ -43,19 +45,54 @@ public interface PayloadHandlingContext {
      *
      * @return the main-thread executor.
      */
-    Executor getExecutor();
+    @NotNull Executor getExecutor();
 
     /**
-     * Gets the player that received this packet.
+     * Gets the player that received this payload.
      *
-     * @return the reciever player.
+     * @return the receiver player.
      */
     @Nullable PlayerEntity getPlayer();
+
+    /**
+     * Gets the world in which this payload was received.
+     *
+     * @return the world where this payload was received.
+     */
+    default @Nullable World getWorld() {
+        PlayerEntity player = getPlayer();
+        if (player == null) return null;
+        return player.getWorld();
+    }
+
+    /**
+     * Gets the player that received this payload or throws an exception if no player is present.
+     *
+     * @return the receiver player.
+     * @throws PayloadHandlingException if this payload was received without a player to receive it.
+     */
+    default @NotNull PlayerEntity mustGetPlayer() throws PayloadHandlingException {
+        PlayerEntity player = getPlayer();
+        if (player == null) throw new PayloadHandlingErrorException("No player associated with this payload.");
+        return player;
+    }
+
+    /**
+     * Gets the world in which this payload was received or throws an exception if no world is available.
+     *
+     * @return the world where this payload was received.
+     * @throws PayloadHandlingException if this payload was received without a world where it was received.
+     */
+    default @NotNull World mustGetWorld() throws PayloadHandlingException {
+        World world = getWorld();
+        if (world == null) throw new PayloadHandlingErrorException("No world associated with this payload.");
+        return world;
+    }
 
     /**
      * Used to disconnect the client with the given message.
      *
      * @param message the message for the client to display when disconnected.
      */
-    void disconnect(Text message);
+    void disconnect(@NotNull Text message);
 }

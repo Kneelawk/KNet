@@ -110,8 +110,8 @@ tasks {
 
     javadoc {
         source(project(":xplat").sourceSets.main.get().allJava)
-        exclude("com/kneelawk/graphlib/netutil/impl")
-        exclude("com/kneelawk/graphlib/netutil/fabric/impl")
+        exclude("com/kneelawk/knet/impl")
+        exclude("com/kneelawk/knet/fabric/impl")
 
         val yarn_mappings: String by project
         val jetbrains_annotations_version: String by project
