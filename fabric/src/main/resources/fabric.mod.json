@@ -15,7 +15,13 @@
   "license": "MIT",
   "icon": "assets/knet/icon.png",
   "environment": "*",
-  "entrypoints": { },
+  "entrypoints": {
+    "client": [
+      {
+        "value": "com.kneelawk.knet.fabric.impl.client.KNetModClientFabric"
+      }
+    ]
+  },
   "mixins": [ ],
   "depends": {
     "fabricloader": ">=0.15.0",
