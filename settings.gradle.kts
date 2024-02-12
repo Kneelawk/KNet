@@ -30,4 +30,7 @@ include(":xplat")
 include(":fabric")
 include(":neoforge")
 
+include(":xplat:mojmap")
+project(":xplat:mojmap").projectDir = file("xplat/mojmap")
+
 rootProject.name = "knet"
