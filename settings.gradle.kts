@@ -33,4 +33,11 @@ include(":neoforge")
 include(":xplat:mojmap")
 project(":xplat:mojmap").projectDir = file("xplat/mojmap")
 
+include(":example-xplat")
+project(":example-xplat").projectDir = file("example/xplat")
+include(":example-fabric")
+project(":example-fabric").projectDir = file("example/fabric")
+include(":example-neoforge")
+project(":example-neoforge").projectDir = file("example/neoforge")
+
 rootProject.name = "knet"

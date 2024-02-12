@@ -1,0 +1,24 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "knet_example"
+version = "${version}"
+displayName = "KNet Example"
+authors = "Kneelawk"
+description = "KNet example mod."
+
+[[dependencies.knet_example]]
+modId = "neoforge"
+type = "REQUIRED"
+versionRange = "[20.4.148-beta,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.knet_example]]
+modId = "knet"
+type = "REQUIRED"
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "knet_example",
+  "version": "${version}",
+  "name": "KNet Example",
+  "description": "KNet example mod.",
+  "authors": [
+    "Kneelawk"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Kneelawk/KNet",
+    "issues": "https://github.com/Kneelawk/KNet/issues",
+    "sources": "https://github.com/Kneelawk/KNet"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": { },
+  "mixins": [ ],
+  "depends": {
+    "knet": "*",
+    "fabricloader": ">=0.15.0",
+    "fabric-api": "*",
+    "minecraft": ">=1.20.4 <1.21-",
+    "java": ">=17"
+  }
+}
