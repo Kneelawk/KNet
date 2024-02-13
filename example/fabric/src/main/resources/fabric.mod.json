@@ -14,7 +14,13 @@
   },
   "license": "MIT",
   "environment": "*",
-  "entrypoints": { },
+  "entrypoints": {
+    "main": [
+      {
+        "value": "com.kneelawk.knet.example.KNetExampleFabric"
+      }
+    ]
+  },
   "mixins": [ ],
   "depends": {
     "knet": "*",

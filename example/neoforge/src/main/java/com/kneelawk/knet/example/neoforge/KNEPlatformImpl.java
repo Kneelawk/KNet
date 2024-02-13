@@ -23,18 +23,17 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.neoforge;
 
-import net.minecraft.util.Identifier;
+import java.util.function.Supplier;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+import net.minecraft.block.Block;
 
-    public static void init() {
+import com.kneelawk.knet.example.KNEPlatform;
 
-    }
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+public class KNEPlatformImpl implements KNEPlatform {
+    @Override
+    public <T extends Block> Supplier<T> registerBlock(String path, Supplier<T> creator) {
+        return KNetExampleNeoForge.BLOCKS.register(path, creator);
     }
 }

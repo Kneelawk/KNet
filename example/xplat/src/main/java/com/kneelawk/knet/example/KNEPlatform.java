@@ -25,16 +25,14 @@
 
 package com.kneelawk.knet.example;
 
-import net.minecraft.util.Identifier;
+import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+import net.minecraft.block.Block;
 
-    public static void init() {
+public interface KNEPlatform {
+    KNEPlatform INSTANCE = ServiceLoader.load(KNEPlatform.class).findFirst()
+        .orElseThrow(() -> new RuntimeException("Unable to find KNetExample platform"));
 
-    }
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
-    }
+    <T extends Block> Supplier<T> registerBlock(String path, Supplier<T> creator);
 }

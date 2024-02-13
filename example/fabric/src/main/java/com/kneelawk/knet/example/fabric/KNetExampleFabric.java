@@ -23,18 +23,31 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.fabric;
 
+import java.util.List;
+
+import net.fabricmc.api.ModInitializer;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+import net.minecraft.block.Block;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+import com.kneelawk.knet.example.KNetExample;
 
-    public static void init() {
+public class KNetExampleFabric implements ModInitializer {
+    public static final List<Pair<Identifier, Block>> BLOCKS = new ObjectArrayList<>();
 
-    }
+    @Override
+    public void onInitialize() {
+        KNetExample.init();
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+        for (var block : BLOCKS) {
+            Registry.register(Registries.BLOCK, block.getLeft(), block.getRight());
+        }
     }
 }

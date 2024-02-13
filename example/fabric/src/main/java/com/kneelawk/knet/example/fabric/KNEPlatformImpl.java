@@ -23,18 +23,22 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.fabric;
 
-import net.minecraft.util.Identifier;
+import java.util.function.Supplier;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+import net.minecraft.block.Block;
+import net.minecraft.util.Pair;
 
-    public static void init() {
+import com.kneelawk.knet.example.KNEPlatform;
 
-    }
+import static com.kneelawk.knet.example.KNetExample.id;
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+public class KNEPlatformImpl implements KNEPlatform {
+    @Override
+    public <T extends Block> Supplier<T> registerBlock(String path, Supplier<T> creator) {
+        T block = creator.get();
+        KNetExampleFabric.BLOCKS.add(new Pair<>(id(path), block));
+        return () -> block;
     }
 }

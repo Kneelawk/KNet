@@ -25,10 +25,20 @@
 
 package com.kneelawk.knet.example.neoforge;
 
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.kneelawk.knet.example.KNetExample;
 
 @Mod(KNetExample.MOD_ID)
 public class KNetExampleNeoForge {
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(KNetExample.MOD_ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(KNetExample.MOD_ID);
+
+    public KNetExampleNeoForge(IEventBus modBus) {
+        KNetExample.init();
+
+        BLOCKS.register(modBus);
+    }
 }
