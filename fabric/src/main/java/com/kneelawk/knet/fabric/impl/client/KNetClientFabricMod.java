@@ -29,7 +29,7 @@ import net.fabricmc.api.ClientModInitializer;
 
 import com.kneelawk.knet.fabric.impl.proxy.ClientProxy;
 
-public class KNetModClientFabric implements ClientModInitializer {
+public class KNetClientFabricMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientProxy.init();
