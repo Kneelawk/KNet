@@ -108,4 +108,9 @@ public class FancyLightBlockEntity extends BlockEntity {
         nbt.putByte("green", (byte) green);
         nbt.putByte("blue", (byte) blue);
     }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        return createNbt();
+    }
 }
