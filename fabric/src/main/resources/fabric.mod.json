@@ -18,7 +18,7 @@
   "entrypoints": {
     "main": [
       {
-        "value": "com.kneelawk.knet.fabric.impl.KNetModFabric"
+        "value": "com.kneelawk.knet.fabric.impl.KNetFabricMod"
       }
     ],
     "client": [
