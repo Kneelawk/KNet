@@ -25,11 +25,20 @@
 
 package com.kneelawk.knet.api.channel;
 
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
@@ -56,7 +65,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param id     the id of this channel. Must be the same as the id of the payloads being sent.
      * @param reader used for converting packets into payloads.
      */
-    public NoContextChannel(Identifier id, PacketByteBuf.PacketReader<P> reader) {
+    public NoContextChannel(@NotNull Identifier id, @NotNull PacketByteBuf.PacketReader<P> reader) {
         this.id = id;
         this.reader = reader;
     }
@@ -69,7 +78,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvOffThreadClient(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvOffThreadClient(@NotNull NoContextPayloadHandler<P> handler) {
         clientHandler = handler;
         return this;
     }
@@ -82,7 +91,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvOffThreadServer(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvOffThreadServer(@NotNull NoContextPayloadHandler<P> handler) {
         serverHandler = handler;
         return this;
     }
@@ -95,7 +104,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvOffThreadBoth(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvOffThreadBoth(@NotNull NoContextPayloadHandler<P> handler) {
         clientHandler = handler;
         serverHandler = handler;
         return this;
@@ -109,7 +118,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvClient(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvClient(@NotNull NoContextPayloadHandler<P> handler) {
         clientHandler = sync(handler);
         return this;
     }
@@ -122,7 +131,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvServer(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvServer(@NotNull NoContextPayloadHandler<P> handler) {
         serverHandler = sync(handler);
         return this;
     }
@@ -135,7 +144,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvBoth(NoContextPayloadHandler<P> handler) {
+    public NoContextChannel<P> recvBoth(@NotNull NoContextPayloadHandler<P> handler) {
         serverHandler = clientHandler = sync(handler);
         return this;
     }
@@ -156,14 +165,23 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
     }
 
     /**
+     * Sends a payload to all players connected to this server.
+     *
+     * @param payload the payload to send.
+     */
+    public void sendPlayToAll(@NotNull P payload) {
+        checkPayload(payload);
+        KNetPlatform.INSTANCE.sendPlayToAll(payload);
+    }
+
+    /**
      * Sends a payload to a player.
      *
      * @param player  the player to send to.
      * @param payload the payload to send.
      */
-    public void sendPlay(PlayerEntity player, P payload) {
-        if (payload.id() != id) throw new IllegalStateException("Payload id does not match channel id");
-
+    public void sendPlay(@NotNull PlayerEntity player, @NotNull P payload) {
+        checkPayload(payload);
         KNetPlatform.INSTANCE.sendPlay(player, payload);
     }
 
@@ -172,10 +190,81 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      *
      * @param payload the payload to send.
      */
-    public void sendPlayToServer(P payload) {
-        if (payload.id() != id) throw new IllegalStateException("Payload id does not match channel id");
-
+    public void sendPlayToServer(@NotNull P payload) {
+        checkPayload(payload);
         KNetPlatform.INSTANCE.sendPlayToServer(payload);
+    }
+
+    /**
+     * Sends a payload to all players in a dimension.
+     *
+     * @param dim     the dimension to send to.
+     * @param payload the payload to send.
+     */
+    public void sendPlayToDimension(@NotNull RegistryKey<World> dim, @NotNull P payload) {
+        checkPayload(payload);
+        KNetPlatform.INSTANCE.sendPlayToDimension(dim, payload);
+    }
+
+    /**
+     * Sends a payload to all players tracking an entity, except the entity itself, if it is a player.
+     *
+     * @param entity  the entity that all receiver players should be tracking.
+     * @param payload the payload to send.
+     */
+    public void sendPlayToTracking(@NotNull Entity entity, @NotNull P payload) {
+        checkPayload(payload);
+        KNetPlatform.INSTANCE.sendPlayToTrackingEntity(entity, payload);
+    }
+
+    /**
+     * Sends a payload to all players tracking an entity, including the entity itself, if it is a player.
+     *
+     * @param entity  the entity that all receiver players should be tracking.
+     * @param payload the payload to send.
+     */
+    public void sendPlayToTrackingAndSelf(@NotNull Entity entity, @NotNull P payload) {
+        checkPayload(payload);
+        KNetPlatform.INSTANCE.sendPlayToTrackingEntityAndSelf(entity, payload);
+    }
+
+    /**
+     * Sends a payload to all players tracking a chunk.
+     *
+     * @param world   the world that holds the chunk.
+     * @param pos     the position of the chunk.
+     * @param payload the payload to send.
+     */
+    public void sendPlayToTracking(@NotNull ServerWorld world, @NotNull ChunkPos pos, @NotNull P payload) {
+        checkPayload(payload);
+        KNetPlatform.INSTANCE.sendPlayToTrackingChunk(world, pos, payload);
+    }
+
+    /**
+     * Sends a payload to all players tracking a block entity.
+     *
+     * @param be      the block entity that all receiver players should be tracking.
+     * @param payload the payload.
+     */
+    public void sendPlayToTracking(@NotNull BlockEntity be, @NotNull P payload) {
+        checkPayload(payload);
+        KNetPlatform.INSTANCE.sendPlayToTrackingBlockEntity(be, payload);
+    }
+
+    /**
+     * Sends a payload to all players tracking a block position.
+     *
+     * @param world   the world that holds the block.
+     * @param pos     the position of the block.
+     * @param payload the payload to send.
+     */
+    public void sendPlatyToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull P payload) {
+        checkPayload(payload);
+        KNetPlatform.INSTANCE.sendPlayToTrackingBlock(world, pos, payload);
+    }
+
+    private void checkPayload(P payload) {
+        if (payload.id() != id) throw new IllegalStateException("Payload id does not match channel id");
     }
 
     @Override

@@ -23,22 +23,22 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.fabric.client;
 
-import net.minecraft.util.Identifier;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
+import com.kneelawk.knet.example.client.ber.FancyLightBlockEntityRenderer;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
-
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-    }
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+public class KNetExampleClientFabric implements ClientModInitializer {
+    @Override
+    public void onInitializeClient() {
+        BlockRenderLayerMap.INSTANCE.putBlock(KNEBlocks.FANCY_LIGHT.get(), RenderLayer.getCutout());
+        BlockEntityRendererFactories.register(KNEBlockEntities.FANCY_LIGHT.get(), FancyLightBlockEntityRenderer::new);
     }
 }

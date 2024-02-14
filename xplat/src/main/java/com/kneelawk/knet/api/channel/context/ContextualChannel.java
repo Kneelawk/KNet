@@ -27,11 +27,18 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
 
 import com.kneelawk.knet.api.channel.Channel;
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
@@ -110,6 +117,16 @@ public class ContextualChannel<C, P> implements Channel {
     }
 
     /**
+     * Sends a payload to all players connected to this server.
+     *
+     * @param context the context to send.
+     * @param payload the payload to send.
+     */
+    public void sendPlayToAll(@NotNull C context, @NotNull P payload) {
+        KNetPlatform.INSTANCE.sendPlayToAll(payload(context, payload));
+    }
+
+    /**
      * Sends a payload to a player.
      *
      * @param player  the player to send to.
@@ -117,7 +134,7 @@ public class ContextualChannel<C, P> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlay(@NotNull PlayerEntity player, @NotNull C context, @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlay(player, new Payload(channelContext.encodeContext(context), payload));
+        KNetPlatform.INSTANCE.sendPlay(player, payload(context, payload));
     }
 
     /**
@@ -127,7 +144,81 @@ public class ContextualChannel<C, P> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlayToServer(@NotNull C context, @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlayToServer(new Payload(channelContext.encodeContext(context), payload));
+        KNetPlatform.INSTANCE.sendPlayToServer(payload(context, payload));
+    }
+
+    /**
+     * Sends a payload to all players in a dimension.
+     *
+     * @param dim     the dimension to send to.
+     * @param context the context to send.
+     * @param payload the payload to send.
+     */
+    public void sendPlayToDimension(@NotNull RegistryKey<World> dim, @NotNull C context, @NotNull P payload) {
+        KNetPlatform.INSTANCE.sendPlayToDimension(dim, payload(context, payload));
+    }
+
+    /**
+     * Sends a payload to all players tracking an entity, except the entity itself, if it is a player.
+     *
+     * @param entity  the entity that all receiver players should be tracking.
+     * @param context the context to send.
+     * @param payload the payload to send.
+     */
+    public void sendPlayToTracking(@NotNull Entity entity, @NotNull C context, @NotNull P payload) {
+        KNetPlatform.INSTANCE.sendPlayToTrackingEntity(entity, payload(context, payload));
+    }
+
+    /**
+     * Sends a payload to all players tracking an entity, including the entity itself, if it is a player.
+     *
+     * @param entity  the entity that all receiver players should be tracking.
+     * @param context the context to send.
+     * @param payload the payload to send.
+     */
+    public void sendPlayToTrackingAndSelf(@NotNull Entity entity, @NotNull C context, @NotNull P payload) {
+        KNetPlatform.INSTANCE.sendPlayToTrackingEntityAndSelf(entity, payload(context, payload));
+    }
+
+    /**
+     * Sends a payload to all players tracking a chunk.
+     *
+     * @param world   the world that holds the chunk.
+     * @param pos     the position of the chunk.
+     * @param context the context to send.
+     * @param payload the payload to send.
+     */
+    public void sendPlayToTracking(@NotNull ServerWorld world, @NotNull ChunkPos pos, @NotNull C context,
+                                   @NotNull P payload) {
+        KNetPlatform.INSTANCE.sendPlayToTrackingChunk(world, pos, payload(context, payload));
+    }
+
+    /**
+     * Sends a payload to all players tracking a block entity.
+     *
+     * @param be      the block entity that all receiver players should be tracking.
+     * @param context the context to send.
+     * @param payload the payload.
+     */
+    public void sendPlayToTracking(@NotNull BlockEntity be, @NotNull C context, @NotNull P payload) {
+        KNetPlatform.INSTANCE.sendPlayToTrackingBlockEntity(be, payload(context, payload));
+    }
+
+    /**
+     * Sends a payload to all players tracking a block position.
+     *
+     * @param world   the world that holds the block.
+     * @param pos     the position of the block.
+     * @param context the context to send.
+     * @param payload the payload to send.
+     */
+    public void sendPlatyToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull C context,
+                                    @NotNull P payload) {
+        KNetPlatform.INSTANCE.sendPlayToTrackingBlock(world, pos, payload(context, payload));
+    }
+
+    private Payload payload(C context, P payload) {
+        return new Payload(channelContext.encodeContext(context), payload);
     }
 
     @Override

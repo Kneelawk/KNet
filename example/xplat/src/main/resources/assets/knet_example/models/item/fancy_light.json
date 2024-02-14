@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "knet_example:item/fancy_light"
+  }
+}

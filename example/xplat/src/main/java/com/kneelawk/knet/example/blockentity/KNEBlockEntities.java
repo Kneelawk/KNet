@@ -23,22 +23,19 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.blockentity;
 
-import net.minecraft.util.Identifier;
+import java.util.function.Supplier;
 
+import net.minecraft.block.entity.BlockEntityType;
+
+import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+public class KNEBlockEntities {
+    public static final Supplier<BlockEntityType<FancyLightBlockEntity>> FANCY_LIGHT =
+        KNEPlatform.INSTANCE.registerBlockEntity("fancy_light",
+            () -> BlockEntityType.Builder.create(FancyLightBlockEntity::new, KNEBlocks.FANCY_LIGHT.get()).build(null));
 
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-    }
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
-    }
+    public static void init() {}
 }

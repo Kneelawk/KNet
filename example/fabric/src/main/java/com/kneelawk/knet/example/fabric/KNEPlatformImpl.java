@@ -27,7 +27,15 @@ package com.kneelawk.knet.example.fabric;
 
 import java.util.function.Supplier;
 
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.BlockItem;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 import com.kneelawk.knet.example.KNEPlatform;
@@ -36,9 +44,21 @@ import static com.kneelawk.knet.example.KNetExample.id;
 
 public class KNEPlatformImpl implements KNEPlatform {
     @Override
-    public <T extends Block> Supplier<T> registerBlock(String path, Supplier<T> creator) {
+    public <T extends Block> Supplier<T> registerBlockWithItem(String path, Supplier<T> creator,
+                                                               MapCodec<? extends Block> codec) {
+        Identifier id = id(path);
         T block = creator.get();
-        KNetExampleFabric.BLOCKS.add(new Pair<>(id(path), block));
+        KNetExampleFabric.BLOCKS.add(new Pair<>(id, block));
+        KNetExampleFabric.ITEMS.add(new Pair<>(id, new BlockItem(block, new FabricItemSettings())));
+        KNetExampleFabric.BLOCK_TYPES.add(new Pair<>(id, codec));
         return () -> block;
+    }
+
+    @Override
+    public <T extends BlockEntity> Supplier<BlockEntityType<T>> registerBlockEntity(String path,
+                                                                                    Supplier<BlockEntityType<T>> creator) {
+        BlockEntityType<T> type = creator.get();
+        KNetExampleFabric.BLOCK_ENTITY_TYPES.add(new Pair<>(id(path), type));
+        return () -> type;
     }
 }

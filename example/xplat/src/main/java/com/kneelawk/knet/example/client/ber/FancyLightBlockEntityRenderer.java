@@ -23,22 +23,21 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.client.ber;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.util.math.MatrixStack;
 
-import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
+import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+public class FancyLightBlockEntityRenderer implements BlockEntityRenderer<FancyLightBlockEntity> {
+    public FancyLightBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {}
 
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-    }
+    @Override
+    public void render(FancyLightBlockEntity entity, float tickDelta, MatrixStack matrices,
+                       VertexConsumerProvider vertexConsumers, int light, int overlay) {
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
     }
 }

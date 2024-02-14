@@ -23,22 +23,40 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.block;
 
-import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
-import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
+import com.mojang.serialization.MapCodec;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.BlockPos;
 
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
+import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
+
+public class FancyLightBlock extends BlockWithEntity {
+    public static final MapCodec<FancyLightBlock> CODEC = createCodec(FancyLightBlock::new);
+
+    public FancyLightBlock(Settings settings) {
+        super(settings);
     }
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return CODEC;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new FancyLightBlockEntity(pos, state);
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 }

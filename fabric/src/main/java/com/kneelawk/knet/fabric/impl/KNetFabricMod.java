@@ -23,22 +23,21 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.fabric.impl;
 
-import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
-import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+import net.minecraft.server.MinecraftServer;
 
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-    }
+public class KNetFabricMod implements ModInitializer {
+    public static @Nullable MinecraftServer currentServer;
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+    @Override
+    public void onInitialize() {
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> currentServer = server);
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> currentServer = null);
     }
 }

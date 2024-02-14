@@ -16,9 +16,14 @@
   "icon": "assets/knet/icon.png",
   "environment": "*",
   "entrypoints": {
+    "main": [
+      {
+        "value": "com.kneelawk.knet.fabric.impl.KNetModFabric"
+      }
+    ],
     "client": [
       {
-        "value": "com.kneelawk.knet.fabric.impl.client.KNetModClientFabric"
+        "value": "com.kneelawk.knet.fabric.impl.client.KNetClientFabricMod"
       }
     ]
   },

@@ -27,18 +27,40 @@ package com.kneelawk.knet.example.neoforge;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import com.mojang.serialization.MapCodec;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.registry.RegistryKeys;
+
 import com.kneelawk.knet.example.KNetExample;
+import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
+import com.kneelawk.knet.neoforge.api.KNetNeoForge;
 
 @Mod(KNetExample.MOD_ID)
 public class KNetExampleNeoForge {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(KNetExample.MOD_ID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(KNetExample.MOD_ID);
+    public static final DeferredRegister<MapCodec<? extends Block>> BLOCK_TYPES =
+        DeferredRegister.create(RegistryKeys.BLOCK_TYPE, KNetExample.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
+        DeferredRegister.create(RegistryKeys.BLOCK_ENTITY_TYPE, KNetExample.MOD_ID);
 
     public KNetExampleNeoForge(IEventBus modBus) {
         KNetExample.init();
 
         BLOCKS.register(modBus);
+        ITEMS.register(modBus);
+        BLOCK_TYPES.register(modBus);
+        BLOCK_ENTITY_TYPES.register(modBus);
+    }
+
+    private void onRegisterPayloadHandler(RegisterPayloadHandlerEvent event) {
+        IPayloadRegistrar registrar = event.registrar(KNetExample.MOD_ID);
+        KNetNeoForge.registerPlay(registrar, FancyLightBlockEntity.COLOR_UPDATE_CHANNEL);
     }
 }

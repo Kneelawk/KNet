@@ -27,13 +27,31 @@ package com.kneelawk.knet.example.neoforge;
 
 import java.util.function.Supplier;
 
+import net.neoforged.neoforge.registries.DeferredBlock;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 
 import com.kneelawk.knet.example.KNEPlatform;
 
 public class KNEPlatformImpl implements KNEPlatform {
     @Override
-    public <T extends Block> Supplier<T> registerBlock(String path, Supplier<T> creator) {
-        return KNetExampleNeoForge.BLOCKS.register(path, creator);
+    public <T extends Block> Supplier<T> registerBlockWithItem(String path, Supplier<T> creator,
+                                                               MapCodec<? extends Block> codec) {
+        DeferredBlock<T> block = KNetExampleNeoForge.BLOCKS.register(path, creator);
+        KNetExampleNeoForge.ITEMS.register(path, () -> new BlockItem(block.get(), new Item.Settings()));
+        KNetExampleNeoForge.BLOCK_TYPES.register(path, () -> codec);
+        return block;
+    }
+
+    @Override
+    public <T extends BlockEntity> Supplier<BlockEntityType<T>> registerBlockEntity(String path,
+                                                                                    Supplier<BlockEntityType<T>> creator) {
+        return KNetExampleNeoForge.BLOCK_ENTITY_TYPES.register(path, creator);
     }
 }

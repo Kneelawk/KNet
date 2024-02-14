@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "knet_example:block/fancy_light" }
+  }
+}

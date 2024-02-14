@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "render_type": "cutout",
+  "textures": {
+    "all": "knet_example:block/fancy_light"
+  }
+}

@@ -23,22 +23,23 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.block;
 
-import net.minecraft.util.Identifier;
+import java.util.function.Supplier;
 
-import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.enums.Instrument;
+import net.minecraft.sound.BlockSoundGroup;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+import com.kneelawk.knet.example.KNEPlatform;
 
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-    }
+public class KNEBlocks {
+    public static final Supplier<FancyLightBlock> FANCY_LIGHT =
+        KNEPlatform.INSTANCE.registerBlockWithItem("fancy_light", () -> new FancyLightBlock(
+                AbstractBlock.Settings.create().mapColor(MapColor.PALE_YELLOW).instrument(Instrument.PLING).strength(0.3f)
+                    .sounds(BlockSoundGroup.GLASS).luminance(state -> 15).solidBlock((state, world, pos) -> false)),
+            FancyLightBlock.CODEC);
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
-    }
+    public static void init() {}
 }

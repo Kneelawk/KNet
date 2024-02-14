@@ -19,6 +19,8 @@ base {
 base.libsDirectory.set(rootProject.layout.buildDirectory.map { it.dir("libs") })
 
 loom {
+    accessWidenerPath = project(":example-xplat").loom.accessWidenerPath
+
     runs {
         named("client") {
             programArgs("--width", "1280", "--height", "720")

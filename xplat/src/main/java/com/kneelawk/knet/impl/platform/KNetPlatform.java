@@ -27,14 +27,41 @@ package com.kneelawk.knet.impl.platform;
 
 import java.util.ServiceLoader;
 
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
 
 public interface KNetPlatform {
     KNetPlatform INSTANCE = ServiceLoader.load(KNetPlatform.class).findFirst()
         .orElseThrow(() -> new RuntimeException("Unable to find KNet platform"));
 
+    void sendPlayToAll(CustomPayload payload);
+
     void sendPlay(PlayerEntity player, CustomPayload payload);
 
     void sendPlayToServer(CustomPayload payload);
+
+    void sendPlayToDimension(RegistryKey<World> dim, CustomPayload payload);
+
+    void sendPlayToTrackingEntity(Entity entity, CustomPayload payload);
+
+    void sendPlayToTrackingEntityAndSelf(Entity entity, CustomPayload payload);
+
+    void sendPlayToTrackingChunk(ServerWorld world, ChunkPos pos, CustomPayload payload);
+
+    default void sendPlayToTrackingBlockEntity(BlockEntity be, CustomPayload payload) {
+        if (be.getWorld() instanceof ServerWorld serverWorld) {
+            sendPlayToTrackingChunk(serverWorld, new ChunkPos(be.getPos()), payload);
+        }
+    }
+
+    default void sendPlayToTrackingBlock(ServerWorld world, BlockPos pos, CustomPayload payload) {
+        sendPlayToTrackingChunk(world, new ChunkPos(pos), payload);
+    }
 }

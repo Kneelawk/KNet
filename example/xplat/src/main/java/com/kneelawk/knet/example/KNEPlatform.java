@@ -28,11 +28,19 @@ package com.kneelawk.knet.example;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 
 public interface KNEPlatform {
     KNEPlatform INSTANCE = ServiceLoader.load(KNEPlatform.class).findFirst()
         .orElseThrow(() -> new RuntimeException("Unable to find KNetExample platform"));
 
-    <T extends Block> Supplier<T> registerBlock(String path, Supplier<T> creator);
+    <T extends Block> Supplier<T> registerBlockWithItem(String path, Supplier<T> creator,
+                                                        MapCodec<? extends Block> codec);
+
+    <T extends BlockEntity> Supplier<BlockEntityType<T>> registerBlockEntity(String path,
+                                                                             Supplier<BlockEntityType<T>> creator);
 }

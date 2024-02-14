@@ -23,22 +23,18 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.neoforge.client;
 
-import net.minecraft.util.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
-import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
+import com.kneelawk.knet.example.client.ber.FancyLightBlockEntityRenderer;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
-
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-    }
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class KNetExampleClientNeoForge {
+    public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(KNEBlockEntities.FANCY_LIGHT.get(), FancyLightBlockEntityRenderer::new);
     }
 }

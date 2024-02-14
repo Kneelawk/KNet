@@ -17,7 +17,12 @@
   "entrypoints": {
     "main": [
       {
-        "value": "com.kneelawk.knet.example.KNetExampleFabric"
+        "value": "com.kneelawk.knet.example.fabric.KNetExampleFabric"
+      }
+    ],
+    "client": [
+      {
+        "value": "com.kneelawk.knet.example.fabric.client.KNetExampleClientFabric"
       }
     ]
   },

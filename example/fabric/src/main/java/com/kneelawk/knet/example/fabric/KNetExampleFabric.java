@@ -31,23 +31,41 @@ import net.fabricmc.api.ModInitializer;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 import com.kneelawk.knet.example.KNetExample;
+import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
+import com.kneelawk.knet.fabric.api.KNetFabric;
 
 public class KNetExampleFabric implements ModInitializer {
     public static final List<Pair<Identifier, Block>> BLOCKS = new ObjectArrayList<>();
+    public static final List<Pair<Identifier, Item>> ITEMS = new ObjectArrayList<>();
+    public static final List<Pair<Identifier, MapCodec<? extends Block>>> BLOCK_TYPES = new ObjectArrayList<>();
+    public static final List<Pair<Identifier, BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new ObjectArrayList<>();
 
     @Override
     public void onInitialize() {
         KNetExample.init();
 
-        for (var block : BLOCKS) {
-            Registry.register(Registries.BLOCK, block.getLeft(), block.getRight());
+        register(BLOCKS, Registries.BLOCK);
+        register(ITEMS, Registries.ITEM);
+        register(BLOCK_TYPES, Registries.BLOCK_TYPE);
+        register(BLOCK_ENTITY_TYPES, Registries.BLOCK_ENTITY_TYPE);
+
+        KNetFabric.registerPlay(FancyLightBlockEntity.COLOR_UPDATE_CHANNEL);
+    }
+
+    private static <T> void register(List<Pair<Identifier, T>> list, Registry<T> registry) {
+        for (var pair : list) {
+            Registry.register(registry, pair.getLeft(), pair.getRight());
         }
     }
 }

@@ -13,6 +13,10 @@ base {
     archivesName.set("$archives_base_name-${project.name}-intermediary")
 }
 
+loom {
+    accessWidenerPath.set(file("src/main/resources/knet_example.accesswidener"))
+}
+
 architectury {
     val enabled_platforms: String by project
     common(enabled_platforms.split(','))
