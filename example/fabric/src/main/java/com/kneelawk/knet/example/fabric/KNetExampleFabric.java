@@ -38,6 +38,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
@@ -50,6 +51,7 @@ public class KNetExampleFabric implements ModInitializer {
     public static final List<Pair<Identifier, Item>> ITEMS = new ObjectArrayList<>();
     public static final List<Pair<Identifier, MapCodec<? extends Block>>> BLOCK_TYPES = new ObjectArrayList<>();
     public static final List<Pair<Identifier, BlockEntityType<?>>> BLOCK_ENTITY_TYPES = new ObjectArrayList<>();
+    public static final List<Pair<Identifier, ScreenHandlerType<?>>> SCREEN_HANDLERS = new ObjectArrayList<>();
 
     @Override
     public void onInitialize() {
@@ -59,6 +61,7 @@ public class KNetExampleFabric implements ModInitializer {
         register(ITEMS, Registries.ITEM);
         register(BLOCK_TYPES, Registries.BLOCK_TYPE);
         register(BLOCK_ENTITY_TYPES, Registries.BLOCK_ENTITY_TYPE);
+        register(SCREEN_HANDLERS, Registries.SCREEN_HANDLER);
 
         KNetFabric.registerPlay(FancyLightBlockEntity.COLOR_UPDATE_CHANNEL);
     }

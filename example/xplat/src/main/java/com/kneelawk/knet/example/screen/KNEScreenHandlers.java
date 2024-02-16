@@ -23,30 +23,17 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.screen;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import java.util.function.Supplier;
 
-import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
-import com.kneelawk.knet.example.screen.KNEScreenHandlers;
+import net.minecraft.screen.ScreenHandlerType;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+import com.kneelawk.knet.example.KNEPlatform;
 
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-        KNEScreenHandlers.init();
-    }
+public class KNEScreenHandlers {
+    public static final Supplier<ScreenHandlerType<FancyLightScreenHandler>> FANCY_LIGHT =
+        KNEPlatform.INSTANCE.registerExtraScreenHandler("fancy_light", FancyLightScreenHandler::fromNetwork);
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
-    }
-
-    public static MutableText tt(String prefix, String suffix, Object... args) {
-        return Text.translatable(prefix + "." + MOD_ID + "." + suffix, args);
-    }
+    public static void init() {}
 }

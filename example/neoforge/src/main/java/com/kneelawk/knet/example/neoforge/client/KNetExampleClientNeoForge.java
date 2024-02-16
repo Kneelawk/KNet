@@ -29,14 +29,22 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
 import com.kneelawk.knet.example.client.ber.FancyLightBlockEntityRenderer;
+import com.kneelawk.knet.example.client.screen.FancyLightScreen;
+import com.kneelawk.knet.example.screen.KNEScreenHandlers;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class KNetExampleClientNeoForge {
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(KNEBlockEntities.FANCY_LIGHT.get(), FancyLightBlockEntityRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(KNEScreenHandlers.FANCY_LIGHT.get(), FancyLightScreen::new);
     }
 }

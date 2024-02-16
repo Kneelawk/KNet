@@ -36,6 +36,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.screen.ScreenHandlerType;
 
 import com.kneelawk.knet.example.KNetExample;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
@@ -49,6 +50,8 @@ public class KNetExampleNeoForge {
         DeferredRegister.create(RegistryKeys.BLOCK_TYPE, KNetExample.MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
         DeferredRegister.create(RegistryKeys.BLOCK_ENTITY_TYPE, KNetExample.MOD_ID);
+    public static final DeferredRegister<ScreenHandlerType<?>> SCREEN_HANDLERS =
+        DeferredRegister.create(RegistryKeys.SCREEN_HANDLER, KNetExample.MOD_ID);
 
     public KNetExampleNeoForge(IEventBus modBus) {
         KNetExample.init();
@@ -57,6 +60,9 @@ public class KNetExampleNeoForge {
         ITEMS.register(modBus);
         BLOCK_TYPES.register(modBus);
         BLOCK_ENTITY_TYPES.register(modBus);
+        SCREEN_HANDLERS.register(modBus);
+
+        modBus.addListener(this::onRegisterPayloadHandler);
     }
 
     private void onRegisterPayloadHandler(RegisterPayloadHandlerEvent event) {

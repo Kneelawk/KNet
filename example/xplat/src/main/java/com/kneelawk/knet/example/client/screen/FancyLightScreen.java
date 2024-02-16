@@ -23,30 +23,23 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.client.screen;
 
-import net.minecraft.text.MutableText;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
-import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
-import com.kneelawk.knet.example.screen.KNEScreenHandlers;
+import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
-
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-        KNEScreenHandlers.init();
+public class FancyLightScreen extends HandledScreen<FancyLightScreenHandler> {
+    public FancyLightScreen(FancyLightScreenHandler handler, PlayerInventory inventory,
+                            Text title) {
+        super(handler, inventory, title);
     }
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
-    }
+    @Override
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 
-    public static MutableText tt(String prefix, String suffix, Object... args) {
-        return Text.translatable(prefix + "." + MOD_ID + "." + suffix, args);
     }
 }

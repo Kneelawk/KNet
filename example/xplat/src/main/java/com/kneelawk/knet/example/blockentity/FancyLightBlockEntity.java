@@ -25,9 +25,18 @@
 
 package com.kneelawk.knet.example.blockentity;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import com.kneelawk.knet.api.KNet;
@@ -35,10 +44,15 @@ import com.kneelawk.knet.api.channel.context.ContextualChannel;
 import com.kneelawk.knet.api.channel.context.PayloadCodec;
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
+import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 
 import static com.kneelawk.knet.example.KNetExample.id;
+import static com.kneelawk.knet.example.KNetExample.tt;
 
-public class FancyLightBlockEntity extends BlockEntity {
+public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHandlerFactory {
+    private static final Text CONTAINER_NAME = tt("container", "fancy_light");
+
     public static final ContextualChannel<FancyLightBlockEntity, ColorUpdate> COLOR_UPDATE_CHANNEL =
         new ContextualChannel<>(id("fancy_light_color_update"),
             KNet.BLOCK_ENTITY_CONTEXT.cast(FancyLightBlockEntity.class), ColorUpdate.CODEC).recvClient(
@@ -112,5 +126,21 @@ public class FancyLightBlockEntity extends BlockEntity {
     @Override
     public NbtCompound toInitialChunkDataNbt() {
         return createNbt();
+    }
+
+    @Override
+    public void writeExtra(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeBlockPos(getPos());
+    }
+
+    @Override
+    public Text getDisplayName() {
+        return CONTAINER_NAME;
+    }
+
+    @Nullable
+    @Override
+    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+        return new FancyLightScreenHandler(syncId, ScreenHandlerContext.create(getWorld(), getPos()), this);
     }
 }

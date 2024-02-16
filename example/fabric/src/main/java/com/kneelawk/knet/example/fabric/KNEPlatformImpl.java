@@ -27,18 +27,32 @@ package com.kneelawk.knet.example.fabric;
 
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 import com.kneelawk.knet.example.KNEPlatform;
+import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
+import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
 
 import static com.kneelawk.knet.example.KNetExample.id;
 
@@ -60,5 +74,38 @@ public class KNEPlatformImpl implements KNEPlatform {
         BlockEntityType<T> type = creator.get();
         KNetExampleFabric.BLOCK_ENTITY_TYPES.add(new Pair<>(id(path), type));
         return () -> type;
+    }
+
+    @Override
+    public <T extends ScreenHandler> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path,
+                                                                                               ExtraScreenHandlerDecoder<T> factory) {
+        ScreenHandlerType<T> type = new ExtendedScreenHandlerType<>(factory::create);
+        KNetExampleFabric.SCREEN_HANDLERS.add(new Pair<>(id(path), type));
+        return () -> type;
+    }
+
+    @Override
+    public void openScreen(ServerPlayerEntity player, NamedScreenHandlerFactory factory) {
+        if (factory instanceof ExtraScreenHandlerFactory extra) {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+                @Override
+                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+                    extra.writeExtra(player, buf);
+                }
+
+                @Override
+                public Text getDisplayName() {
+                    return extra.getDisplayName();
+                }
+
+                @Nullable
+                @Override
+                public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+                    return extra.createMenu(syncId, playerInventory, player);
+                }
+            });
+        } else {
+            player.openHandledScreen(factory);
+        }
     }
 }

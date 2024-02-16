@@ -1,3 +1,4 @@
 {
-  "block.knet_example.fancy_light": "Fancy Light Block"
+  "block.knet_example.fancy_light": "Fancy Light Block",
+  "container.knet_example.fancy_light": "Fancy Light"
 }

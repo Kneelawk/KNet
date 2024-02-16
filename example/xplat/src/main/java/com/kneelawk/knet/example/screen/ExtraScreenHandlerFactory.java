@@ -23,30 +23,12 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.example.screen;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
-import com.kneelawk.knet.example.screen.KNEScreenHandlers;
-
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
-
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-        KNEScreenHandlers.init();
-    }
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
-    }
-
-    public static MutableText tt(String prefix, String suffix, Object... args) {
-        return Text.translatable(prefix + "." + MOD_ID + "." + suffix, args);
-    }
+public interface ExtraScreenHandlerFactory extends NamedScreenHandlerFactory {
+    void writeExtra(ServerPlayerEntity player, PacketByteBuf buf);
 }

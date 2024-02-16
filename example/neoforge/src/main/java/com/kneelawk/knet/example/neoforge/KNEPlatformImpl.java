@@ -27,6 +27,7 @@ package com.kneelawk.knet.example.neoforge;
 
 import java.util.function.Supplier;
 
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
 import com.mojang.serialization.MapCodec;
@@ -36,8 +37,14 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import com.kneelawk.knet.example.KNEPlatform;
+import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
+import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
 
 public class KNEPlatformImpl implements KNEPlatform {
     @Override
@@ -53,5 +60,20 @@ public class KNEPlatformImpl implements KNEPlatform {
     public <T extends BlockEntity> Supplier<BlockEntityType<T>> registerBlockEntity(String path,
                                                                                     Supplier<BlockEntityType<T>> creator) {
         return KNetExampleNeoForge.BLOCK_ENTITY_TYPES.register(path, creator);
+    }
+
+    @Override
+    public <T extends ScreenHandler> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path,
+                                                                                               ExtraScreenHandlerDecoder<T> factory) {
+        return KNetExampleNeoForge.SCREEN_HANDLERS.register(path, () -> IMenuTypeExtension.create(factory::create));
+    }
+
+    @Override
+    public void openScreen(ServerPlayerEntity player, NamedScreenHandlerFactory factory) {
+        if (factory instanceof ExtraScreenHandlerFactory extra) {
+            player.openMenu(extra, buf -> extra.writeExtra(player, buf));
+        } else {
+            player.openHandledScreen(factory);
+        }
     }
 }
