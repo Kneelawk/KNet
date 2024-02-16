@@ -26,6 +26,7 @@
 package com.kneelawk.knet.example.neoforge.client;
 
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
@@ -34,6 +35,7 @@ import com.kneelawk.knet.example.client.ber.FancyLightBlockEntityRenderer;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class KNetExampleClientNeoForge {
+    @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(KNEBlockEntities.FANCY_LIGHT.get(), FancyLightBlockEntityRenderer::new);
     }
