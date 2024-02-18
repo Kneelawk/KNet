@@ -23,38 +23,23 @@
  *
  */
 
-package com.kneelawk.knet.example;
-
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+package com.kneelawk.knet.fabric.api;
 
 import com.kneelawk.knet.api.KNetRegistrar;
-import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
-import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
-import com.kneelawk.knet.example.screen.KNEScreenHandlers;
+import com.kneelawk.knet.api.channel.Channel;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
-
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-        KNEScreenHandlers.init();
+/**
+ * Fabric KNet registrar implementation that can be sent to common code to register channels.
+ */
+public class KNetRegistrarFabric implements KNetRegistrar {
+    /**
+     * Creates a new KNet registrar that can be sent to common code to register channels.
+     */
+    public KNetRegistrarFabric() {
     }
 
-    public static void registerChannels(KNetRegistrar registrar) {
-        registrar.register(FancyLightBlockEntity.COLOR_UPDATE_CHANNEL);
-        registrar.register(FancyLightScreenHandler.COLOR_UPDATE_CHANNEL);
-    }
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
-    }
-
-    public static MutableText tt(String prefix, String suffix, Object... args) {
-        return Text.translatable(prefix + "." + MOD_ID + "." + suffix, args);
+    @Override
+    public void register(Channel channel) {
+        KNetFabric.registerPlay(channel);
     }
 }

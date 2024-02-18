@@ -28,7 +28,6 @@ package com.kneelawk.knet.example.neoforge;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.mojang.serialization.MapCodec;
@@ -39,9 +38,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandlerType;
 
 import com.kneelawk.knet.example.KNetExample;
-import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
-import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
-import com.kneelawk.knet.neoforge.api.KNetNeoForge;
+import com.kneelawk.knet.neoforge.api.KNetRegistrarNeoForge;
 
 @Mod(KNetExample.MOD_ID)
 public class KNetExampleNeoForge {
@@ -67,8 +64,6 @@ public class KNetExampleNeoForge {
     }
 
     private void onRegisterPayloadHandler(RegisterPayloadHandlerEvent event) {
-        IPayloadRegistrar registrar = event.registrar(KNetExample.MOD_ID);
-        KNetNeoForge.registerPlay(registrar, FancyLightBlockEntity.COLOR_UPDATE_CHANNEL);
-        KNetNeoForge.registerPlay(registrar, FancyLightScreenHandler.COLOR_UPDATE_CHANNEL);
+        KNetExample.registerChannels(new KNetRegistrarNeoForge(event.registrar(KNetExample.MOD_ID)));
     }
 }

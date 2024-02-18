@@ -43,9 +43,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 import com.kneelawk.knet.example.KNetExample;
-import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
-import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
-import com.kneelawk.knet.fabric.api.KNetFabric;
+import com.kneelawk.knet.fabric.api.KNetRegistrarFabric;
 
 public class KNetExampleFabric implements ModInitializer {
     public static final List<Pair<Identifier, Block>> BLOCKS = new ObjectArrayList<>();
@@ -64,8 +62,7 @@ public class KNetExampleFabric implements ModInitializer {
         register(BLOCK_ENTITY_TYPES, Registries.BLOCK_ENTITY_TYPE);
         register(SCREEN_HANDLERS, Registries.SCREEN_HANDLER);
 
-        KNetFabric.registerPlay(FancyLightBlockEntity.COLOR_UPDATE_CHANNEL);
-        KNetFabric.registerPlay(FancyLightScreenHandler.COLOR_UPDATE_CHANNEL);
+        KNetExample.registerChannels(new KNetRegistrarFabric());
     }
 
     private static <T> void register(List<Pair<Identifier, T>> list, Registry<T> registry) {

@@ -23,38 +23,30 @@
  *
  */
 
-package com.kneelawk.knet.example;
+package com.kneelawk.knet.neoforge.api;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
 import com.kneelawk.knet.api.KNetRegistrar;
-import com.kneelawk.knet.example.block.KNEBlocks;
-import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
-import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
-import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
-import com.kneelawk.knet.example.screen.KNEScreenHandlers;
+import com.kneelawk.knet.api.channel.Channel;
 
-public class KNetExample {
-    public static final String MOD_ID = "knet_example";
+/**
+ * NeoForge KNet registrar implementation that can be sent to common code to register channels.
+ */
+public class KNetRegistrarNeoForge implements KNetRegistrar {
+    private final IPayloadRegistrar registrar;
 
-    public static void init() {
-        KNEBlocks.init();
-        KNEBlockEntities.init();
-        KNEScreenHandlers.init();
+    /**
+     * Creates a new KNet registrar that can be sent to common code to register channels.
+     *
+     * @param registrar the NeoForge {@link IPayloadRegistrar} retrieved during the {@link net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent} event.
+     */
+    public KNetRegistrarNeoForge(IPayloadRegistrar registrar) {
+        this.registrar = registrar;
     }
 
-    public static void registerChannels(KNetRegistrar registrar) {
-        registrar.register(FancyLightBlockEntity.COLOR_UPDATE_CHANNEL);
-        registrar.register(FancyLightScreenHandler.COLOR_UPDATE_CHANNEL);
-    }
-
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
-    }
-
-    public static MutableText tt(String prefix, String suffix, Object... args) {
-        return Text.translatable(prefix + "." + MOD_ID + "." + suffix, args);
+    @Override
+    public void register(Channel channel) {
+        KNetNeoForge.registerPlay(registrar, channel);
     }
 }
