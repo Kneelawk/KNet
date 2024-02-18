@@ -20,11 +20,6 @@
       {
         "value": "com.kneelawk.knet.fabric.impl.KNetFabricMod"
       }
-    ],
-    "client": [
-      {
-        "value": "com.kneelawk.knet.fabric.impl.client.KNetClientFabricMod"
-      }
     ]
   },
   "mixins": [ ],

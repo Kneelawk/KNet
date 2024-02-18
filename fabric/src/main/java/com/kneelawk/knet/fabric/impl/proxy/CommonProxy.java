@@ -25,22 +25,39 @@
 
 package com.kneelawk.knet.fabric.impl.proxy;
 
+import java.lang.reflect.InvocationTargetException;
+
+import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.channel.Channel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
-import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.fabric.impl.FabricPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
 
 public class CommonProxy {
-    static CommonProxy instance = new CommonProxy();
+    private static final CommonProxy INSTANCE;
+
+    static {
+        CommonProxy instance = new CommonProxy();
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            try {
+                instance = (CommonProxy) CommonProxy.class.getClassLoader()
+                    .loadClass("com.kneelawk.knet.fabric.impl.proxy.ClientProxy").getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        INSTANCE = instance;
+    }
 
     public static CommonProxy getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public boolean isPhysicalClient() {

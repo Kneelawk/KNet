@@ -37,10 +37,6 @@ import com.kneelawk.knet.fabric.impl.FabricPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
 
 public class ClientProxy extends CommonProxy {
-    public static void init() {
-        CommonProxy.instance = new ClientProxy();
-    }
-
     @Override
     public boolean isPhysicalClient() {
         return true;
