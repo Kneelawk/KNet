@@ -81,16 +81,19 @@ public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHan
     public void updateRed(int newRed) {
         red = newRed & 0xFF;
         COLOR_UPDATE_CHANNEL.sendPlayToTracking(this, this, new ColorUpdatePayload((byte) red, (byte) 0));
+        markDirty();
     }
 
     public void updateGreen(int newGreen) {
         green = newGreen & 0xFF;
         COLOR_UPDATE_CHANNEL.sendPlayToTracking(this, this, new ColorUpdatePayload((byte) green, (byte) 1));
+        markDirty();
     }
 
     public void updateBlue(int newBlue) {
         blue = newBlue & 0xFF;
         COLOR_UPDATE_CHANNEL.sendPlayToTracking(this, this, new ColorUpdatePayload((byte) blue, (byte) 2));
+        markDirty();
     }
 
     private void recv(ColorUpdatePayload payload, PayloadHandlingContext ctx) throws PayloadHandlingErrorException {
