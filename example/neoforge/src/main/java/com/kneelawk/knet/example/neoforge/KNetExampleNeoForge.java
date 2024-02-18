@@ -40,6 +40,7 @@ import net.minecraft.screen.ScreenHandlerType;
 
 import com.kneelawk.knet.example.KNetExample;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
+import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 import com.kneelawk.knet.neoforge.api.KNetNeoForge;
 
 @Mod(KNetExample.MOD_ID)
@@ -68,5 +69,6 @@ public class KNetExampleNeoForge {
     private void onRegisterPayloadHandler(RegisterPayloadHandlerEvent event) {
         IPayloadRegistrar registrar = event.registrar(KNetExample.MOD_ID);
         KNetNeoForge.registerPlay(registrar, FancyLightBlockEntity.COLOR_UPDATE_CHANNEL);
+        KNetNeoForge.registerPlay(registrar, FancyLightScreenHandler.COLOR_UPDATE_CHANNEL);
     }
 }

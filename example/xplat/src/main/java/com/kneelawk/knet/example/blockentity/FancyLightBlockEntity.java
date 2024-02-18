@@ -41,9 +41,9 @@ import net.minecraft.util.math.BlockPos;
 
 import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.context.ContextualChannel;
-import com.kneelawk.knet.api.channel.context.PayloadCodec;
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.example.net.ColorUpdatePayload;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
 import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 
@@ -53,17 +53,10 @@ import static com.kneelawk.knet.example.KNetExample.tt;
 public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHandlerFactory {
     private static final Text CONTAINER_NAME = tt("container", "fancy_light");
 
-    public static final ContextualChannel<FancyLightBlockEntity, ColorUpdate> COLOR_UPDATE_CHANNEL =
+    public static final ContextualChannel<FancyLightBlockEntity, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
         new ContextualChannel<>(id("fancy_light_color_update"),
-            KNet.BLOCK_ENTITY_CONTEXT.cast(FancyLightBlockEntity.class), ColorUpdate.CODEC).recvClient(
+            KNet.BLOCK_ENTITY_CONTEXT.cast(FancyLightBlockEntity.class), ColorUpdatePayload.CODEC).recvClient(
             FancyLightBlockEntity::recv);
-
-    private record ColorUpdate(byte value, byte index) {
-        public static final PayloadCodec<ColorUpdate> CODEC = new PayloadCodec<>((buf, obj) -> {
-            buf.writeByte(obj.value());
-            buf.writeByte(obj.index());
-        }, buf -> new ColorUpdate(buf.readByte(), buf.readByte()));
-    }
 
     private int red = 255;
     private int green = 255;
@@ -87,20 +80,20 @@ public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHan
 
     public void updateRed(int newRed) {
         red = newRed & 0xFF;
-        COLOR_UPDATE_CHANNEL.sendPlayToTracking(this, this, new ColorUpdate((byte) red, (byte) 0));
+        COLOR_UPDATE_CHANNEL.sendPlayToTracking(this, this, new ColorUpdatePayload((byte) red, (byte) 0));
     }
 
     public void updateGreen(int newGreen) {
         green = newGreen & 0xFF;
-        COLOR_UPDATE_CHANNEL.sendPlayToTracking(this, this, new ColorUpdate((byte) green, (byte) 1));
+        COLOR_UPDATE_CHANNEL.sendPlayToTracking(this, this, new ColorUpdatePayload((byte) green, (byte) 1));
     }
 
     public void updateBlue(int newBlue) {
         blue = newBlue & 0xFF;
-        COLOR_UPDATE_CHANNEL.sendPlayToTracking(this, this, new ColorUpdate((byte) blue, (byte) 2));
+        COLOR_UPDATE_CHANNEL.sendPlayToTracking(this, this, new ColorUpdatePayload((byte) blue, (byte) 2));
     }
 
-    private void recv(ColorUpdate payload, PayloadHandlingContext ctx) throws PayloadHandlingErrorException {
+    private void recv(ColorUpdatePayload payload, PayloadHandlingContext ctx) throws PayloadHandlingErrorException {
         switch (payload.index()) {
             case 0 -> red = payload.value() & 0xFF;
             case 1 -> green = payload.value() & 0xFF;

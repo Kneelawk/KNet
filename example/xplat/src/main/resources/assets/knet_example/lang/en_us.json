@@ -1,4 +1,7 @@
 {
   "block.knet_example.fancy_light": "Fancy Light Block",
-  "container.knet_example.fancy_light": "Fancy Light"
+  "container.knet_example.fancy_light": "Fancy Light",
+  "gui.knet_example.red": "R",
+  "gui.knet_example.green": "G",
+  "gui.knet_example.blue": "B"
 }

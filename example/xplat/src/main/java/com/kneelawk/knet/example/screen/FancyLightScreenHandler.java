@@ -34,10 +34,22 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import com.kneelawk.knet.api.KNet;
+import com.kneelawk.knet.api.channel.context.ContextualChannel;
+import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
+import com.kneelawk.knet.example.net.ColorUpdatePayload;
+
+import static com.kneelawk.knet.example.KNetExample.id;
 
 public class FancyLightScreenHandler extends ScreenHandler {
+    public static final ContextualChannel<FancyLightScreenHandler, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
+        new ContextualChannel<>(id("fancy_light_screen_color_update"),
+            KNet.SCREEN_HANDLER_CONTEXT.cast(FancyLightScreenHandler.class), ColorUpdatePayload.CODEC).recvServer(
+            FancyLightScreenHandler::recv);
+
     private final ScreenHandlerContext context;
     private final FancyLightBlockEntity entity;
 
@@ -65,5 +77,42 @@ public class FancyLightScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
         return canUse(context, player, KNEBlocks.FANCY_LIGHT.get());
+    }
+
+    private void recv(ColorUpdatePayload payload, PayloadHandlingContext ctx) throws PayloadHandlingErrorException {
+        switch (payload.index()) {
+            case 0 -> entity.updateRed(payload.value());
+            case 1 -> entity.updateGreen(payload.value());
+            case 2 -> entity.updateBlue(payload.value());
+            default -> throw new PayloadHandlingErrorException(
+                "Encountered unexpected color update index: " + payload.index());
+        }
+    }
+
+    public int getRed() {
+        return entity.getRed();
+    }
+
+    public int getGreen() {
+        return entity.getGreen();
+    }
+
+    public int getBlue() {
+        return entity.getBlue();
+    }
+
+    public int getValue(int index) {
+        return switch (index) {
+            case 0 -> getRed();
+            case 1 -> getGreen();
+            case 2 -> getBlue();
+            default -> 0;
+        };
+    }
+
+    public void updateValue(int value, int index) {
+        if (0 <= index && index < 3) {
+            COLOR_UPDATE_CHANNEL.sendPlayToServer(this, new ColorUpdatePayload((byte) value, (byte) index));
+        }
     }
 }
