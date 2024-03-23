@@ -30,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
@@ -44,17 +43,18 @@ import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
 
 /**
- * Describes a {@link CustomPayload} channel that can have payloads sent and received.
+ * Describes a {@link NetPayload} channel that can have payloads sent and received.
  *
  * @param <P> the type of payload this channel sends and receives.
  */
-public class NoContextChannel<P extends CustomPayload> implements Channel {
+public class NoContextChannel<P extends NetPayload> implements Channel {
     private final Identifier id;
-    private final PacketByteBuf.PacketReader<P> reader;
+    private final NetByteBuf.PacketReader<P> reader;
 
     private NoContextPayloadHandler<P> clientHandler = null;
     private NoContextPayloadHandler<P> serverHandler = null;
@@ -65,7 +65,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param id     the id of this channel. Must be the same as the id of the payloads being sent.
      * @param reader used for converting packets into payloads.
      */
-    public NoContextChannel(@NotNull Identifier id, @NotNull PacketByteBuf.PacketReader<P> reader) {
+    public NoContextChannel(@NotNull Identifier id, @NotNull NetByteBuf.PacketReader<P> reader) {
         this.id = id;
         this.reader = reader;
     }
@@ -273,7 +273,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
     }
 
     @Override
-    public PacketByteBuf.PacketReader<P> getReader() {
+    public NetByteBuf.PacketReader<? extends NetPayload> getReader() {
         return reader;
     }
 

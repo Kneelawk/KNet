@@ -8,6 +8,10 @@
 
 package com.kneelawk.knet.api.util;
 
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
@@ -44,6 +48,26 @@ public class NetByteBuf extends PacketByteBuf {
             readerIndex = buffer.readerIndex();
             readPartialOffset = buffer.readPartialOffset;
             readPartialCache = buffer.readPartialCache;
+        }
+    }
+
+    /**
+     * A functional interface to read a value from {@link NetByteBuf}.
+     */
+    @FunctionalInterface
+    public interface PacketReader<T> extends Function<NetByteBuf, T> {
+        default PacketReader<Optional<T>> asOptional() {
+            return buf -> buf.readOptional(this);
+        }
+    }
+
+    /**
+     * A functional interface to write a value to {@link NetByteBuf}.
+     */
+    @FunctionalInterface
+    public interface PacketWriter<T> extends BiConsumer<NetByteBuf, T> {
+        default PacketWriter<Optional<T>> asOptional() {
+            return (buf, value) -> buf.writeOptional(value, this);
         }
     }
 
@@ -854,5 +878,36 @@ public class NetByteBuf extends PacketByteBuf {
     @Override
     public String readString() {
         return readString(Short.MAX_VALUE);
+    }
+
+    /**
+     * Writes an optional value to this buf. An optional value is represented by
+     * a boolean indicating if the value is present, followed by the value only if
+     * the value is present.
+     *
+     * @param value  the optional value to write.
+     * @param writer the packet writer capable of writing the value.
+     * @see #readOptional(PacketReader)
+     */
+    public <T> void writeOptional(Optional<T> value, PacketWriter<T> writer) {
+        if (value.isPresent()) {
+            this.writeBoolean(true);
+            writer.accept(this, value.get());
+        } else {
+            this.writeBoolean(false);
+        }
+    }
+
+    /**
+     * Reads an optional value from this buf. An optional value is represented by
+     * a boolean indicating if the value is present, followed by the value only if
+     * the value is present.
+     *
+     * @param reader the packet reader capable of reading the value.
+     * @return the read optional value
+     * @see #writeOptional(Optional, PacketWriter)
+     */
+    public <T> Optional<T> readOptional(PacketReader<T> reader) {
+        return this.readBoolean() ? Optional.of(reader.apply(this)) : Optional.empty();
     }
 }

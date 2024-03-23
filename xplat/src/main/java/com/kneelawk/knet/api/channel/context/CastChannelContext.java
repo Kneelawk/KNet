@@ -27,11 +27,10 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.PacketByteBuf;
-
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 
 /**
  * Creates a channel context that casts the parent into the child.
@@ -55,12 +54,12 @@ public class CastChannelContext<PARENT, CHILD extends PARENT> implements Channel
     }
 
     @Override
-    public @NotNull Object decodePayload(@NotNull PacketByteBuf buf) {
+    public @NotNull Object decodePayload(@NotNull NetByteBuf buf) {
         return parentChannelContext.decodePayload(buf);
     }
 
     @Override
-    public void encodePayload(@NotNull Object payload, @NotNull PacketByteBuf buf) {
+    public void encodePayload(@NotNull Object payload, @NotNull NetByteBuf buf) {
         parentChannelContext.encodePayload(payload, buf);
     }
 

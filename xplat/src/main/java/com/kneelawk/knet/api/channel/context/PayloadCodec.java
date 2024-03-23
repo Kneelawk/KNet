@@ -27,7 +27,7 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.PacketByteBuf;
+import com.kneelawk.knet.api.util.NetByteBuf;
 
 /**
  * A codec for a contextual payload.
@@ -36,6 +36,6 @@ import net.minecraft.network.PacketByteBuf;
  * @param decoder the decoder for the payload.
  * @param <P>     the type of payload.
  */
-public record PayloadCodec<P>(@NotNull PacketByteBuf.PacketWriter<P> encoder,
-                              @NotNull PacketByteBuf.PacketReader<P> decoder) {
+public record PayloadCodec<P>(@NotNull NetByteBuf.PacketWriter<P> encoder,
+                              @NotNull NetByteBuf.PacketReader<P> decoder) {
 }

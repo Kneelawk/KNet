@@ -27,10 +27,9 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.PacketByteBuf;
-
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 
 /**
  * A channel context that wraps another channel context, extracting extra information from it.
@@ -68,7 +67,7 @@ public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelConte
     }
 
     @Override
-    public @NotNull Object decodePayload(@NotNull PacketByteBuf buf) {
+    public @NotNull Object decodePayload(@NotNull NetByteBuf buf) {
         Object parentPayload = parentChannelContext.decodePayload(buf);
         PAYLOAD payload = codec.decoder().apply(buf);
         return new Payload(parentPayload, payload);
@@ -76,7 +75,7 @@ public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelConte
 
     @SuppressWarnings("unchecked")
     @Override
-    public void encodePayload(@NotNull Object payload, @NotNull PacketByteBuf buf) {
+    public void encodePayload(@NotNull Object payload, @NotNull NetByteBuf buf) {
         Payload myPayload = (Payload) payload;
         parentChannelContext.encodePayload(myPayload.parentPayload, buf);
         codec.encoder().accept(buf, myPayload.payload);

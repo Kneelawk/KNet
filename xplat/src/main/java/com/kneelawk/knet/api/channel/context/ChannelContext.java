@@ -27,10 +27,9 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.PacketByteBuf;
-
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 
 /**
  * Describes something capable of supplying context to a channel.
@@ -44,7 +43,7 @@ public interface ChannelContext<C> {
      * @param buf the buffer to decode from.
      * @return the newly decoded payload.
      */
-    @NotNull Object decodePayload(@NotNull PacketByteBuf buf);
+    @NotNull Object decodePayload(@NotNull NetByteBuf buf);
 
     /**
      * Encodes a payload to a buffer.
@@ -52,7 +51,7 @@ public interface ChannelContext<C> {
      * @param payload the payload to encodel
      * @param buf     the buffer to write to.
      */
-    void encodePayload(@NotNull Object payload, @NotNull PacketByteBuf buf);
+    void encodePayload(@NotNull Object payload, @NotNull NetByteBuf buf);
 
     /**
      * Finds a context using a previously decoded payload.

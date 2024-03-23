@@ -23,13 +23,34 @@
  *
  */
 
-package com.kneelawk.knet.example.screen;
+package com.kneelawk.knet.api.channel;
 
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.CustomPayload;
 
 import com.kneelawk.knet.api.util.NetByteBuf;
 
-public interface ExtraScreenHandlerFactory extends NamedScreenHandlerFactory {
-    void writeExtra(ServerPlayerEntity player, NetByteBuf buf);
+/**
+ * Version of {@link CustomPayload} that uses {@link NetByteBuf}s.
+ */
+public interface NetPayload extends CustomPayload {
+    /**
+     * Writes this payload to a {@link NetByteBuf}.
+     *
+     * @param buf the buffer to write to.
+     */
+    void write(NetByteBuf buf);
+
+    /**
+     * Default implementation that converts the given {@link PacketByteBuf} into a {@link NetByteBuf} in order to call
+     * {@link #write(NetByteBuf)}.
+     * <p>
+     * Note: this properly handles situations where this method is called with a {@link NetByteBuf} already.
+     *
+     * @param buf the {@link PacketByteBuf} to be converted.
+     */
+    @Override
+    default void write(PacketByteBuf buf) {
+        write(NetByteBuf.asNetByteBuf(buf));
+    }
 }

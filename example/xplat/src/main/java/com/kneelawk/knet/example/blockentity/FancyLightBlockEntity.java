@@ -32,7 +32,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -43,6 +42,7 @@ import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.context.ContextualChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.example.net.ColorUpdatePayload;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
 import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
@@ -125,7 +125,7 @@ public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHan
     }
 
     @Override
-    public void writeExtra(ServerPlayerEntity player, PacketByteBuf buf) {
+    public void writeExtra(ServerPlayerEntity player, NetByteBuf buf) {
         buf.writeBlockPos(getPos());
     }
 

@@ -26,9 +26,10 @@
 package com.kneelawk.knet.example.screen;
 
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 
+import com.kneelawk.knet.api.util.NetByteBuf;
+
 public interface ExtraScreenHandlerDecoder<T extends ScreenHandler> {
-    T create(int syncId, PlayerInventory playerInv, PacketByteBuf buf);
+    T create(int syncId, PlayerInventory playerInv, NetByteBuf buf);
 }

@@ -50,6 +50,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
@@ -79,7 +80,8 @@ public class KNEPlatformImpl implements KNEPlatform {
     @Override
     public <T extends ScreenHandler> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path,
                                                                                                ExtraScreenHandlerDecoder<T> factory) {
-        ScreenHandlerType<T> type = new ExtendedScreenHandlerType<>(factory::create);
+        ScreenHandlerType<T> type = new ExtendedScreenHandlerType<>(
+            (syncId, playerInv, buf) -> factory.create(syncId, playerInv, NetByteBuf.asNetByteBuf(buf)));
         KNetExampleFabric.SCREEN_HANDLERS.add(new Pair<>(id(path), type));
         return () -> type;
     }
@@ -90,7 +92,7 @@ public class KNEPlatformImpl implements KNEPlatform {
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
                 public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                    extra.writeExtra(player, buf);
+                    extra.writeExtra(player, NetByteBuf.asNetByteBuf(buf));
                 }
 
                 @Override

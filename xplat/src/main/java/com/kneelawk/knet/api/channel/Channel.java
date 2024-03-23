@@ -25,12 +25,12 @@
 
 package com.kneelawk.knet.api.channel;
 
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 
 /**
  * A channel that can be registered with a platform.
@@ -48,7 +48,7 @@ public interface Channel {
      *
      * @return this channel's payload reader.
      */
-    PacketByteBuf.PacketReader<? extends CustomPayload> getReader();
+    NetByteBuf.PacketReader<? extends NetPayload> getReader();
 
     /**
      * Called by net-util platform code when this channel receives a payload on the client-side.

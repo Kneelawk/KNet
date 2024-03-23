@@ -28,7 +28,6 @@ package com.kneelawk.knet.example.screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.util.math.BlockPos;
@@ -38,6 +37,7 @@ import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.context.ContextualChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
 import com.kneelawk.knet.example.net.ColorUpdatePayload;
@@ -53,7 +53,7 @@ public class FancyLightScreenHandler extends ScreenHandler {
     private final ScreenHandlerContext context;
     private final FancyLightBlockEntity entity;
 
-    public static FancyLightScreenHandler fromNetwork(int syncId, PlayerInventory playerInv, PacketByteBuf buf) {
+    public static FancyLightScreenHandler fromNetwork(int syncId, PlayerInventory playerInv, NetByteBuf buf) {
         BlockPos pos = buf.readBlockPos();
         World world = playerInv.player.getWorld();
 

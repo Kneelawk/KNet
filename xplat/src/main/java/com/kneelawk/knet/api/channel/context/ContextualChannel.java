@@ -30,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
@@ -41,16 +40,18 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 import com.kneelawk.knet.api.channel.Channel;
+import com.kneelawk.knet.api.channel.NetPayload;
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
 
 /**
  * Describes a channel that sends and receives contextual payloads.
  * <p>
- * Note: Payloads to not have to extend {@link CustomPayload}.
+ * Note: Payloads to not have to extend {@link Payload}.
  *
  * @param <C> the type of context this channel has.
  * @param <P> the type of payload this channel sends and receives.
@@ -227,11 +228,11 @@ public class ContextualChannel<C, P> implements Channel {
     }
 
     @Override
-    public PacketByteBuf.PacketReader<? extends CustomPayload> getReader() {
+    public NetByteBuf.PacketReader<? extends NetPayload> getReader() {
         return this::read;
     }
 
-    private Payload read(PacketByteBuf buf) {
+    private NetPayload read(NetByteBuf buf) {
         Object contextPayload = channelContext.decodePayload(buf);
         P payload = codec.decoder().apply(buf);
         return new Payload(contextPayload, payload);
@@ -278,7 +279,7 @@ public class ContextualChannel<C, P> implements Channel {
         return clientHandler != null;
     }
 
-    private class Payload implements CustomPayload {
+    private class Payload implements NetPayload {
         private final Object contextPayload;
         private final P payload;
 
@@ -288,7 +289,7 @@ public class ContextualChannel<C, P> implements Channel {
         }
 
         @Override
-        public void write(PacketByteBuf buf) {
+        public void write(NetByteBuf buf) {
             channelContext.encodePayload(contextPayload, buf);
             codec.encoder().accept(buf, payload);
         }

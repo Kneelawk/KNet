@@ -42,6 +42,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
@@ -65,13 +66,14 @@ public class KNEPlatformImpl implements KNEPlatform {
     @Override
     public <T extends ScreenHandler> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path,
                                                                                                ExtraScreenHandlerDecoder<T> factory) {
-        return KNetExampleNeoForge.SCREEN_HANDLERS.register(path, () -> IMenuTypeExtension.create(factory::create));
+        return KNetExampleNeoForge.SCREEN_HANDLERS.register(path, () -> IMenuTypeExtension.create(
+            (syncId, playerInv, buf) -> factory.create(syncId, playerInv, NetByteBuf.asNetByteBuf(buf))));
     }
 
     @Override
     public void openScreen(ServerPlayerEntity player, NamedScreenHandlerFactory factory) {
         if (factory instanceof ExtraScreenHandlerFactory extra) {
-            player.openMenu(extra, buf -> extra.writeExtra(player, buf));
+            player.openMenu(extra, buf -> extra.writeExtra(player, NetByteBuf.asNetByteBuf(buf)));
         } else {
             player.openHandledScreen(factory);
         }
