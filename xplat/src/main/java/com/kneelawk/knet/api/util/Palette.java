@@ -26,6 +26,7 @@
 package com.kneelawk.knet.api.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -82,7 +83,7 @@ public class Palette<T> {
      * @param key the integer key to look up.
      * @return the object associated with the given integer key.
      */
-    public @NotNull T get(int key) {
+    public @Nullable T get(int key) {
         return palette.get(key);
     }
 
