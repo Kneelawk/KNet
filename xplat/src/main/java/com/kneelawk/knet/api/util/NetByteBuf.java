@@ -867,34 +867,7 @@ public class NetByteBuf extends PacketByteBuf {
     }
 
     /**
-     * Reads an identifier value from the buffer.
-     *
-     * @return the valid identifier read.
-     * @deprecated Because {@link PacketByteBuf#readIdentifier()} can throw an {@link InvalidIdentifierException}.
-     */
-    @Override
-    @Deprecated
-    public Identifier readIdentifier() {
-        return super.readIdentifier();
-    }
-
-    /**
-     * Reads in a string, and tries to parse it as an {@link Identifier}. If the string is a valid identifier then it
-     * is returned, however if it isn't then {@link DecoderException} is thrown.
-     *
-     * @return the valid identifier read.
-     * @throws DecoderException if the read string wasn't a valid {@link Identifier}.
-     */
-    public Identifier readIdentifierSafe() throws DecoderException {
-        try {
-            return super.readIdentifier();
-        } catch (InvalidIdentifierException iee) {
-            throw new DecoderException("Invalid Identifier", iee);
-        }
-    }
-
-    /**
-     * Like {@link #readIdentifierSafe()}, but returns null instead of throwing an error if the read string was
+     * Like {@link #readIdentifier()}, but returns null instead of throwing an error if the read string was
      * invalid.
      *
      * @return the valid identifier read, or {@code null} if the read string did not represent a valid identifier.
