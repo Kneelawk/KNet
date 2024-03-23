@@ -31,8 +31,8 @@ import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.channel.Channel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
-import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.fabric.impl.FabricPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
 
@@ -48,7 +48,7 @@ public class ClientProxy extends CommonProxy {
         if (channel.isToClient()) {
             ClientPlayNetworking.registerGlobalReceiver(channel.getId(), (client, handler, buf, responseSender) -> {
                 try {
-                    channel.handleClientPayload(channel.getReader().apply(buf),
+                    channel.handleClientPayload(channel.getReader().apply(NetByteBuf.asNetByteBuf(buf)),
                         new FabricPayloadHandlingContext(client, client.player, handler.getConnection()::disconnect));
                 } catch (PayloadHandlingSilentException e) {
                     // do nothing

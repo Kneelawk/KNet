@@ -228,7 +228,7 @@ public class ContextualChannel<C, P> implements Channel {
     }
 
     @Override
-    public NetByteBuf.PacketReader<? extends NetPayload> getReader() {
+    public NetByteBuf.NetReader<? extends NetPayload> getReader() {
         return this::read;
     }
 

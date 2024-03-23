@@ -53,20 +53,52 @@ public class NetByteBuf extends PacketByteBuf {
 
     /**
      * A functional interface to read a value from {@link NetByteBuf}.
+     *
+     * @param <T> the type this net reader reads from buffers.
      */
     @FunctionalInterface
-    public interface PacketReader<T> extends Function<NetByteBuf, T> {
-        default PacketReader<Optional<T>> asOptional() {
+    public interface NetReader<T> extends Function<NetByteBuf, T> {
+        /**
+         * Converts this net reader into a packet reader expected by vanilla.
+         *
+         * @return this net reader as a packet reader.
+         */
+        default PacketReader<T> intoPacketReader() {
+            return buf -> apply(NetByteBuf.asNetByteBuf(buf));
+        }
+
+        /**
+         * Converts this net reader into one that optionally reads something.
+         *
+         * @return a version of this net reader that only optionally reads.
+         */
+        default NetReader<Optional<T>> asOptional() {
             return buf -> buf.readOptional(this);
         }
     }
 
     /**
      * A functional interface to write a value to {@link NetByteBuf}.
+     *
+     * @param <T> the type this net writer writes to buffers.
      */
     @FunctionalInterface
-    public interface PacketWriter<T> extends BiConsumer<NetByteBuf, T> {
-        default PacketWriter<Optional<T>> asOptional() {
+    public interface NetWriter<T> extends BiConsumer<NetByteBuf, T> {
+        /**
+         * Converts this net writer into a packet writer expected by vanilla.
+         *
+         * @return this net writer as a packet writer.
+         */
+        default PacketWriter<T> intoPacketWriter() {
+            return (buf, t) -> accept(NetByteBuf.asNetByteBuf(buf), t);
+        }
+
+        /**
+         * Converts this net writer into one that optionally writes something.
+         *
+         * @return a version of this net writer that only optionally writes.
+         */
+        default NetWriter<Optional<T>> asOptional() {
             return (buf, value) -> buf.writeOptional(value, this);
         }
     }
@@ -887,9 +919,10 @@ public class NetByteBuf extends PacketByteBuf {
      *
      * @param value  the optional value to write.
      * @param writer the packet writer capable of writing the value.
-     * @see #readOptional(PacketReader)
+     * @param <T>    the type this method optionally writes.
+     * @see #readOptional(NetReader)
      */
-    public <T> void writeOptional(Optional<T> value, PacketWriter<T> writer) {
+    public <T> void writeOptional(Optional<T> value, NetWriter<T> writer) {
         if (value.isPresent()) {
             this.writeBoolean(true);
             writer.accept(this, value.get());
@@ -904,10 +937,11 @@ public class NetByteBuf extends PacketByteBuf {
      * the value is present.
      *
      * @param reader the packet reader capable of reading the value.
+     * @param <T>    the type this method optionally reads.
      * @return the read optional value
-     * @see #writeOptional(Optional, PacketWriter)
+     * @see #writeOptional(Optional, NetWriter)
      */
-    public <T> Optional<T> readOptional(PacketReader<T> reader) {
+    public <T> Optional<T> readOptional(NetReader<T> reader) {
         return this.readBoolean() ? Optional.of(reader.apply(this)) : Optional.empty();
     }
 }

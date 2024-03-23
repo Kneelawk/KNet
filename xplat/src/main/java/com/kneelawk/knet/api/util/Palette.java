@@ -49,7 +49,7 @@ public class Palette<T> {
      * @param <T>    the type of object this palette associates.
      * @return a filled palette.
      */
-    public static <T> Palette<T> decode(@NotNull NetByteBuf buf, @NotNull NetByteBuf.PacketReader<T> reader) {
+    public static <T> Palette<T> decode(@NotNull NetByteBuf buf, @NotNull NetByteBuf.NetReader<T> reader) {
         int paletteLen = buf.readVarInt();
         Int2ObjectMap<T> palette = new Int2ObjectLinkedOpenHashMap<>(paletteLen);
         Object2IntMap<T> reverse = new Object2IntOpenHashMap<>(paletteLen);
@@ -116,7 +116,7 @@ public class Palette<T> {
      * @param buf    the buffer to write to.
      * @param writer the function for encoding palette'd objects into the buffer.
      */
-    public void encode(@NotNull NetByteBuf buf, @NotNull NetByteBuf.PacketWriter<T> writer) {
+    public void encode(@NotNull NetByteBuf buf, @NotNull NetByteBuf.NetWriter<T> writer) {
         buf.writeVarInt(palette.size());
         for (Int2ObjectMap.Entry<T> entry : palette.int2ObjectEntrySet()) {
             buf.writeVarInt(entry.getIntKey());

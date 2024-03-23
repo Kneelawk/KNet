@@ -53,7 +53,7 @@ public class KNetNeoForge {
      * @param channel   the channel to register.
      */
     public static void registerPlay(IPayloadRegistrar registrar, Channel channel) {
-        registrar.play(channel.getId(), channel.getReader(), handler -> {
+        registrar.play(channel.getId(), channel.getReader().intoPacketReader(), handler -> {
             if (channel.isToServer()) {
                 handler.server((payload, ctx) -> {
                     try {

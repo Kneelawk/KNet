@@ -48,7 +48,7 @@ public interface Channel {
      *
      * @return this channel's payload reader.
      */
-    NetByteBuf.PacketReader<? extends NetPayload> getReader();
+    NetByteBuf.NetReader<? extends NetPayload> getReader();
 
     /**
      * Called by net-util platform code when this channel receives a payload on the client-side.

@@ -36,6 +36,6 @@ import com.kneelawk.knet.api.util.NetByteBuf;
  * @param decoder the decoder for the payload.
  * @param <P>     the type of payload.
  */
-public record PayloadCodec<P>(@NotNull NetByteBuf.PacketWriter<P> encoder,
-                              @NotNull NetByteBuf.PacketReader<P> decoder) {
+public record PayloadCodec<P>(@NotNull NetByteBuf.NetWriter<P> encoder,
+                              @NotNull NetByteBuf.NetReader<P> decoder) {
 }

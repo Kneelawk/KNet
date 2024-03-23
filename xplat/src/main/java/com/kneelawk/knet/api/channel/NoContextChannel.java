@@ -54,7 +54,7 @@ import com.kneelawk.knet.impl.platform.KNetPlatform;
  */
 public class NoContextChannel<P extends NetPayload> implements Channel {
     private final Identifier id;
-    private final NetByteBuf.PacketReader<P> reader;
+    private final NetByteBuf.NetReader<P> reader;
 
     private NoContextPayloadHandler<P> clientHandler = null;
     private NoContextPayloadHandler<P> serverHandler = null;
@@ -65,7 +65,7 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      * @param id     the id of this channel. Must be the same as the id of the payloads being sent.
      * @param reader used for converting packets into payloads.
      */
-    public NoContextChannel(@NotNull Identifier id, @NotNull NetByteBuf.PacketReader<P> reader) {
+    public NoContextChannel(@NotNull Identifier id, @NotNull NetByteBuf.NetReader<P> reader) {
         this.id = id;
         this.reader = reader;
     }
@@ -273,7 +273,7 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
     }
 
     @Override
-    public NetByteBuf.PacketReader<? extends NetPayload> getReader() {
+    public NetByteBuf.NetReader<? extends NetPayload> getReader() {
         return reader;
     }
 
