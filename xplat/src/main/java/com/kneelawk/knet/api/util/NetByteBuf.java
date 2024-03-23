@@ -202,6 +202,9 @@ public class NetByteBuf extends PacketByteBuf {
         return asNetByteBuf(Unpooled.buffer(initialCapacity), passthrough);
     }
 
+    // Hold on to the wrapped buffer, so we can access it when changing passthrough-ness while wrapping.
+    private final ByteBuf wrapped;
+
     /**
      * If true then all {@link PacketByteBuf} override methods that this {@link NetByteBuf} optimises will instead just
      * write using the normal minecraft methods, rather than the (potentially) optimised versions.
@@ -246,6 +249,7 @@ public class NetByteBuf extends PacketByteBuf {
      */
     public NetByteBuf(ByteBuf wrapped, boolean passthrough) {
         super(wrapped);
+        this.wrapped = wrapped;
         this.passthrough = passthrough;
     }
 
@@ -262,7 +266,7 @@ public class NetByteBuf extends PacketByteBuf {
     }
 
     /**
-     * Returns the given {@link ByteBuf} as {@link NetByteBuf}, but with passthrough mode enabled. if the given
+     * Returns the given {@link ByteBuf} as {@link NetByteBuf}, but with passthrough mode enabled. If the given
      * instance is already a {@link NetByteBuf} then the given buffer is returned (note that this may result in
      * unexpected consequences if multiple read/write Boolean methods are called on the given buffer before you called
      * this).
@@ -275,7 +279,7 @@ public class NetByteBuf extends PacketByteBuf {
     }
 
     /**
-     * Returns the given {@link ByteBuf} as {@link NetByteBuf}, but with passthrough mode enabled. if the given
+     * Returns the given {@link ByteBuf} as {@link NetByteBuf}, but with passthrough mode enabled. If the given
      * instance is already a {@link NetByteBuf} then the given buffer is returned (note that this may result in
      * unexpected consequences if multiple read/write Boolean methods are called on the given buffer before you called
      * this).
@@ -285,8 +289,12 @@ public class NetByteBuf extends PacketByteBuf {
      * @return the given buffer as a {@link NetByteBuf}.
      */
     public static NetByteBuf asNetByteBuf(ByteBuf buf, boolean passthrough) {
-        if (buf instanceof NetByteBuf netBuf && netBuf.passthrough == passthrough) {
-            return netBuf;
+        if (buf instanceof NetByteBuf netBuf) {
+            if (netBuf.passthrough == passthrough) {
+                return netBuf;
+            } else {
+                return new NetByteBuf(netBuf.wrapped, passthrough);
+            }
         } else {
             return new NetByteBuf(buf, passthrough);
         }
