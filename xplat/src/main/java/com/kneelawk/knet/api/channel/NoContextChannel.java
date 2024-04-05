@@ -79,7 +79,7 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      * @return this.
      */
     public NoContextChannel<P> recvOffThreadClient(@NotNull NoContextPayloadHandler<P> handler) {
-        clientHandler = handler;
+        clientHandler = debugWrap(handler);
         return this;
     }
 
@@ -92,7 +92,7 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      * @return this.
      */
     public NoContextChannel<P> recvOffThreadServer(@NotNull NoContextPayloadHandler<P> handler) {
-        serverHandler = handler;
+        serverHandler = debugWrap(handler);
         return this;
     }
 
@@ -105,8 +105,7 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      * @return this.
      */
     public NoContextChannel<P> recvOffThreadBoth(@NotNull NoContextPayloadHandler<P> handler) {
-        clientHandler = handler;
-        serverHandler = handler;
+        serverHandler = clientHandler = debugWrap(handler);
         return this;
     }
 
@@ -152,6 +151,18 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
     private NoContextPayloadHandler<P> sync(NoContextPayloadHandler<P> handler) {
         return (payload, ctx) -> ctx.getExecutor().execute(() -> {
             try {
+                if (KNetLog.debug) {
+                    String name = "server";
+                    if (handler == clientHandler) {
+                        name = "client";
+                        PlayerEntity player = ctx.getPlayer();
+                        if (player != null) {
+                            name = "client " + player.getGameProfile().getName();
+                        }
+                    }
+                    KNetLog.logReceive(id, name, payload);
+                }
+
                 handler.handle(payload, ctx);
             } catch (PayloadHandlingSilentException e) {
                 // do nothing
@@ -162,6 +173,26 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
                 KNetLog.LOG.error("Channel {} error:", id, e);
             }
         });
+    }
+    
+    private NoContextPayloadHandler<P> debugWrap(NoContextPayloadHandler<P> handler) {
+        if (KNetLog.debug) {
+            return (payload, ctx) -> {
+                String name = "server";
+                if (handler == clientHandler) {
+                    name = "client";
+                    PlayerEntity player = ctx.getPlayer();
+                    if (player != null) {
+                        name = "client " + player.getGameProfile().getName();
+                    }
+                }
+                KNetLog.logReceive(id, name, payload);
+
+                handler.handle(payload, ctx);
+            };
+        } else {
+            return handler;
+        }
     }
 
     /**
@@ -308,9 +339,6 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
     @Override
     public void handleClientPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException {
         if (clientHandler != null) {
-            if (KNetLog.debug) {
-                KNetLog.logReceive(id, "server", payload);
-            }
             clientHandler.handle((P) payload, ctx);
         }
     }
@@ -319,14 +347,6 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
     @Override
     public void handleServerPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException {
         if (serverHandler != null) {
-            if (KNetLog.debug) {
-                String name = "client";
-                PlayerEntity player = ctx.getPlayer();
-                if (player != null) {
-                    name = "client " + player.getGameProfile().getName();
-                }
-                KNetLog.logReceive(id, name, payload);
-            }
             serverHandler.handle((P) payload, ctx);
         }
     }
