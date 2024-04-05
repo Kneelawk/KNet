@@ -293,7 +293,7 @@ public class ContextualChannel<C, P> implements Channel {
                 try {
                     if (KNetLog.debug) {
                         String name = "server";
-                        if (handler == clientHandler) {
+                        if (handler == serverHandler) {
                             name = "client";
                             PlayerEntity player = ctx.getPlayer();
                             if (player != null) {

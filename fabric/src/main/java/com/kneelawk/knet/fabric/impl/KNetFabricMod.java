@@ -29,14 +29,21 @@ import org.jetbrains.annotations.Nullable;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.server.MinecraftServer;
+
+import com.kneelawk.knet.impl.KNetImpl;
+import com.kneelawk.knet.impl.KNetLog;
 
 public class KNetFabricMod implements ModInitializer {
     public static @Nullable MinecraftServer currentServer;
 
     @Override
     public void onInitialize() {
+        KNetLog.LOG.info("Initializing KNet " +
+            FabricLoader.getInstance().getModContainer(KNetImpl.MOD_ID).get().getMetadata().getVersion());
+
         ServerLifecycleEvents.SERVER_STARTING.register(server -> currentServer = server);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> currentServer = null);
     }

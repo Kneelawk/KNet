@@ -153,7 +153,7 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
             try {
                 if (KNetLog.debug) {
                     String name = "server";
-                    if (handler == clientHandler) {
+                    if (handler == serverHandler) {
                         name = "client";
                         PlayerEntity player = ctx.getPlayer();
                         if (player != null) {
@@ -179,7 +179,7 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
         if (KNetLog.debug) {
             return (payload, ctx) -> {
                 String name = "server";
-                if (handler == clientHandler) {
+                if (handler == serverHandler) {
                     name = "client";
                     PlayerEntity player = ctx.getPlayer();
                     if (player != null) {
