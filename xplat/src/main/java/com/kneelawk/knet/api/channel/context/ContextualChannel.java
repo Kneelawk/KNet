@@ -25,6 +25,9 @@
 
 package com.kneelawk.knet.api.channel.context;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.block.entity.BlockEntity;
@@ -32,6 +35,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -144,6 +148,22 @@ public class ContextualChannel<C, P> implements Channel {
             KNetLog.logSend(id, player.getGameProfile().getName(), toSend);
         }
         KNetPlatform.INSTANCE.sendPlay(player, toSend);
+    }
+
+    /**
+     * Sends a payload to a collection of players.
+     *
+     * @param players the players to send to.
+     * @param context the context to send.
+     * @param payload the payload to send.
+     */
+    public void sendPlay(@NotNull Collection<ServerPlayerEntity> players, @NotNull C context, @NotNull P payload) {
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, players.stream().map(player -> player.getGameProfile().getName())
+                .collect(Collectors.joining(", ", "[", "]")), toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlay(players, toSend);
     }
 
     /**

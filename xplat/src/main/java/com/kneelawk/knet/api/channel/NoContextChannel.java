@@ -25,6 +25,9 @@
 
 package com.kneelawk.knet.api.channel;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.block.entity.BlockEntity;
@@ -32,6 +35,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -174,7 +178,7 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
             }
         });
     }
-    
+
     private NoContextPayloadHandler<P> debugWrap(NoContextPayloadHandler<P> handler) {
         if (KNetLog.debug) {
             return (payload, ctx) -> {
@@ -220,6 +224,21 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
             KNetLog.logSend(id, player.getGameProfile().toString(), payload);
         }
         KNetPlatform.INSTANCE.sendPlay(player, payload);
+    }
+
+    /**
+     * Sends a payload to a collection of players.
+     *
+     * @param players the players to send to.
+     * @param payload the payload to send.
+     */
+    public void sendPlay(@NotNull Collection<ServerPlayerEntity> players, @NotNull P payload) {
+        checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, players.stream().map(player -> player.getGameProfile().getName())
+                .collect(Collectors.joining(", ", "[", "]")), payload);
+        }
+        KNetPlatform.INSTANCE.sendPlay(players, payload);
     }
 
     /**

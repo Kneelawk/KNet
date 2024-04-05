@@ -25,6 +25,7 @@
 
 package com.kneelawk.knet.impl.platform;
 
+import java.util.Collection;
 import java.util.ServiceLoader;
 
 import net.minecraft.block.entity.BlockEntity;
@@ -32,6 +33,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -58,10 +60,18 @@ public interface KNetPlatform {
     default void sendPlayToTrackingBlockEntity(BlockEntity be, CustomPayload payload) {
         if (be.getWorld() instanceof ServerWorld serverWorld) {
             sendPlayToTrackingChunk(serverWorld, new ChunkPos(be.getPos()), payload);
+        } else {
+            sendPlayToServer(payload);
         }
     }
 
     default void sendPlayToTrackingBlock(ServerWorld world, BlockPos pos, CustomPayload payload) {
         sendPlayToTrackingChunk(world, new ChunkPos(pos), payload);
+    }
+
+    default void sendPlay(Collection<ServerPlayerEntity> players, CustomPayload payload) {
+        for (ServerPlayerEntity player : players) {
+            sendPlay(player, payload);
+        }
     }
 }
