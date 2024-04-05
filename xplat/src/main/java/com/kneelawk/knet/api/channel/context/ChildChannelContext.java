@@ -136,7 +136,7 @@ public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelConte
 
         @Override
         public String toString() {
-            return "Payload{" +
+            return "ChildChannelContext.Payload{" +
                 "parentPayload=" + parentPayload +
                 ", payload=" + payload +
                 '}';

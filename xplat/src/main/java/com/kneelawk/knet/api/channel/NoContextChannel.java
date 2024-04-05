@@ -171,6 +171,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      */
     public void sendPlayToAll(@NotNull P payload) {
         checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "all", payload);
+        }
         KNetPlatform.INSTANCE.sendPlayToAll(payload);
     }
 
@@ -182,6 +185,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      */
     public void sendPlay(@NotNull PlayerEntity player, @NotNull P payload) {
         checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, player.getGameProfile().toString(), payload);
+        }
         KNetPlatform.INSTANCE.sendPlay(player, payload);
     }
 
@@ -192,6 +198,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      */
     public void sendPlayToServer(@NotNull P payload) {
         checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "server", payload);
+        }
         KNetPlatform.INSTANCE.sendPlayToServer(payload);
     }
 
@@ -203,6 +212,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      */
     public void sendPlayToDimension(@NotNull RegistryKey<World> dim, @NotNull P payload) {
         checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "dimension " + dim.getValue(), payload);
+        }
         KNetPlatform.INSTANCE.sendPlayToDimension(dim, payload);
     }
 
@@ -214,6 +226,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      */
     public void sendPlayToTracking(@NotNull Entity entity, @NotNull P payload) {
         checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking entity " + entity, payload);
+        }
         KNetPlatform.INSTANCE.sendPlayToTrackingEntity(entity, payload);
     }
 
@@ -225,6 +240,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      */
     public void sendPlayToTrackingAndSelf(@NotNull Entity entity, @NotNull P payload) {
         checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking entity " + entity + " and self", payload);
+        }
         KNetPlatform.INSTANCE.sendPlayToTrackingEntityAndSelf(entity, payload);
     }
 
@@ -237,6 +255,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      */
     public void sendPlayToTracking(@NotNull ServerWorld world, @NotNull ChunkPos pos, @NotNull P payload) {
         checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking chunk " + pos, payload);
+        }
         KNetPlatform.INSTANCE.sendPlayToTrackingChunk(world, pos, payload);
     }
 
@@ -248,6 +269,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      */
     public void sendPlayToTracking(@NotNull BlockEntity be, @NotNull P payload) {
         checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking block-entity " + be + " @ " + be.getPos(), payload);
+        }
         KNetPlatform.INSTANCE.sendPlayToTrackingBlockEntity(be, payload);
     }
 
@@ -260,6 +284,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      */
     public void sendPlatyToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull P payload) {
         checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking pos " + pos, payload);
+        }
         KNetPlatform.INSTANCE.sendPlayToTrackingBlock(world, pos, payload);
     }
 
@@ -281,6 +308,9 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
     @Override
     public void handleClientPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException {
         if (clientHandler != null) {
+            if (KNetLog.debug) {
+                KNetLog.logReceive(id, "server", payload);
+            }
             clientHandler.handle((P) payload, ctx);
         }
     }
@@ -289,6 +319,14 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
     @Override
     public void handleServerPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException {
         if (serverHandler != null) {
+            if (KNetLog.debug) {
+                String name = "client";
+                PlayerEntity player = ctx.getPlayer();
+                if (player != null) {
+                    name = "client " + player.getGameProfile().getName();
+                }
+                KNetLog.logReceive(id, name, payload);
+            }
             serverHandler.handle((P) payload, ctx);
         }
     }

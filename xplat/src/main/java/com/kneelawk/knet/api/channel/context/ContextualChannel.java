@@ -124,7 +124,11 @@ public class ContextualChannel<C, P> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlayToAll(@NotNull C context, @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlayToAll(payload(context, payload));
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "all", toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlayToAll(toSend);
     }
 
     /**
@@ -135,7 +139,11 @@ public class ContextualChannel<C, P> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlay(@NotNull PlayerEntity player, @NotNull C context, @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlay(player, payload(context, payload));
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, player.getGameProfile().getName(), toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlay(player, toSend);
     }
 
     /**
@@ -145,7 +153,11 @@ public class ContextualChannel<C, P> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlayToServer(@NotNull C context, @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlayToServer(payload(context, payload));
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "server", toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlayToServer(toSend);
     }
 
     /**
@@ -156,7 +168,11 @@ public class ContextualChannel<C, P> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlayToDimension(@NotNull RegistryKey<World> dim, @NotNull C context, @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlayToDimension(dim, payload(context, payload));
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "dimension " + dim.getValue(), toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlayToDimension(dim, toSend);
     }
 
     /**
@@ -167,7 +183,11 @@ public class ContextualChannel<C, P> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlayToTracking(@NotNull Entity entity, @NotNull C context, @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlayToTrackingEntity(entity, payload(context, payload));
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking entity " + entity, toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlayToTrackingEntity(entity, toSend);
     }
 
     /**
@@ -178,7 +198,11 @@ public class ContextualChannel<C, P> implements Channel {
      * @param payload the payload to send.
      */
     public void sendPlayToTrackingAndSelf(@NotNull Entity entity, @NotNull C context, @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlayToTrackingEntityAndSelf(entity, payload(context, payload));
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking entity " + entity + " and self", toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlayToTrackingEntityAndSelf(entity, toSend);
     }
 
     /**
@@ -191,7 +215,11 @@ public class ContextualChannel<C, P> implements Channel {
      */
     public void sendPlayToTracking(@NotNull ServerWorld world, @NotNull ChunkPos pos, @NotNull C context,
                                    @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlayToTrackingChunk(world, pos, payload(context, payload));
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking chunk " + pos, toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlayToTrackingChunk(world, pos, toSend);
     }
 
     /**
@@ -202,7 +230,11 @@ public class ContextualChannel<C, P> implements Channel {
      * @param payload the payload.
      */
     public void sendPlayToTracking(@NotNull BlockEntity be, @NotNull C context, @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlayToTrackingBlockEntity(be, payload(context, payload));
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking block-entity " + be + " @ " + be.getPos(), toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlayToTrackingBlockEntity(be, toSend);
     }
 
     /**
@@ -215,7 +247,11 @@ public class ContextualChannel<C, P> implements Channel {
      */
     public void sendPlatyToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull C context,
                                     @NotNull P payload) {
-        KNetPlatform.INSTANCE.sendPlayToTrackingBlock(world, pos, payload(context, payload));
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, "tracking pos " + pos, toSend);
+        }
+        KNetPlatform.INSTANCE.sendPlayToTrackingBlock(world, pos, toSend);
     }
 
     private Payload payload(C context, P payload) {
@@ -255,6 +291,18 @@ public class ContextualChannel<C, P> implements Channel {
         if (handler != null) {
             ctx.getExecutor().execute(() -> {
                 try {
+                    if (KNetLog.debug) {
+                        String name = "server";
+                        if (handler == clientHandler) {
+                            name = "client";
+                            PlayerEntity player = ctx.getPlayer();
+                            if (player != null) {
+                                name = "client " + player.getGameProfile().getName();
+                            }
+                        }
+                        KNetLog.logReceive(id, name, payload);
+                    }
+
                     C handlerContext = channelContext.decodeContext(payload.contextPayload, ctx);
                     handler.handle(handlerContext, payload.payload, ctx);
                 } catch (PayloadHandlingSilentException e) {
@@ -320,7 +368,7 @@ public class ContextualChannel<C, P> implements Channel {
 
         @Override
         public String toString() {
-            return "Payload{" +
+            return "ContextualChannel.Payload{" +
                 "contextPayload=" + contextPayload +
                 ", payload=" + payload +
                 '}';

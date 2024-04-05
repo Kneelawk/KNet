@@ -28,6 +28,27 @@ package com.kneelawk.knet.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.minecraft.util.Identifier;
+
 public class KNetLog {
     public static final Logger LOG = LoggerFactory.getLogger(KNetImpl.MOD_ID);
+
+    public static final boolean debug = Boolean.getBoolean("com.kneelawk.knet.debug");
+    public static final boolean debugStackTraces = Boolean.getBoolean("com.kneelawk.knet.debug.stackTraces");
+
+    public static void logSend(Identifier channel, String to, Object payload) {
+        if (debugStackTraces) {
+            LOG.info("[KNET-DEBUG] SEND {} to {}: {}", channel, to, payload, new RuntimeException("Stack Trace"));
+        } else {
+            LOG.info("[KNET-DEBUG] SEND {} to {}: {}", channel, to, payload);
+        }
+    }
+
+    public static void logReceive(Identifier channel, String from, Object payload) {
+        if (debugStackTraces) {
+            LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel, from, payload, new RuntimeException("Stack Trace"));
+        } else {
+            LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel, from, payload);
+        }
+    }
 }
