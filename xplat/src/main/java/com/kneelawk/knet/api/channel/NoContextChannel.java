@@ -332,7 +332,7 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      * @param pos     the position of the block.
      * @param payload the payload to send.
      */
-    public void sendPlatyToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull P payload) {
+    public void sendPlayToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking pos " + pos, payload);

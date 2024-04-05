@@ -265,8 +265,8 @@ public class ContextualChannel<C, P> implements Channel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendPlatyToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull C context,
-                                    @NotNull P payload) {
+    public void sendPlayToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull C context,
+                                   @NotNull P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking pos " + pos, toSend);
