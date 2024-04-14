@@ -44,8 +44,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
-import com.kneelawk.knet.api.channel.Channel;
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.channel.PlayChannel;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.util.NetByteBuf;
@@ -60,14 +60,14 @@ import com.kneelawk.knet.impl.platform.KNetPlatform;
  * @param <C> the type of context this channel has.
  * @param <P> the type of payload this channel sends and receives.
  */
-public class ContextualChannel<C, P> implements Channel {
+public class ContextualPlayChannel<C, P> implements PlayChannel {
     private final CustomPayload.Id<Payload> id;
-    private final ChannelContext<C> channelContext;
+    private final PlayChannelContext<C> channelContext;
     private final PacketCodec<? super NetByteBuf, P> codec;
     private final PacketCodec<NetByteBuf, Payload> payloadCodec = PacketCodec.of(Payload::write, this::read);
 
-    private ContextualPayloadHandler<C, P> clientHandler = null;
-    private ContextualPayloadHandler<C, P> serverHandler = null;
+    private ContextualPlayPayloadHandler<C, P> clientHandler = null;
+    private ContextualPlayPayloadHandler<C, P> serverHandler = null;
 
     /**
      * Creates a new contextual channel.
@@ -76,8 +76,8 @@ public class ContextualChannel<C, P> implements Channel {
      * @param channelContext the context of the channel.
      * @param codec          the payload codec of the channel.
      */
-    public ContextualChannel(@NotNull Identifier id, @NotNull ChannelContext<C> channelContext,
-                             @NotNull PacketCodec<? super NetByteBuf, P> codec) {
+    public ContextualPlayChannel(@NotNull Identifier id, @NotNull PlayChannelContext<C> channelContext,
+                                 @NotNull PacketCodec<? super NetByteBuf, P> codec) {
         this.id = new CustomPayload.Id<>(id);
         this.channelContext = channelContext;
         this.codec = codec;
@@ -91,7 +91,7 @@ public class ContextualChannel<C, P> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public @NotNull ContextualChannel<C, P> recvClient(@NotNull ContextualPayloadHandler<C, P> handler) {
+    public @NotNull ContextualPlayChannel<C, P> recvClient(@NotNull ContextualPlayPayloadHandler<C, P> handler) {
         clientHandler = handler;
         return this;
     }
@@ -104,7 +104,7 @@ public class ContextualChannel<C, P> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public @NotNull ContextualChannel<C, P> recvServer(@NotNull ContextualPayloadHandler<C, P> handler) {
+    public @NotNull ContextualPlayChannel<C, P> recvServer(@NotNull ContextualPlayPayloadHandler<C, P> handler) {
         serverHandler = handler;
         return this;
     }
@@ -117,7 +117,7 @@ public class ContextualChannel<C, P> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public @NotNull ContextualChannel<C, P> recvBoth(@NotNull ContextualPayloadHandler<C, P> handler) {
+    public @NotNull ContextualPlayChannel<C, P> recvBoth(@NotNull ContextualPlayPayloadHandler<C, P> handler) {
         serverHandler = clientHandler = handler;
         return this;
     }
@@ -297,18 +297,18 @@ public class ContextualChannel<C, P> implements Channel {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handleClientPayload(CustomPayload payload, PayloadHandlingContext ctx) {
+    public void handleClientPayload(CustomPayload payload, PlayPayloadHandlingContext ctx) {
         handlePayload(clientHandler, (Payload) payload, ctx);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handleServerPayload(CustomPayload payload, PayloadHandlingContext ctx) {
+    public void handleServerPayload(CustomPayload payload, PlayPayloadHandlingContext ctx) {
         handlePayload(serverHandler, (Payload) payload, ctx);
     }
 
-    private void handlePayload(ContextualPayloadHandler<C, P> handler, Payload payload,
-                               PayloadHandlingContext ctx) {
+    private void handlePayload(ContextualPlayPayloadHandler<C, P> handler, Payload payload,
+                               PlayPayloadHandlingContext ctx) {
         if (handler != null) {
             ctx.getExecutor().execute(() -> {
                 try {

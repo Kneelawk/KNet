@@ -37,11 +37,11 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.channel.Channel;
+import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.util.NetByteBuf;
-import com.kneelawk.knet.fabric.impl.FabricPayloadHandlingContext;
+import com.kneelawk.knet.fabric.impl.FabricPlayPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
 
 public class CommonProxy {
@@ -70,7 +70,7 @@ public class CommonProxy {
     }
 
     @SuppressWarnings("unchecked")
-    public void registerPlayChannel(Channel channel) {
+    public void registerPlayChannel(PlayChannel channel) {
         if (channel.isToServer()) {
             PayloadTypeRegistry.playC2S().register((CustomPayload.Id<CustomPayload>) channel.getId(),
                 (PacketCodec<PacketByteBuf, CustomPayload>) NetByteBuf.netCodec(channel.getCodec()));
@@ -78,7 +78,7 @@ public class CommonProxy {
                 (payload, ctx) -> {
                     try {
                         channel.handleServerPayload(payload,
-                            new FabricPayloadHandlingContext(ctx.player().server, ctx.player(),
+                            new FabricPlayPayloadHandlingContext(ctx.player().server, ctx.player(),
                                 ctx.player().networkHandler::disconnect));
                     } catch (PayloadHandlingSilentException e) {
                         // do nothing

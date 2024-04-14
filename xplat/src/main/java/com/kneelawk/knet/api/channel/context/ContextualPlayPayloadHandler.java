@@ -27,7 +27,7 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 
 /**
@@ -37,7 +37,7 @@ import com.kneelawk.knet.api.handling.PayloadHandlingException;
  * @param <P> the payload to be handled.
  */
 @FunctionalInterface
-public interface ContextualPayloadHandler<C, P> {
+public interface ContextualPlayPayloadHandler<C, P> {
     /**
      * Handle a payload with context.
      *
@@ -46,6 +46,6 @@ public interface ContextualPayloadHandler<C, P> {
      * @param ctx     the default payload handling context.
      * @throws PayloadHandlingException if an error occurs while handling the payload.
      */
-    void handle(@NotNull C context, @NotNull P payload, @NotNull PayloadHandlingContext ctx)
+    void handle(@NotNull C context, @NotNull P payload, @NotNull PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException;
 }

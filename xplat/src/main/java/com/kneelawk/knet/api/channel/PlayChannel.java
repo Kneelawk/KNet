@@ -28,14 +28,14 @@ package com.kneelawk.knet.api.channel;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
 
 /**
  * A channel that can be registered with a platform.
  */
-public interface Channel {
+public interface PlayChannel {
     /**
      * Gets this channel's id.
      *
@@ -57,7 +57,7 @@ public interface Channel {
      * @param ctx     the context used for applying the payload.
      * @throws PayloadHandlingException if an error occurred while handling the payload.
      */
-    void handleClientPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException;
+    void handleClientPayload(CustomPayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException;
 
     /**
      * Called by net-util platform code when this channel receives a payload on the server-side.
@@ -66,7 +66,7 @@ public interface Channel {
      * @param ctx     the context used for applying the payload.
      * @throws PayloadHandlingException if an error occurred while handling the payload.
      */
-    void handleServerPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException;
+    void handleServerPayload(CustomPayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException;
 
     /**
      * Gets whether this channel receives payloads on the server.

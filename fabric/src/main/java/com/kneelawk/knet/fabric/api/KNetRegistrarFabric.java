@@ -26,7 +26,7 @@
 package com.kneelawk.knet.fabric.api;
 
 import com.kneelawk.knet.api.KNetRegistrar;
-import com.kneelawk.knet.api.channel.Channel;
+import com.kneelawk.knet.api.channel.PlayChannel;
 
 /**
  * Fabric KNet registrar implementation that can be sent to common code to register channels.
@@ -39,7 +39,7 @@ public class KNetRegistrarFabric implements KNetRegistrar {
     }
 
     @Override
-    public void register(Channel channel) {
+    public void register(PlayChannel channel) {
         KNetFabric.registerPlay(channel);
     }
 }

@@ -33,12 +33,12 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.channel.Channel;
+import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.impl.KNetLog;
-import com.kneelawk.knet.neoforge.impl.NeoForgePayloadHandlingContext;
+import com.kneelawk.knet.neoforge.impl.NeoForgePlayPayloadHandlingContext;
 
 /**
  * NeoForge-specific KNet public interface.
@@ -56,14 +56,14 @@ public class KNetNeoForge {
      * @param channel   the channel to register.
      */
     @SuppressWarnings("unchecked")
-    public static void registerPlay(IPayloadRegistrar registrar, Channel channel) {
+    public static void registerPlay(IPayloadRegistrar registrar, PlayChannel channel) {
         registrar.play((CustomPayload.Id<CustomPayload>) channel.getId(),
             (PacketCodec<PacketByteBuf, CustomPayload>) NetByteBuf.netCodec(channel.getCodec()), handler -> {
                 if (channel.isToServer()) {
                     handler.server((payload, ctx) -> {
                         try {
                             channel.handleServerPayload(payload,
-                                new NeoForgePayloadHandlingContext(ctx.workHandler()::execute,
+                                new NeoForgePlayPayloadHandlingContext(ctx.workHandler()::execute,
                                     ctx.player().orElse(null),
                                     ctx.packetHandler()::disconnect));
                         } catch (PayloadHandlingSilentException e) {
@@ -81,7 +81,7 @@ public class KNetNeoForge {
                     handler.client((payload, ctx) -> {
                         try {
                             channel.handleClientPayload(payload,
-                                new NeoForgePayloadHandlingContext(ctx.workHandler()::execute,
+                                new NeoForgePlayPayloadHandlingContext(ctx.workHandler()::execute,
                                     ctx.player().orElse(null),
                                     ctx.packetHandler()::disconnect));
                         } catch (PayloadHandlingSilentException e) {

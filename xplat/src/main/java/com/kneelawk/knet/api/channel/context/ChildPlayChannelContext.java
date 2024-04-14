@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.network.codec.PacketCodec;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
 
@@ -40,10 +40,10 @@ import com.kneelawk.knet.api.util.NetByteBuf;
  * @param <PARENT>  the parent context.
  * @param <PAYLOAD> the payload used to find the child in the parent.
  */
-public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelContext<CHILD> {
-    private final ChannelContext<PARENT> parentChannelContext;
+public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChannelContext<CHILD> {
+    private final PlayChannelContext<PARENT> parentChannelContext;
     private final PacketCodec<? super NetByteBuf, PAYLOAD> codec;
-    private final ChildContextDecoder<PARENT, CHILD, PAYLOAD> decoder;
+    private final ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder;
     private final ContextEncoder<CHILD, PAYLOAD> encoder;
     private final ParentContextFinder<PARENT, CHILD> parentFinder;
 
@@ -56,11 +56,11 @@ public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelConte
      * @param encoder              the encoder for encoding child-specific information into a payload.
      * @param parentFinder         the way to get the parent when given the child.
      */
-    public ChildChannelContext(@NotNull ChannelContext<PARENT> parentChannelContext,
-                               @NotNull PacketCodec<? super NetByteBuf, PAYLOAD> codec,
-                               @NotNull ChildContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
-                               @NotNull ContextEncoder<CHILD, PAYLOAD> encoder,
-                               @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+    public ChildPlayChannelContext(@NotNull PlayChannelContext<PARENT> parentChannelContext,
+                                   @NotNull PacketCodec<? super NetByteBuf, PAYLOAD> codec,
+                                   @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
+                                   @NotNull ContextEncoder<CHILD, PAYLOAD> encoder,
+                                   @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
         this.parentChannelContext = parentChannelContext;
         this.codec = codec;
         this.decoder = decoder;
@@ -85,7 +85,7 @@ public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelConte
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NotNull CHILD decodeContext(@NotNull Object payload, @NotNull PayloadHandlingContext ctx)
+    public @NotNull CHILD decodeContext(@NotNull Object payload, @NotNull PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         Payload myPayload = (Payload) payload;
         PARENT parent = parentChannelContext.decodeContext(myPayload.parentPayload, ctx);

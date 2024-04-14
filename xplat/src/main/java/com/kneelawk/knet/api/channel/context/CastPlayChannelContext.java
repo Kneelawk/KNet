@@ -27,7 +27,7 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
@@ -38,8 +38,8 @@ import com.kneelawk.knet.api.util.NetByteBuf;
  * @param <TO>  the child to cast into.
  * @param <FROM> the parent to cast from.
  */
-public class CastChannelContext<FROM, TO> implements ChannelContext<TO> {
-    private final ChannelContext<FROM> parentChannelContext;
+public class CastPlayChannelContext<FROM, TO> implements PlayChannelContext<TO> {
+    private final PlayChannelContext<FROM> parentChannelContext;
     private final Class<TO> toClass;
 
     /**
@@ -48,7 +48,7 @@ public class CastChannelContext<FROM, TO> implements ChannelContext<TO> {
      * @param parentChannelContext the parent channel context.
      * @param toClass           the class of the child to cast into.
      */
-    public CastChannelContext(@NotNull ChannelContext<FROM> parentChannelContext, @NotNull Class<TO> toClass) {
+    public CastPlayChannelContext(@NotNull PlayChannelContext<FROM> parentChannelContext, @NotNull Class<TO> toClass) {
         this.parentChannelContext = parentChannelContext;
         this.toClass = toClass;
     }
@@ -64,7 +64,7 @@ public class CastChannelContext<FROM, TO> implements ChannelContext<TO> {
     }
 
     @Override
-    public @NotNull TO decodeContext(@NotNull Object payload, @NotNull PayloadHandlingContext ctx)
+    public @NotNull TO decodeContext(@NotNull Object payload, @NotNull PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         FROM from = parentChannelContext.decodeContext(payload, ctx);
         try {

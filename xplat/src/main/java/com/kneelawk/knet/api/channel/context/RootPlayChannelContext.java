@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.network.codec.PacketCodec;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
 
@@ -39,9 +39,9 @@ import com.kneelawk.knet.api.util.NetByteBuf;
  * @param <C> the context this supplies.
  * @param <P> the payload this uses.
  */
-public class RootChannelContext<C, P> implements ChannelContext<C> {
+public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
     private final PacketCodec<? super NetByteBuf, P> codec;
-    private final ContextDecoder<C, P> decoder;
+    private final PlayContextDecoder<C, P> decoder;
     private final ContextEncoder<C, P> encoder;
 
     /**
@@ -51,8 +51,9 @@ public class RootChannelContext<C, P> implements ChannelContext<C> {
      * @param decoder a decoder for decoding context from the payload.
      * @param encoder an encoder for encoding context into a payload.
      */
-    public RootChannelContext(@NotNull PacketCodec<? super NetByteBuf, P> codec, @NotNull ContextDecoder<C, P> decoder,
-                              @NotNull ContextEncoder<C, P> encoder) {
+    public RootPlayChannelContext(@NotNull PacketCodec<? super NetByteBuf, P> codec, @NotNull
+    PlayContextDecoder<C, P> decoder,
+                                  @NotNull ContextEncoder<C, P> encoder) {
         this.codec = codec;
         this.decoder = decoder;
         this.encoder = encoder;
@@ -71,7 +72,7 @@ public class RootChannelContext<C, P> implements ChannelContext<C> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NotNull C decodeContext(@NotNull Object payload, @NotNull PayloadHandlingContext ctx)
+    public @NotNull C decodeContext(@NotNull Object payload, @NotNull PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         return decoder.decode((P) payload, ctx);
     }

@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.network.codec.PacketCodec;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
 
@@ -38,7 +38,7 @@ import com.kneelawk.knet.api.util.NetByteBuf;
  *
  * @param <C> the type of context supplied.
  */
-public interface ChannelContext<C> {
+public interface PlayChannelContext<C> {
     /**
      * Decodes a payload from a buffer.
      *
@@ -63,7 +63,7 @@ public interface ChannelContext<C> {
      * @return the decoded context.
      * @throws PayloadHandlingException if an error occurs while finding the context.
      */
-    @NotNull C decodeContext(@NotNull Object payload, @NotNull PayloadHandlingContext ctx)
+    @NotNull C decodeContext(@NotNull Object payload, @NotNull PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException;
 
     /**
@@ -81,8 +81,8 @@ public interface ChannelContext<C> {
      * @param <T>       the type to cast to.
      * @return a new channel context that casts to the desired class.
      */
-    default <T extends C> @NotNull ChannelContext<T> cast(@NotNull Class<T> castClass) {
-        return new CastChannelContext<>(this, castClass);
+    default <T extends C> @NotNull PlayChannelContext<T> cast(@NotNull Class<T> castClass) {
+        return new CastPlayChannelContext<>(this, castClass);
     }
 
     /**
@@ -96,10 +96,10 @@ public interface ChannelContext<C> {
      * @param <P>          the child-specific payload type.
      * @return a new channel context that gets the child from the parent channel context.
      */
-    default <T, P> @NotNull ChannelContext<T> child(@NotNull PacketCodec<? super NetByteBuf, P> codec,
-                                                    @NotNull ChildContextDecoder<C, T, P> decoder,
-                                                    @NotNull ContextEncoder<T, P> encoder,
-                                                    @NotNull ParentContextFinder<C, T> parentFinder) {
-        return new ChildChannelContext<>(this, codec, decoder, encoder, parentFinder);
+    default <T, P> @NotNull PlayChannelContext<T> child(@NotNull PacketCodec<? super NetByteBuf, P> codec,
+                                                        @NotNull ChildPlayContextDecoder<C, T, P> decoder,
+                                                        @NotNull ContextEncoder<T, P> encoder,
+                                                        @NotNull ParentContextFinder<C, T> parentFinder) {
+        return new ChildPlayChannelContext<>(this, codec, decoder, encoder, parentFinder);
     }
 }

@@ -28,14 +28,13 @@ package com.kneelawk.knet.api;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import com.kneelawk.knet.api.channel.context.ChannelContext;
-import com.kneelawk.knet.api.channel.context.RootChannelContext;
+import com.kneelawk.knet.api.channel.context.PlayChannelContext;
+import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.util.NetByteBuf;
 
@@ -54,8 +53,8 @@ public class KNet {
      * new ContextualChannel<>(channelId, KNet.BLOCK_ENTITY_CONTEXT.cast(MyBlockEntity.class), myPayloadCodec);
      * }</pre>
      */
-    public static final ChannelContext<BlockEntity> BLOCK_ENTITY_CONTEXT =
-        new RootChannelContext<>(BlockEntityPayload.CODEC, (payload, ctx) -> {
+    public static final PlayChannelContext<BlockEntity> BLOCK_ENTITY_CONTEXT =
+        new RootPlayChannelContext<>(BlockEntityPayload.CODEC, (payload, ctx) -> {
             World world = ctx.mustGetWorld();
             BlockEntity be = world.getBlockEntity(payload.pos());
             if (be == null) throw new PayloadHandlingErrorException(
@@ -80,8 +79,8 @@ public class KNet {
      * new ContextualChannel<>(channelId, KNet.ENTITY_CONTEXT.cast(MyEntity.class), myPayloadCodec);
      * }</pre>
      */
-    public static final ChannelContext<Entity> ENTITY_CONTEXT =
-        new RootChannelContext<>(EntityPayload.CODEC, (payload, ctx) -> {
+    public static final PlayChannelContext<Entity> ENTITY_CONTEXT =
+        new RootPlayChannelContext<>(EntityPayload.CODEC, (payload, ctx) -> {
             World world = ctx.mustGetWorld();
             Entity entity = world.getEntityById(payload.entityId());
             if (entity == null) throw new PayloadHandlingErrorException(
@@ -104,8 +103,8 @@ public class KNet {
      * new ContextualChannel<>(channelId, KNet.SCREEN_HANDLER_CONTEXT.cast(MyScreenHandler.class), myPayloadCodec);
      * }</pre>
      */
-    public static final ChannelContext<ScreenHandler> SCREEN_HANDLER_CONTEXT =
-        new RootChannelContext<>(ScreenHandlerPayload.CODEC, (payload, ctx) -> {
+    public static final PlayChannelContext<ScreenHandler> SCREEN_HANDLER_CONTEXT =
+        new RootPlayChannelContext<>(ScreenHandlerPayload.CODEC, (payload, ctx) -> {
             PlayerEntity player = ctx.mustGetPlayer();
             ScreenHandler screenHandler = player.currentScreenHandler;
             if (screenHandler == null) {

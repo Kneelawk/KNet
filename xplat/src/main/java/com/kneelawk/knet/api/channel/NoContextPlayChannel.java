@@ -39,12 +39,11 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
@@ -57,12 +56,12 @@ import com.kneelawk.knet.impl.platform.KNetPlatform;
  *
  * @param <P> the type of payload this channel sends and receives.
  */
-public class NoContextChannel<P extends CustomPayload> implements Channel {
+public class NoContextPlayChannel<P extends CustomPayload> implements PlayChannel {
     private final CustomPayload.Id<P> id;
     private final PacketCodec<? super NetByteBuf, P> codec;
 
-    private NoContextPayloadHandler<P> clientHandler = null;
-    private NoContextPayloadHandler<P> serverHandler = null;
+    private NoContextPlayPayloadHandler<P> clientHandler = null;
+    private NoContextPlayPayloadHandler<P> serverHandler = null;
 
     /**
      * Creates a new context-less channel.
@@ -70,7 +69,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param id     the id of this channel. Must be the same as the id of the payloads being sent.
      * @param codec used for converting packets into payloads.
      */
-    public NoContextChannel(@NotNull CustomPayload.Id<P> id, @NotNull PacketCodec<? super NetByteBuf, P> codec) {
+    public NoContextPlayChannel(@NotNull CustomPayload.Id<P> id, @NotNull PacketCodec<? super NetByteBuf, P> codec) {
         this.id = id;
         this.codec = codec;
     }
@@ -83,7 +82,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvOffThreadClient(@NotNull NoContextPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvOffThreadClient(@NotNull NoContextPlayPayloadHandler<P> handler) {
         clientHandler = debugWrap(handler);
         return this;
     }
@@ -96,7 +95,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvOffThreadServer(@NotNull NoContextPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvOffThreadServer(@NotNull NoContextPlayPayloadHandler<P> handler) {
         serverHandler = debugWrap(handler);
         return this;
     }
@@ -109,7 +108,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvOffThreadBoth(@NotNull NoContextPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvOffThreadBoth(@NotNull NoContextPlayPayloadHandler<P> handler) {
         serverHandler = clientHandler = debugWrap(handler);
         return this;
     }
@@ -122,7 +121,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvClient(@NotNull NoContextPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvClient(@NotNull NoContextPlayPayloadHandler<P> handler) {
         clientHandler = sync(handler);
         return this;
     }
@@ -135,7 +134,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvServer(@NotNull NoContextPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvServer(@NotNull NoContextPlayPayloadHandler<P> handler) {
         serverHandler = sync(handler);
         return this;
     }
@@ -148,12 +147,12 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextChannel<P> recvBoth(@NotNull NoContextPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvBoth(@NotNull NoContextPlayPayloadHandler<P> handler) {
         serverHandler = clientHandler = sync(handler);
         return this;
     }
 
-    private NoContextPayloadHandler<P> sync(NoContextPayloadHandler<P> handler) {
+    private NoContextPlayPayloadHandler<P> sync(NoContextPlayPayloadHandler<P> handler) {
         return (payload, ctx) -> ctx.getExecutor().execute(() -> {
             try {
                 if (KNetLog.debug) {
@@ -180,7 +179,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
         });
     }
 
-    private NoContextPayloadHandler<P> debugWrap(NoContextPayloadHandler<P> handler) {
+    private NoContextPlayPayloadHandler<P> debugWrap(NoContextPlayPayloadHandler<P> handler) {
         if (KNetLog.debug) {
             return (payload, ctx) -> {
                 String name = "server";
@@ -357,7 +356,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handleClientPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException {
+    public void handleClientPayload(CustomPayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException {
         if (clientHandler != null) {
             clientHandler.handle((P) payload, ctx);
         }
@@ -365,7 +364,7 @@ public class NoContextChannel<P extends CustomPayload> implements Channel {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handleServerPayload(CustomPayload payload, PayloadHandlingContext ctx) throws PayloadHandlingException {
+    public void handleServerPayload(CustomPayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException {
         if (serverHandler != null) {
             serverHandler.handle((P) payload, ctx);
         }

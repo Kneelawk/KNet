@@ -34,10 +34,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.channel.context.ContextualChannel;
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.channel.context.ContextualPlayChannel;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
-import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
 import com.kneelawk.knet.example.net.BlockPosPayload;
@@ -46,8 +45,8 @@ import com.kneelawk.knet.example.net.ColorUpdatePayload;
 import static com.kneelawk.knet.example.KNetExample.id;
 
 public class FancyLightScreenHandler extends ScreenHandler {
-    public static final ContextualChannel<FancyLightScreenHandler, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
-        new ContextualChannel<>(id("fancy_light_screen_color_update"),
+    public static final ContextualPlayChannel<FancyLightScreenHandler, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
+        new ContextualPlayChannel<>(id("fancy_light_screen_color_update"),
             KNet.SCREEN_HANDLER_CONTEXT.cast(FancyLightScreenHandler.class), ColorUpdatePayload.CODEC).recvServer(
             FancyLightScreenHandler::recv);
 
@@ -80,7 +79,7 @@ public class FancyLightScreenHandler extends ScreenHandler {
         return canUse(context, player, KNEBlocks.FANCY_LIGHT.get());
     }
 
-    private void recv(ColorUpdatePayload payload, PayloadHandlingContext ctx) throws PayloadHandlingErrorException {
+    private void recv(ColorUpdatePayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingErrorException {
         switch (payload.index()) {
             case 0 -> entity.updateRed(payload.value());
             case 1 -> entity.updateGreen(payload.value());

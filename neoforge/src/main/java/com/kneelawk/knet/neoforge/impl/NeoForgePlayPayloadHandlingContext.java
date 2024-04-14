@@ -23,29 +23,33 @@
  *
  */
 
-package com.kneelawk.knet.api.channel.context;
+package com.kneelawk.knet.neoforge.impl;
 
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
-import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 
-/**
- * Used for decoding context from a payload.
- *
- * @param <C> the context to decode.
- * @param <P> the payload to decode from.
- */
-@FunctionalInterface
-public interface ContextDecoder<C, P> {
-    /**
-     * Decodes context from a payload.
-     *
-     * @param payload the payload to decode from.
-     * @param ctx     the handling context.
-     * @return the decoded payload context.
-     * @throws PayloadHandlingException if an error occurs.
-     */
-    @NotNull C decode(@NotNull P payload, @NotNull PayloadHandlingContext ctx) throws PayloadHandlingException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+
+public record NeoForgePlayPayloadHandlingContext(Executor executor, PlayerEntity player, Consumer<Text> disconnector)
+    implements PlayPayloadHandlingContext {
+    @Override
+    public @NotNull Executor getExecutor() {
+        return executor;
+    }
+
+    @Override
+    public @Nullable PlayerEntity getPlayer() {
+        return player;
+    }
+
+    @Override
+    public void disconnect(@NotNull Text message) {
+        disconnector.accept(message);
+    }
 }

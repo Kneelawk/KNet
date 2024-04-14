@@ -23,28 +23,27 @@
  *
  */
 
-package com.kneelawk.knet.neoforge.impl;
+package com.kneelawk.knet.fabric.impl;
 
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
-public record NeoForgePayloadHandlingContext(Executor executor, PlayerEntity player, Consumer<Text> disconnector)
-    implements PayloadHandlingContext {
+public record FabricPlayPayloadHandlingContext(Executor executor, PlayerEntity player, Consumer<Text> disconnector) implements
+    PlayPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
         return executor;
     }
 
     @Override
-    public @Nullable PlayerEntity getPlayer() {
+    public PlayerEntity getPlayer() {
         return player;
     }
 

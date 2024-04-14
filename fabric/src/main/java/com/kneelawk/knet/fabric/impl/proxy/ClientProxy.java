@@ -33,11 +33,11 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.channel.Channel;
+import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.util.NetByteBuf;
-import com.kneelawk.knet.fabric.impl.FabricPayloadHandlingContext;
+import com.kneelawk.knet.fabric.impl.FabricPlayPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
 
 public class ClientProxy extends CommonProxy {
@@ -48,14 +48,14 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void registerPlayChannel(Channel channel) {
+    public void registerPlayChannel(PlayChannel channel) {
         super.registerPlayChannel(channel);
         if (channel.isToClient()) {
             PayloadTypeRegistry.playS2C().register((CustomPayload.Id<CustomPayload>) channel.getId(),
                 (PacketCodec<PacketByteBuf, CustomPayload>) NetByteBuf.netCodec(channel.getCodec()));
             ClientPlayNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
-                    channel.handleClientPayload(payload, new FabricPayloadHandlingContext(ctx.client(), ctx.player(),
+                    channel.handleClientPayload(payload, new FabricPlayPayloadHandlingContext(ctx.client(), ctx.player(),
                         ctx.player().networkHandler.getConnection()::disconnect));
                 } catch (PayloadHandlingSilentException e) {
                     // do nothing

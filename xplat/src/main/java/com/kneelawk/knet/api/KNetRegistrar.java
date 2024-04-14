@@ -25,7 +25,7 @@
 
 package com.kneelawk.knet.api;
 
-import com.kneelawk.knet.api.channel.Channel;
+import com.kneelawk.knet.api.channel.PlayChannel;
 
 /**
  * A wrapper around platform-specific registration methods that can be passed to common code for channel registration.
@@ -38,5 +38,5 @@ public interface KNetRegistrar {
      *
      * @param channel the channel to register.
      */
-    void register(Channel channel);
+    void register(PlayChannel channel);
 }

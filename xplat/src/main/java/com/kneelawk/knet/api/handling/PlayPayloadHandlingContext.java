@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
@@ -39,7 +40,7 @@ import net.minecraft.world.World;
  * <p>
  * This is an abstraction over the various loader-specific contexts given when receiving a packet.
  */
-public interface PayloadHandlingContext {
+public interface PlayPayloadHandlingContext {
     /**
      * Gets the executor for running things on the main thread instead of the netty packet-handler threads.
      *

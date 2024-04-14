@@ -23,24 +23,29 @@
  *
  */
 
-package com.kneelawk.knet.api.channel;
+package com.kneelawk.knet.api.channel.context;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 
 /**
- * Used for handling a payload.
+ * Used for decoding context from a payload.
  *
- * @param <P> the type of payload handled.
+ * @param <C> the context to decode.
+ * @param <P> the payload to decode from.
  */
 @FunctionalInterface
-public interface NoContextPayloadHandler<P> {
+public interface PlayContextDecoder<C, P> {
     /**
-     * Handle a payload.
+     * Decodes context from a payload.
      *
-     * @param payload the payload.
-     * @param ctx     the associated context.
-     * @throws PayloadHandlingException if an error occurred while handling the payload.
+     * @param payload the payload to decode from.
+     * @param ctx     the handling context.
+     * @return the decoded payload context.
+     * @throws PayloadHandlingException if an error occurs.
      */
-    void handle(P payload, PayloadHandlingContext ctx) throws PayloadHandlingException;
+    @NotNull C decode(@NotNull P payload, @NotNull PlayPayloadHandlingContext ctx) throws PayloadHandlingException;
 }

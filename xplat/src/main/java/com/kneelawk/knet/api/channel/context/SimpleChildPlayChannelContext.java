@@ -27,20 +27,20 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.kneelawk.knet.api.handling.PayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
 
 /**
- * Like a {@link ChildChannelContext}, wrapping another channel context, extracting more detailed context from it.
+ * Like a {@link ChildPlayChannelContext}, wrapping another channel context, extracting more detailed context from it.
  * However, this does not add any extra data to the payload sent. Instead, this essentially just converts one type of
  * context into another.
  *
  * @param <PARENT> the parent context.
  * @param <CHILD>  the child context to extract.
  */
-public class SimpleChildChannelContext<PARENT, CHILD> implements ChannelContext<CHILD> {
-    private final ChannelContext<PARENT> parentChannelContext;
+public class SimpleChildPlayChannelContext<PARENT, CHILD> implements PlayChannelContext<CHILD> {
+    private final PlayChannelContext<PARENT> parentChannelContext;
     private final ChildContextFinder<PARENT, CHILD> childFinder;
     private final ParentContextFinder<PARENT, CHILD> parentFinder;
 
@@ -51,9 +51,9 @@ public class SimpleChildChannelContext<PARENT, CHILD> implements ChannelContext<
      * @param childFinder          the way to get the child when given the parent.
      * @param parentFinder         the way to get the parent when given the child.
      */
-    public SimpleChildChannelContext(ChannelContext<PARENT> parentChannelContext,
-                                     ChildContextFinder<PARENT, CHILD> childFinder,
-                                     ParentContextFinder<PARENT, CHILD> parentFinder) {
+    public SimpleChildPlayChannelContext(PlayChannelContext<PARENT> parentChannelContext,
+                                         ChildContextFinder<PARENT, CHILD> childFinder,
+                                         ParentContextFinder<PARENT, CHILD> parentFinder) {
         this.parentChannelContext = parentChannelContext;
         this.childFinder = childFinder;
         this.parentFinder = parentFinder;
@@ -70,7 +70,7 @@ public class SimpleChildChannelContext<PARENT, CHILD> implements ChannelContext<
     }
 
     @Override
-    public @NotNull CHILD decodeContext(@NotNull Object payload, @NotNull PayloadHandlingContext ctx)
+    public @NotNull CHILD decodeContext(@NotNull Object payload, @NotNull PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         return childFinder.getChild(parentChannelContext.decodeContext(payload, ctx));
     }
