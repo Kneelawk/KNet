@@ -30,6 +30,6 @@ import net.minecraft.screen.ScreenHandler;
 
 import com.kneelawk.knet.api.util.NetByteBuf;
 
-public interface ExtraScreenHandlerDecoder<T extends ScreenHandler> {
-    T create(int syncId, PlayerInventory playerInv, NetByteBuf buf);
+public interface ExtraScreenHandlerDecoder<T extends ScreenHandler, P> {
+    T create(int syncId, PlayerInventory playerInv, P payload);
 }

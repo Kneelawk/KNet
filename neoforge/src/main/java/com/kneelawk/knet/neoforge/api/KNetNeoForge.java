@@ -28,12 +28,15 @@ package com.kneelawk.knet.neoforge.api;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.channel.Channel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
-import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.neoforge.impl.NeoForgePayloadHandlingContext;
 
@@ -52,42 +55,46 @@ public class KNetNeoForge {
      *                  {@link net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent} event.
      * @param channel   the channel to register.
      */
+    @SuppressWarnings("unchecked")
     public static void registerPlay(IPayloadRegistrar registrar, Channel channel) {
-        registrar.play(channel.getId(), channel.getReader().intoPacketReader(), handler -> {
-            if (channel.isToServer()) {
-                handler.server((payload, ctx) -> {
-                    try {
-                        channel.handleServerPayload(payload,
-                            new NeoForgePayloadHandlingContext(ctx.workHandler()::execute, ctx.player().orElse(null),
-                                ctx.packetHandler()::disconnect));
-                    } catch (PayloadHandlingSilentException e) {
-                        // do nothing
-                    } catch (PayloadHandlingDisconnectException e) {
-                        ctx.packetHandler()
-                            .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
-                    } catch (Exception e) {
-                        // just log as an error by default
-                        KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
-                    }
-                });
-            }
-            if (channel.isToClient() && FMLEnvironment.dist.isClient()) {
-                handler.client((payload, ctx) -> {
-                    try {
-                        channel.handleClientPayload(payload,
-                            new NeoForgePayloadHandlingContext(ctx.workHandler()::execute, ctx.player().orElse(null),
-                                ctx.packetHandler()::disconnect));
-                    } catch (PayloadHandlingSilentException e) {
-                        // do nothing
-                    } catch (PayloadHandlingDisconnectException e) {
-                        ctx.packetHandler()
-                            .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
-                    } catch (Exception e) {
-                        // just log as an error by default
-                        KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
-                    }
-                });
-            }
-        });
+        registrar.play((CustomPayload.Id<CustomPayload>) channel.getId(),
+            (PacketCodec<PacketByteBuf, CustomPayload>) NetByteBuf.netCodec(channel.getCodec()), handler -> {
+                if (channel.isToServer()) {
+                    handler.server((payload, ctx) -> {
+                        try {
+                            channel.handleServerPayload(payload,
+                                new NeoForgePayloadHandlingContext(ctx.workHandler()::execute,
+                                    ctx.player().orElse(null),
+                                    ctx.packetHandler()::disconnect));
+                        } catch (PayloadHandlingSilentException e) {
+                            // do nothing
+                        } catch (PayloadHandlingDisconnectException e) {
+                            ctx.packetHandler()
+                                .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                        } catch (Exception e) {
+                            // just log as an error by default
+                            KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
+                        }
+                    });
+                }
+                if (channel.isToClient() && FMLEnvironment.dist.isClient()) {
+                    handler.client((payload, ctx) -> {
+                        try {
+                            channel.handleClientPayload(payload,
+                                new NeoForgePayloadHandlingContext(ctx.workHandler()::execute,
+                                    ctx.player().orElse(null),
+                                    ctx.packetHandler()::disconnect));
+                        } catch (PayloadHandlingSilentException e) {
+                            // do nothing
+                        } catch (PayloadHandlingDisconnectException e) {
+                            ctx.packetHandler()
+                                .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                        } catch (Exception e) {
+                            // just log as an error by default
+                            KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
+                        }
+                    });
+                }
+            });
     }
 }

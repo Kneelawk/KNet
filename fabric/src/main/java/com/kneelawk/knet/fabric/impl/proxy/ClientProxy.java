@@ -26,7 +26,11 @@
 package com.kneelawk.knet.fabric.impl.proxy;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.channel.Channel;
@@ -43,17 +47,20 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void registerPlayChannel(Channel channel) {
         super.registerPlayChannel(channel);
         if (channel.isToClient()) {
-            ClientPlayNetworking.registerGlobalReceiver(channel.getId(), (client, handler, buf, responseSender) -> {
+            PayloadTypeRegistry.playS2C().register((CustomPayload.Id<CustomPayload>) channel.getId(),
+                (PacketCodec<PacketByteBuf, CustomPayload>) NetByteBuf.netCodec(channel.getCodec()));
+            ClientPlayNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
-                    channel.handleClientPayload(channel.getReader().apply(NetByteBuf.asNetByteBuf(buf)),
-                        new FabricPayloadHandlingContext(client, client.player, handler.getConnection()::disconnect));
+                    channel.handleClientPayload(payload, new FabricPayloadHandlingContext(ctx.client(), ctx.player(),
+                        ctx.player().networkHandler.getConnection()::disconnect));
                 } catch (PayloadHandlingSilentException e) {
                     // do nothing
                 } catch (PayloadHandlingDisconnectException e) {
-                    handler.getConnection()
+                    ctx.player().networkHandler.getConnection()
                         .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
                 } catch (Exception e) {
                     // just log as an error by default

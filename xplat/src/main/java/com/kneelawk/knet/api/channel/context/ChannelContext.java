@@ -27,6 +27,8 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.network.codec.PacketCodec;
+
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
@@ -94,7 +96,7 @@ public interface ChannelContext<C> {
      * @param <P>          the child-specific payload type.
      * @return a new channel context that gets the child from the parent channel context.
      */
-    default <T, P> @NotNull ChannelContext<T> child(@NotNull PayloadCodec<P> codec,
+    default <T, P> @NotNull ChannelContext<T> child(@NotNull PacketCodec<? super NetByteBuf, P> codec,
                                                     @NotNull ChildContextDecoder<C, T, P> decoder,
                                                     @NotNull ContextEncoder<T, P> encoder,
                                                     @NotNull ParentContextFinder<C, T> parentFinder) {

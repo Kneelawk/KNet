@@ -25,11 +25,15 @@
 
 package com.kneelawk.knet.example.screen;
 
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 
-public interface ExtraScreenHandlerFactory extends NamedScreenHandlerFactory {
-    void writeExtra(ServerPlayerEntity player, NetByteBuf buf);
+public interface ExtraScreenHandlerFactory<P> extends NamedScreenHandlerFactory {
+    P getExtra(ServerPlayerEntity player);
+    
+    PacketCodec<? super RegistryNetByteBuf, P> getCodec();
 }

@@ -28,9 +28,13 @@ package com.kneelawk.knet.fabric.impl.proxy;
 import java.lang.reflect.InvocationTargetException;
 
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.channel.Channel;
@@ -65,17 +69,22 @@ public class CommonProxy {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public void registerPlayChannel(Channel channel) {
         if (channel.isToServer()) {
+            PayloadTypeRegistry.playC2S().register((CustomPayload.Id<CustomPayload>) channel.getId(),
+                (PacketCodec<PacketByteBuf, CustomPayload>) NetByteBuf.netCodec(channel.getCodec()));
             ServerPlayNetworking.registerGlobalReceiver(channel.getId(),
-                (server, player, handler, buf, responseSender) -> {
+                (payload, ctx) -> {
                     try {
-                        channel.handleServerPayload(channel.getReader().apply(NetByteBuf.asNetByteBuf(buf)),
-                            new FabricPayloadHandlingContext(server, player, handler::disconnect));
+                        channel.handleServerPayload(payload,
+                            new FabricPayloadHandlingContext(ctx.player().server, ctx.player(),
+                                ctx.player().networkHandler::disconnect));
                     } catch (PayloadHandlingSilentException e) {
                         // do nothing
                     } catch (PayloadHandlingDisconnectException e) {
-                        handler.disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                        ctx.player().networkHandler.disconnect(
+                            Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
                     } catch (Exception e) {
                         // just log as an error by default
                         KNetLog.LOG.error("Channel {} error:", channel.getId(), e);

@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -44,7 +45,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 import com.kneelawk.knet.api.channel.Channel;
-import com.kneelawk.knet.api.channel.NetPayload;
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
@@ -61,9 +61,10 @@ import com.kneelawk.knet.impl.platform.KNetPlatform;
  * @param <P> the type of payload this channel sends and receives.
  */
 public class ContextualChannel<C, P> implements Channel {
-    private final Identifier id;
+    private final CustomPayload.Id<Payload> id;
     private final ChannelContext<C> channelContext;
-    private final PayloadCodec<P> codec;
+    private final PacketCodec<? super NetByteBuf, P> codec;
+    private final PacketCodec<NetByteBuf, Payload> payloadCodec = PacketCodec.of(Payload::write, this::read);
 
     private ContextualPayloadHandler<C, P> clientHandler = null;
     private ContextualPayloadHandler<C, P> serverHandler = null;
@@ -76,8 +77,8 @@ public class ContextualChannel<C, P> implements Channel {
      * @param codec          the payload codec of the channel.
      */
     public ContextualChannel(@NotNull Identifier id, @NotNull ChannelContext<C> channelContext,
-                             @NotNull PayloadCodec<P> codec) {
-        this.id = id;
+                             @NotNull PacketCodec<? super NetByteBuf, P> codec) {
+        this.id = new CustomPayload.Id<>(id);
         this.channelContext = channelContext;
         this.codec = codec;
     }
@@ -279,18 +280,18 @@ public class ContextualChannel<C, P> implements Channel {
     }
 
     @Override
-    public Identifier getId() {
+    public CustomPayload.Id<? extends CustomPayload> getId() {
         return id;
     }
 
     @Override
-    public NetByteBuf.NetReader<? extends NetPayload> getReader() {
-        return this::read;
+    public PacketCodec<? super NetByteBuf, ? extends CustomPayload> getCodec() {
+        return payloadCodec;
     }
 
-    private NetPayload read(NetByteBuf buf) {
+    private Payload read(NetByteBuf buf) {
         Object contextPayload = channelContext.decodePayload(buf);
-        P payload = codec.decoder().apply(buf);
+        P payload = codec.decode(buf);
         return new Payload(contextPayload, payload);
     }
 
@@ -347,7 +348,7 @@ public class ContextualChannel<C, P> implements Channel {
         return clientHandler != null;
     }
 
-    private class Payload implements NetPayload {
+    private class Payload implements CustomPayload {
         private final Object contextPayload;
         private final P payload;
 
@@ -356,14 +357,13 @@ public class ContextualChannel<C, P> implements Channel {
             this.payload = payload;
         }
 
-        @Override
         public void write(NetByteBuf buf) {
             channelContext.encodePayload(contextPayload, buf);
-            codec.encoder().accept(buf, payload);
+            codec.encode(buf, payload);
         }
 
         @Override
-        public Identifier id() {
+        public Id<? extends CustomPayload> getId() {
             return id;
         }
 

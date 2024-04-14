@@ -28,14 +28,16 @@ package com.kneelawk.knet.api;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import com.kneelawk.knet.api.channel.context.ChannelContext;
-import com.kneelawk.knet.api.channel.context.PayloadCodec;
 import com.kneelawk.knet.api.channel.context.RootChannelContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.api.util.NetByteBuf;
 
 /**
  * KNet xplat public interface.
@@ -64,8 +66,8 @@ public class KNet {
         }, context -> new BlockEntityPayload(context.getPos()));
 
     private record BlockEntityPayload(BlockPos pos) {
-        public static final PayloadCodec<BlockEntityPayload> CODEC =
-            new PayloadCodec<>((buf, obj) -> buf.writeBlockPos(obj.pos()),
+        public static final PacketCodec<NetByteBuf, BlockEntityPayload> CODEC =
+            PacketCodec.ofStatic((buf, obj) -> buf.writeBlockPos(obj.pos()),
                 buf -> new BlockEntityPayload(buf.readBlockPos()));
     }
 
@@ -89,8 +91,8 @@ public class KNet {
         }, context -> new EntityPayload(context.getId()));
 
     private record EntityPayload(int entityId) {
-        public static final PayloadCodec<EntityPayload> CODEC =
-            new PayloadCodec<>((buf, obj) -> buf.writeInt(obj.entityId()), buf -> new EntityPayload(buf.readInt()));
+        public static final PacketCodec<NetByteBuf, EntityPayload> CODEC =
+            PacketCodec.ofStatic((buf, obj) -> buf.writeInt(obj.entityId()), buf -> new EntityPayload(buf.readInt()));
     }
 
     /**
@@ -121,8 +123,8 @@ public class KNet {
         }, context -> new ScreenHandlerPayload(context.syncId));
 
     private record ScreenHandlerPayload(int syncId) {
-        public static final PayloadCodec<ScreenHandlerPayload> CODEC =
-            new PayloadCodec<>((buf, obj) -> buf.writeInt(obj.syncId()),
+        public static final PacketCodec<NetByteBuf, ScreenHandlerPayload> CODEC =
+            PacketCodec.ofStatic((buf, obj) -> buf.writeInt(obj.syncId()),
                 buf -> new ScreenHandlerPayload(buf.readInt()));
     }
 }

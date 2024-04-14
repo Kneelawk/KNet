@@ -30,10 +30,12 @@ import java.util.function.Supplier;
 import net.minecraft.screen.ScreenHandlerType;
 
 import com.kneelawk.knet.example.KNEPlatform;
+import com.kneelawk.knet.example.net.BlockPosPayload;
 
 public class KNEScreenHandlers {
     public static final Supplier<ScreenHandlerType<FancyLightScreenHandler>> FANCY_LIGHT =
-        KNEPlatform.INSTANCE.registerExtraScreenHandler("fancy_light", FancyLightScreenHandler::fromNetwork);
+        KNEPlatform.INSTANCE.registerExtraScreenHandler("fancy_light", FancyLightScreenHandler::fromNetwork,
+            BlockPosPayload.CODEC);
 
     public static void init() {}
 }

@@ -29,7 +29,6 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 
@@ -41,7 +40,8 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.item.Item;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -50,7 +50,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
-import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
@@ -64,7 +64,7 @@ public class KNEPlatformImpl implements KNEPlatform {
         Identifier id = id(path);
         T block = creator.get();
         KNetExampleFabric.BLOCKS.add(new Pair<>(id, block));
-        KNetExampleFabric.ITEMS.add(new Pair<>(id, new BlockItem(block, new FabricItemSettings())));
+        KNetExampleFabric.ITEMS.add(new Pair<>(id, new BlockItem(block, new Item.Settings())));
         KNetExampleFabric.BLOCK_TYPES.add(new Pair<>(id, codec));
         return () -> block;
     }
@@ -78,21 +78,22 @@ public class KNEPlatformImpl implements KNEPlatform {
     }
 
     @Override
-    public <T extends ScreenHandler> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path,
-                                                                                               ExtraScreenHandlerDecoder<T> factory) {
-        ScreenHandlerType<T> type = new ExtendedScreenHandlerType<>(
-            (syncId, playerInv, buf) -> factory.create(syncId, playerInv, NetByteBuf.asNetByteBuf(buf)));
+    public <T extends ScreenHandler, P> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path,
+                                                                                                  ExtraScreenHandlerDecoder<T, P> factory,
+                                                                                                  PacketCodec<? super RegistryNetByteBuf, P> codec) {
+        ScreenHandlerType<T> type =
+            new ExtendedScreenHandlerType<>(factory::create, RegistryNetByteBuf.registryCodec(codec));
         KNetExampleFabric.SCREEN_HANDLERS.add(new Pair<>(id(path), type));
         return () -> type;
     }
 
     @Override
     public void openScreen(ServerPlayerEntity player, NamedScreenHandlerFactory factory) {
-        if (factory instanceof ExtraScreenHandlerFactory extra) {
-            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+        if (factory instanceof ExtraScreenHandlerFactory<?> extra) {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
                 @Override
-                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                    extra.writeExtra(player, NetByteBuf.asNetByteBuf(buf));
+                public Object getScreenOpeningData(ServerPlayerEntity player) {
+                    return extra.getExtra(player);
                 }
 
                 @Override

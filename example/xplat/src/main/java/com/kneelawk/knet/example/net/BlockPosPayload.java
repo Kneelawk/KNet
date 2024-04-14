@@ -23,19 +23,15 @@
  *
  */
 
-package com.kneelawk.knet.api.channel.context;
+package com.kneelawk.knet.example.net;
 
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.util.math.BlockPos;
 
 import com.kneelawk.knet.api.util.NetByteBuf;
 
-/**
- * A codec for a contextual payload.
- *
- * @param encoder the encoder for the payload.
- * @param decoder the decoder for the payload.
- * @param <P>     the type of payload.
- */
-public record PayloadCodec<P>(@NotNull NetByteBuf.NetWriter<P> encoder,
-                              @NotNull NetByteBuf.NetReader<P> decoder) {
+public record BlockPosPayload(BlockPos pos) {
+    public static final PacketCodec<NetByteBuf, BlockPosPayload> CODEC =
+        PacketCodec.ofStatic((buf, value) -> buf.writeBlockPos(value.pos),
+            buf -> new BlockPosPayload(buf.readBlockPos()));
 }

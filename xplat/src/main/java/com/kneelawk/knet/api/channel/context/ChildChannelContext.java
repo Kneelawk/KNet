@@ -27,6 +27,8 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.network.codec.PacketCodec;
+
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
@@ -40,7 +42,7 @@ import com.kneelawk.knet.api.util.NetByteBuf;
  */
 public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelContext<CHILD> {
     private final ChannelContext<PARENT> parentChannelContext;
-    private final PayloadCodec<PAYLOAD> codec;
+    private final PacketCodec<? super NetByteBuf, PAYLOAD> codec;
     private final ChildContextDecoder<PARENT, CHILD, PAYLOAD> decoder;
     private final ContextEncoder<CHILD, PAYLOAD> encoder;
     private final ParentContextFinder<PARENT, CHILD> parentFinder;
@@ -55,7 +57,7 @@ public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelConte
      * @param parentFinder         the way to get the parent when given the child.
      */
     public ChildChannelContext(@NotNull ChannelContext<PARENT> parentChannelContext,
-                               @NotNull PayloadCodec<PAYLOAD> codec,
+                               @NotNull PacketCodec<? super NetByteBuf, PAYLOAD> codec,
                                @NotNull ChildContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
                                @NotNull ContextEncoder<CHILD, PAYLOAD> encoder,
                                @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
@@ -69,7 +71,7 @@ public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelConte
     @Override
     public @NotNull Object decodePayload(@NotNull NetByteBuf buf) {
         Object parentPayload = parentChannelContext.decodePayload(buf);
-        PAYLOAD payload = codec.decoder().apply(buf);
+        PAYLOAD payload = codec.decode(buf);
         return new Payload(parentPayload, payload);
     }
 
@@ -78,7 +80,7 @@ public class ChildChannelContext<PARENT, CHILD, PAYLOAD> implements ChannelConte
     public void encodePayload(@NotNull Object payload, @NotNull NetByteBuf buf) {
         Payload myPayload = (Payload) payload;
         parentChannelContext.encodePayload(myPayload.parentPayload, buf);
-        codec.encoder().accept(buf, myPayload.payload);
+        codec.encode(buf, myPayload.payload);
     }
 
     @SuppressWarnings("unchecked")

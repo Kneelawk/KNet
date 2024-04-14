@@ -62,6 +62,7 @@ dependencies {
     compileOnly(project(path = ":example-xplat", configuration = "namedElements"))
 
     // KNet
+    compileOnly(project(":xplat", configuration = "namedElements"))
     implementation(project(":fabric", configuration = "namedElements"))
     include(project(":fabric"))
 

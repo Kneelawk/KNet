@@ -32,6 +32,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -43,6 +45,8 @@ import com.kneelawk.knet.api.channel.context.ContextualChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
+import com.kneelawk.knet.example.net.BlockPosPayload;
 import com.kneelawk.knet.example.net.ColorUpdatePayload;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
 import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
@@ -50,7 +54,7 @@ import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 import static com.kneelawk.knet.example.KNetExample.id;
 import static com.kneelawk.knet.example.KNetExample.tt;
 
-public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHandlerFactory {
+public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHandlerFactory<BlockPosPayload> {
     private static final Text CONTAINER_NAME = tt("container", "fancy_light");
 
     public static final ContextualChannel<FancyLightBlockEntity, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
@@ -106,27 +110,32 @@ public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHan
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         red = nbt.getByte("red") & 0xFF;
         green = nbt.getByte("green") & 0xFF;
         blue = nbt.getByte("blue") & 0xFF;
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         nbt.putByte("red", (byte) red);
         nbt.putByte("green", (byte) green);
         nbt.putByte("blue", (byte) blue);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return createNbt(registryLookup);
     }
 
     @Override
-    public void writeExtra(ServerPlayerEntity player, NetByteBuf buf) {
-        buf.writeBlockPos(getPos());
+    public BlockPosPayload getExtra(ServerPlayerEntity player) {
+        return new BlockPosPayload(getPos());
+    }
+
+    @Override
+    public PacketCodec<? super RegistryNetByteBuf, BlockPosPayload> getCodec() {
+        return BlockPosPayload.CODEC;
     }
 
     @Override

@@ -33,6 +33,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
+import net.minecraft.network.codec.PacketDecoder;
+import net.minecraft.network.codec.PacketEncoder;
+
 /**
  * Maps objects to integers, allowing for smaller packet sizes when the same objects are referenced multiple times.
  *
@@ -50,13 +53,13 @@ public class Palette<T> {
      * @param <T>    the type of object this palette associates.
      * @return a filled palette.
      */
-    public static <T> Palette<T> decode(@NotNull NetByteBuf buf, @NotNull NetByteBuf.NetReader<T> reader) {
+    public static <T> Palette<T> decode(@NotNull NetByteBuf buf, @NotNull PacketDecoder<? super NetByteBuf, T> reader) {
         int paletteLen = buf.readVarInt();
         Int2ObjectMap<T> palette = new Int2ObjectLinkedOpenHashMap<>(paletteLen);
         Object2IntMap<T> reverse = new Object2IntOpenHashMap<>(paletteLen);
         for (int i = 0; i < paletteLen; i++) {
             int key = buf.readVarInt();
-            T obj = reader.apply(buf);
+            T obj = reader.decode(buf);
             palette.put(key, obj);
             reverse.put(obj, key);
         }
@@ -117,11 +120,11 @@ public class Palette<T> {
      * @param buf    the buffer to write to.
      * @param writer the function for encoding palette'd objects into the buffer.
      */
-    public void encode(@NotNull NetByteBuf buf, @NotNull NetByteBuf.NetWriter<T> writer) {
+    public void encode(@NotNull NetByteBuf buf, @NotNull PacketEncoder<? super NetByteBuf, T> writer) {
         buf.writeVarInt(palette.size());
         for (Int2ObjectMap.Entry<T> entry : palette.int2ObjectEntrySet()) {
             buf.writeVarInt(entry.getIntKey());
-            writer.accept(buf, entry.getValue());
+            writer.encode(buf, entry.getValue());
         }
     }
 }

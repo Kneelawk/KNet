@@ -25,11 +25,12 @@
 
 package com.kneelawk.knet.example.net;
 
-import com.kneelawk.knet.api.channel.context.PayloadCodec;
-import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
+import net.minecraft.network.codec.PacketCodec;
+
+import com.kneelawk.knet.api.util.NetByteBuf;
 
 public record ColorUpdatePayload(byte value, byte index) {
-    public static final PayloadCodec<ColorUpdatePayload> CODEC = new PayloadCodec<>((buf, obj) -> {
+    public static final PacketCodec<NetByteBuf, ColorUpdatePayload> CODEC = PacketCodec.ofStatic((buf, obj) -> {
         buf.writeByte(obj.value());
         buf.writeByte(obj.index());
     }, buf -> new ColorUpdatePayload(buf.readByte(), buf.readByte()));

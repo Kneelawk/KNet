@@ -91,12 +91,12 @@ public class FancyLightBlockEntityRenderer implements BlockEntityRenderer<FancyL
         nz *= div;
 
         consumer.vertex(model, x0, y0, z0).color(red, green, blue, 255).texture(sprite.getMinU(), sprite.getMinV())
-            .light(light).normal(normal, nx, ny, nz).next();
+            .light(light).normal(entry, nx, ny, nz).next();
         consumer.vertex(model, x1, y1, z1).color(red, green, blue, 255).texture(sprite.getMinU(), sprite.getMaxV())
-            .light(light).normal(normal, nx, ny, nz).next();
+            .light(light).normal(entry, nx, ny, nz).next();
         consumer.vertex(model, x2, y2, z2).color(red, green, blue, 255).texture(sprite.getMaxU(), sprite.getMaxV())
-            .light(light).normal(normal, nx, ny, nz).next();
+            .light(light).normal(entry, nx, ny, nz).next();
         consumer.vertex(model, x3, y3, z3).color(red, green, blue, 255).texture(sprite.getMaxU(), sprite.getMinV())
-            .light(light).normal(normal, nx, ny, nz).next();
+            .light(light).normal(entry, nx, ny, nz).next();
     }
 }

@@ -40,6 +40,7 @@ import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
+import com.kneelawk.knet.example.net.BlockPosPayload;
 import com.kneelawk.knet.example.net.ColorUpdatePayload;
 
 import static com.kneelawk.knet.example.KNetExample.id;
@@ -53,8 +54,8 @@ public class FancyLightScreenHandler extends ScreenHandler {
     private final ScreenHandlerContext context;
     private final FancyLightBlockEntity entity;
 
-    public static FancyLightScreenHandler fromNetwork(int syncId, PlayerInventory playerInv, NetByteBuf buf) {
-        BlockPos pos = buf.readBlockPos();
+    public static FancyLightScreenHandler fromNetwork(int syncId, PlayerInventory playerInv, BlockPosPayload payload) {
+        BlockPos pos = payload.pos();
         World world = playerInv.player.getWorld();
 
         if (!(world.getBlockEntity(pos) instanceof FancyLightBlockEntity entity)) throw new IllegalArgumentException(

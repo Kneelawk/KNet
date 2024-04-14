@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -52,13 +53,13 @@ import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
 
 /**
- * Describes a {@link NetPayload} channel that can have payloads sent and received.
+ * Describes a {@link CustomPayload} channel that can have payloads sent and received.
  *
  * @param <P> the type of payload this channel sends and receives.
  */
-public class NoContextChannel<P extends NetPayload> implements Channel {
-    private final Identifier id;
-    private final NetByteBuf.NetReader<P> reader;
+public class NoContextChannel<P extends CustomPayload> implements Channel {
+    private final CustomPayload.Id<P> id;
+    private final PacketCodec<? super NetByteBuf, P> codec;
 
     private NoContextPayloadHandler<P> clientHandler = null;
     private NoContextPayloadHandler<P> serverHandler = null;
@@ -67,11 +68,11 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
      * Creates a new context-less channel.
      *
      * @param id     the id of this channel. Must be the same as the id of the payloads being sent.
-     * @param reader used for converting packets into payloads.
+     * @param codec used for converting packets into payloads.
      */
-    public NoContextChannel(@NotNull Identifier id, @NotNull NetByteBuf.NetReader<P> reader) {
+    public NoContextChannel(@NotNull CustomPayload.Id<P> id, @NotNull PacketCodec<? super NetByteBuf, P> codec) {
         this.id = id;
-        this.reader = reader;
+        this.codec = codec;
     }
 
     /**
@@ -341,17 +342,17 @@ public class NoContextChannel<P extends NetPayload> implements Channel {
     }
 
     private void checkPayload(P payload) {
-        if (payload.id() != id) throw new IllegalStateException("Payload id does not match channel id");
+        if (payload.getId().equals(id)) throw new IllegalStateException("Payload id does not match channel id");
     }
 
     @Override
-    public Identifier getId() {
+    public CustomPayload.Id<? extends CustomPayload> getId() {
         return id;
     }
 
     @Override
-    public NetByteBuf.NetReader<? extends NetPayload> getReader() {
-        return reader;
+    public PacketCodec<? super NetByteBuf, ? extends CustomPayload> getCodec() {
+        return codec;
     }
 
     @SuppressWarnings("unchecked")

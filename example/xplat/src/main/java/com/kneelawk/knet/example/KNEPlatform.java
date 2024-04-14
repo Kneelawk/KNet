@@ -33,11 +33,14 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
 
 public interface KNEPlatform {
@@ -50,7 +53,7 @@ public interface KNEPlatform {
     <T extends BlockEntity> Supplier<BlockEntityType<T>> registerBlockEntity(String path,
                                                                              Supplier<BlockEntityType<T>> creator);
 
-    <T extends ScreenHandler> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path, ExtraScreenHandlerDecoder<T> factory);
+    <T extends ScreenHandler, P> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path, ExtraScreenHandlerDecoder<T, P> factory, PacketCodec<? super RegistryNetByteBuf, P> codec);
 
     void openScreen(ServerPlayerEntity player, NamedScreenHandlerFactory factory);
 }

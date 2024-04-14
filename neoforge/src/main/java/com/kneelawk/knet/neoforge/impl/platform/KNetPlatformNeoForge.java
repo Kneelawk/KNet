@@ -35,7 +35,7 @@ public class KNetPlatformNeoForge implements KNetPlatform {
         if (FMLEnvironment.dist.isClient()) {
             PacketDistributor.SERVER.noArg().send(payload);
         } else {
-            KNetLog.LOG.warn("Attempted to send payload {} to the server from the server-side.", payload.id());
+            KNetLog.LOG.warn("Attempted to send payload {} to the server from the server-side.", payload.getId());
         }
     }
 

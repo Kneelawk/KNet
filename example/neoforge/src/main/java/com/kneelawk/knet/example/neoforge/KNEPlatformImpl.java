@@ -37,12 +37,14 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
@@ -64,16 +66,20 @@ public class KNEPlatformImpl implements KNEPlatform {
     }
 
     @Override
-    public <T extends ScreenHandler> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path,
-                                                                                               ExtraScreenHandlerDecoder<T> factory) {
+    public <T extends ScreenHandler, P> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path,
+                                                                                                  ExtraScreenHandlerDecoder<T, P> factory,
+                                                                                                  PacketCodec<? super RegistryNetByteBuf, P> codec) {
         return KNetExampleNeoForge.SCREEN_HANDLERS.register(path, () -> IMenuTypeExtension.create(
-            (syncId, playerInv, buf) -> factory.create(syncId, playerInv, NetByteBuf.asNetByteBuf(buf))));
+            (syncId, playerInv, buf) -> factory.create(syncId, playerInv,
+                RegistryNetByteBuf.registryCodec(codec).decode(buf))));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void openScreen(ServerPlayerEntity player, NamedScreenHandlerFactory factory) {
-        if (factory instanceof ExtraScreenHandlerFactory extra) {
-            player.openMenu(extra, buf -> extra.writeExtra(player, NetByteBuf.asNetByteBuf(buf)));
+        if (factory instanceof ExtraScreenHandlerFactory<?> extra) {
+            player.openMenu(extra, buf -> ((PacketCodec<RegistryByteBuf, Object>) RegistryNetByteBuf.registryCodec(
+                extra.getCodec())).encode(buf, extra.getExtra(player)));
         } else {
             player.openHandledScreen(factory);
         }

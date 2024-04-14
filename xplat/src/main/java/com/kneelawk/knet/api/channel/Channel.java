@@ -25,8 +25,8 @@
 
 package com.kneelawk.knet.api.channel;
 
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
@@ -41,14 +41,14 @@ public interface Channel {
      *
      * @return this channel's id.
      */
-    Identifier getId();
+    CustomPayload.Id<? extends CustomPayload> getId();
 
     /**
      * Gets this channel's payload reader.
      *
      * @return this channel's payload reader.
      */
-    NetByteBuf.NetReader<? extends NetPayload> getReader();
+    PacketCodec<? super NetByteBuf, ? extends CustomPayload> getCodec();
 
     /**
      * Called by net-util platform code when this channel receives a payload on the client-side.

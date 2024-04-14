@@ -27,6 +27,8 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.network.codec.PacketCodec;
+
 import com.kneelawk.knet.api.handling.PayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
@@ -38,7 +40,7 @@ import com.kneelawk.knet.api.util.NetByteBuf;
  * @param <P> the payload this uses.
  */
 public class RootChannelContext<C, P> implements ChannelContext<C> {
-    private final PayloadCodec<P> codec;
+    private final PacketCodec<? super NetByteBuf, P> codec;
     private final ContextDecoder<C, P> decoder;
     private final ContextEncoder<C, P> encoder;
 
@@ -49,7 +51,7 @@ public class RootChannelContext<C, P> implements ChannelContext<C> {
      * @param decoder a decoder for decoding context from the payload.
      * @param encoder an encoder for encoding context into a payload.
      */
-    public RootChannelContext(@NotNull PayloadCodec<P> codec, @NotNull ContextDecoder<C, P> decoder,
+    public RootChannelContext(@NotNull PacketCodec<? super NetByteBuf, P> codec, @NotNull ContextDecoder<C, P> decoder,
                               @NotNull ContextEncoder<C, P> encoder) {
         this.codec = codec;
         this.decoder = decoder;
@@ -58,13 +60,13 @@ public class RootChannelContext<C, P> implements ChannelContext<C> {
 
     @Override
     public @NotNull Object decodePayload(@NotNull NetByteBuf buf) {
-        return codec.decoder().apply(buf);
+        return codec.decode(buf);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void encodePayload(@NotNull Object payload, @NotNull NetByteBuf buf) {
-        codec.encoder().accept(buf, (P) payload);
+        codec.encode(buf, (P) payload);
     }
 
     @SuppressWarnings("unchecked")

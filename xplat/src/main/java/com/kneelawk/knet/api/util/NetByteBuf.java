@@ -9,16 +9,16 @@
 package com.kneelawk.knet.api.util;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.DecoderException;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketDecoder;
+import net.minecraft.network.codec.PacketEncoder;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.BlockPos;
@@ -48,58 +48,6 @@ public class NetByteBuf extends PacketByteBuf {
             readerIndex = buffer.readerIndex();
             readPartialOffset = buffer.readPartialOffset;
             readPartialCache = buffer.readPartialCache;
-        }
-    }
-
-    /**
-     * A functional interface to read a value from {@link NetByteBuf}.
-     *
-     * @param <T> the type this net reader reads from buffers.
-     */
-    @FunctionalInterface
-    public interface NetReader<T> extends Function<NetByteBuf, T> {
-        /**
-         * Converts this net reader into a packet reader expected by vanilla.
-         *
-         * @return this net reader as a packet reader.
-         */
-        default PacketReader<T> intoPacketReader() {
-            return buf -> apply(NetByteBuf.asNetByteBuf(buf));
-        }
-
-        /**
-         * Converts this net reader into one that optionally reads something.
-         *
-         * @return a version of this net reader that only optionally reads.
-         */
-        default NetReader<Optional<T>> asOptional() {
-            return buf -> buf.readOptional(this);
-        }
-    }
-
-    /**
-     * A functional interface to write a value to {@link NetByteBuf}.
-     *
-     * @param <T> the type this net writer writes to buffers.
-     */
-    @FunctionalInterface
-    public interface NetWriter<T> extends BiConsumer<NetByteBuf, T> {
-        /**
-         * Converts this net writer into a packet writer expected by vanilla.
-         *
-         * @return this net writer as a packet writer.
-         */
-        default PacketWriter<T> intoPacketWriter() {
-            return (buf, t) -> accept(NetByteBuf.asNetByteBuf(buf), t);
-        }
-
-        /**
-         * Converts this net writer into one that optionally writes something.
-         *
-         * @return a version of this net writer that only optionally writes.
-         */
-        default NetWriter<Optional<T>> asOptional() {
-            return (buf, value) -> buf.writeOptional(value, this);
         }
     }
 
@@ -202,6 +150,27 @@ public class NetByteBuf extends PacketByteBuf {
         return asNetByteBuf(Unpooled.buffer(initialCapacity), passthrough);
     }
 
+    /**
+     * Converts a {@link PacketCodec} that expects a {@link NetByteBuf} into one that expects a {@link PacketByteBuf}.
+     *
+     * @param codec the codec to convert.
+     * @param <T>   the type that the codec encodes/decodes.
+     * @return a version of this codec that expects a {@link PacketByteBuf}.
+     */
+    public static <T> PacketCodec<PacketByteBuf, T> netCodec(PacketCodec<? super NetByteBuf, T> codec) {
+        return new PacketCodec<>() {
+            @Override
+            public T decode(PacketByteBuf buf) {
+                return codec.decode(NetByteBuf.asNetByteBuf(buf));
+            }
+
+            @Override
+            public void encode(PacketByteBuf buf, T value) {
+                codec.encode(NetByteBuf.asNetByteBuf(buf), value);
+            }
+        };
+    }
+
     // Hold on to the wrapped buffer, so we can access it when changing passthrough-ness while wrapping.
     private final ByteBuf wrapped;
 
@@ -289,15 +258,20 @@ public class NetByteBuf extends PacketByteBuf {
      * @return the given buffer as a {@link NetByteBuf}.
      */
     public static NetByteBuf asNetByteBuf(ByteBuf buf, boolean passthrough) {
-        if (buf instanceof NetByteBuf netBuf) {
-            if (netBuf.passthrough == passthrough) {
-                return netBuf;
-            } else {
-                return new NetByteBuf(netBuf.wrapped, passthrough);
-            }
+        if (buf instanceof NetByteBuf netBuf && netBuf.passthrough == passthrough) {
+            return netBuf;
         } else {
             return new NetByteBuf(buf, passthrough);
         }
+    }
+
+    /**
+     * Gets the buffer that this is wrapping.
+     *
+     * @return the wrapped buffer.
+     */
+    public ByteBuf getWrapped() {
+        return wrapped;
     }
 
     /**
@@ -901,12 +875,12 @@ public class NetByteBuf extends PacketByteBuf {
      * @param value  the optional value to write.
      * @param writer the packet writer capable of writing the value.
      * @param <T>    the type this method optionally writes.
-     * @see #readOptional(NetReader)
+     * @see #readNetOptional(PacketDecoder)
      */
-    public <T> void writeOptional(Optional<T> value, NetWriter<T> writer) {
+    public <T> void writeNetOptional(Optional<T> value, PacketEncoder<? super NetByteBuf, T> writer) {
         if (value.isPresent()) {
             this.writeBoolean(true);
-            writer.accept(this, value.get());
+            writer.encode(this, value.get());
         } else {
             this.writeBoolean(false);
         }
@@ -920,9 +894,9 @@ public class NetByteBuf extends PacketByteBuf {
      * @param reader the packet reader capable of reading the value.
      * @param <T>    the type this method optionally reads.
      * @return the read optional value
-     * @see #writeOptional(Optional, NetWriter)
+     * @see #writeNetOptional(Optional, PacketEncoder)
      */
-    public <T> Optional<T> readOptional(NetReader<T> reader) {
-        return this.readBoolean() ? Optional.of(reader.apply(this)) : Optional.empty();
+    public <T> Optional<T> readNetOptional(PacketDecoder<? super NetByteBuf, T> reader) {
+        return this.readBoolean() ? Optional.of(reader.decode(this)) : Optional.empty();
     }
 }

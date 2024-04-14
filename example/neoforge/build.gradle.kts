@@ -53,6 +53,7 @@ dependencies {
     compileOnly(project(path = ":example-xplat", configuration = "namedElements"))
 
     // KNet
+    compileOnly(project(":xplat", configuration = "namedElements"))
     compileOnly(project(":neoforge", configuration = "namedElements"))
     runtimeOnly(project(":neoforge", configuration = "dev"))
     include(project(":neoforge"))
@@ -77,7 +78,7 @@ tasks {
 
         inputs.property("version", project.version)
 
-        filesMatching("META-INF/mods.toml") {
+        filesMatching("META-INF/neoforge.mods.toml") {
             expand(mapOf("version" to project.version))
         }
     }

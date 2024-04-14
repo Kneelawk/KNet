@@ -28,6 +28,7 @@ package com.kneelawk.knet.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
 public class KNetLog {
@@ -36,19 +37,19 @@ public class KNetLog {
     public static final boolean debug = Boolean.getBoolean("com.kneelawk.knet.debug");
     public static final boolean debugStackTraces = Boolean.getBoolean("com.kneelawk.knet.debug.stackTraces");
 
-    public static void logSend(Identifier channel, String to, Object payload) {
+    public static void logSend(CustomPayload.Id<?> channel, String to, Object payload) {
         if (debugStackTraces) {
-            LOG.info("[KNET-DEBUG] SEND {} to {}: {}", channel, to, payload, new RuntimeException("Stack Trace"));
+            LOG.info("[KNET-DEBUG] SEND {} to {}: {}", channel.id(), to, payload, new RuntimeException("Stack Trace"));
         } else {
-            LOG.info("[KNET-DEBUG] SEND {} to {}: {}", channel, to, payload);
+            LOG.info("[KNET-DEBUG] SEND {} to {}: {}", channel.id(), to, payload);
         }
     }
 
-    public static void logReceive(Identifier channel, String from, Object payload) {
+    public static void logReceive(CustomPayload.Id<?> channel, String from, Object payload) {
         if (debugStackTraces) {
-            LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel, from, payload, new RuntimeException("Stack Trace"));
+            LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel.id(), from, payload, new RuntimeException("Stack Trace"));
         } else {
-            LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel, from, payload);
+            LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel.id(), from, payload);
         }
     }
 }
