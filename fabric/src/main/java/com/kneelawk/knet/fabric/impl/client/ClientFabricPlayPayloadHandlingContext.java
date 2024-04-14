@@ -23,14 +23,14 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl;
+package com.kneelawk.knet.fabric.impl.client;
 
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.CustomPayload;
@@ -38,15 +38,16 @@ import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
-public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx) implements PlayPayloadHandlingContext {
+public record ClientFabricPlayPayloadHandlingContext(ClientPlayNetworking.Context ctx) implements
+    PlayPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
-        return ctx.player().server;
+        return ctx.client();
     }
 
     @Override
-    public PlayerEntity getPlayer() {
-        return ctx.player();
+    public @Nullable PlayerEntity getPlayer() {
+        return ctx().player();
     }
 
     @Override

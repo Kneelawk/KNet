@@ -12,6 +12,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
@@ -92,5 +93,10 @@ public class KNetPlatformFabric implements KNetPlatform {
     @Override
     public void sendPlayToTrackingChunk(ServerWorld world, ChunkPos pos, CustomPayload payload) {
         PlayerLookup.tracking(world, pos).forEach(player -> ServerPlayNetworking.send(player, payload));
+    }
+
+    @Override
+    public void disconnectFromServer(Text message) {
+        CommonProxy.getInstance().disconnectFromServer(message);
     }
 }

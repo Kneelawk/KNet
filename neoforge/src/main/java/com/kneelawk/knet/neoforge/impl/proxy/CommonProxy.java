@@ -23,39 +23,42 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl;
+package com.kneelawk.knet.neoforge.impl.proxy;
 
-import java.util.concurrent.Executor;
-import java.util.function.Consumer;
+import java.lang.reflect.InvocationTargetException;
 
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.fml.loading.FMLLoader;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.impl.KNetLog;
 
-public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx) implements PlayPayloadHandlingContext {
-    @Override
-    public @NotNull Executor getExecutor() {
-        return ctx.player().server;
+public class CommonProxy {
+    private static final CommonProxy INSTANCE;
+
+    static {
+        CommonProxy instance = new CommonProxy();
+        if (FMLLoader.getDist().isClient()) {
+            try {
+                instance = (CommonProxy) CommonProxy.class.getClassLoader()
+                    .loadClass("com.kneelawk.knet.neoforge.impl.proxy.ClientProxy").getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        INSTANCE = instance;
     }
 
-    @Override
-    public PlayerEntity getPlayer() {
-        return ctx.player();
+    public static CommonProxy getInstance() {
+        return INSTANCE;
     }
 
-    @Override
-    public void disconnect(@NotNull Text message) {
-        ctx.responseSender().disconnect(message);
+    public boolean isPhysicalClient() {
+        return false;
     }
 
-    @Override
-    public void sendPayload(CustomPayload payload) {
-        ctx.responseSender().sendPacket(payload);
+    public void disconnectFromServer(Text message) {
+        KNetLog.LOG.warn("Attempted to disconnect from the server on the server side, with the message: {}", message);
     }
 }

@@ -28,6 +28,8 @@ package com.kneelawk.knet.fabric.impl.proxy;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
@@ -37,7 +39,7 @@ import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.util.NetByteBuf;
-import com.kneelawk.knet.fabric.impl.FabricPlayPayloadHandlingContext;
+import com.kneelawk.knet.fabric.impl.client.ClientFabricPlayPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
 
 public class ClientProxy extends CommonProxy {
@@ -55,8 +57,7 @@ public class ClientProxy extends CommonProxy {
                 (PacketCodec<PacketByteBuf, CustomPayload>) NetByteBuf.netCodec(channel.getCodec()));
             ClientPlayNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
-                    channel.handleClientPayload(payload, new FabricPlayPayloadHandlingContext(ctx.client(), ctx.player(),
-                        ctx.player().networkHandler.getConnection()::disconnect));
+                    channel.handleClientPayload(payload, new ClientFabricPlayPayloadHandlingContext(ctx));
                 } catch (PayloadHandlingSilentException e) {
                     // do nothing
                 } catch (PayloadHandlingDisconnectException e) {
@@ -67,6 +68,14 @@ public class ClientProxy extends CommonProxy {
                     KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
                 }
             });
+        }
+    }
+
+    @Override
+    public void disconnectFromServer(Text message) {
+        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+        if (networkHandler != null) {
+            networkHandler.getConnection().disconnect(message);
         }
     }
 }

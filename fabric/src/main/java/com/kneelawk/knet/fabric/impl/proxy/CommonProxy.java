@@ -77,9 +77,7 @@ public class CommonProxy {
             ServerPlayNetworking.registerGlobalReceiver(channel.getId(),
                 (payload, ctx) -> {
                     try {
-                        channel.handleServerPayload(payload,
-                            new FabricPlayPayloadHandlingContext(ctx.player().server, ctx.player(),
-                                ctx.player().networkHandler::disconnect));
+                        channel.handleServerPayload(payload, new FabricPlayPayloadHandlingContext(ctx));
                     } catch (PayloadHandlingSilentException e) {
                         // do nothing
                     } catch (PayloadHandlingDisconnectException e) {
@@ -91,5 +89,9 @@ public class CommonProxy {
                     }
                 });
         }
+    }
+
+    public void disconnectFromServer(Text message) {
+        KNetLog.LOG.warn("Attempted to disconnect from the server on the server side, with the message: {}", message);
     }
 }

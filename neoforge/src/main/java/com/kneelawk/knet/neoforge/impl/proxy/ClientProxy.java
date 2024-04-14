@@ -23,39 +23,23 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl;
+package com.kneelawk.knet.neoforge.impl.proxy;
 
-import java.util.concurrent.Executor;
-import java.util.function.Consumer;
-
-import org.jetbrains.annotations.NotNull;
-
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
-
-public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx) implements PlayPayloadHandlingContext {
+public class ClientProxy extends CommonProxy {
     @Override
-    public @NotNull Executor getExecutor() {
-        return ctx.player().server;
+    public boolean isPhysicalClient() {
+        return true;
     }
 
     @Override
-    public PlayerEntity getPlayer() {
-        return ctx.player();
-    }
-
-    @Override
-    public void disconnect(@NotNull Text message) {
-        ctx.responseSender().disconnect(message);
-    }
-
-    @Override
-    public void sendPayload(CustomPayload payload) {
-        ctx.responseSender().sendPacket(payload);
+    public void disconnectFromServer(Text message) {
+        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+        if (networkHandler != null) {
+            networkHandler.getConnection().disconnect(message);
+        }
     }
 }

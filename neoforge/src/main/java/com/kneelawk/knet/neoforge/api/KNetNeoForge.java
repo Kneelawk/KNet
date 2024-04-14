@@ -62,10 +62,7 @@ public class KNetNeoForge {
                 if (channel.isToServer()) {
                     handler.server((payload, ctx) -> {
                         try {
-                            channel.handleServerPayload(payload,
-                                new NeoForgePlayPayloadHandlingContext(ctx.workHandler()::execute,
-                                    ctx.player().orElse(null),
-                                    ctx.packetHandler()::disconnect));
+                            channel.handleServerPayload(payload, new NeoForgePlayPayloadHandlingContext(ctx));
                         } catch (PayloadHandlingSilentException e) {
                             // do nothing
                         } catch (PayloadHandlingDisconnectException e) {
@@ -80,10 +77,7 @@ public class KNetNeoForge {
                 if (channel.isToClient() && FMLEnvironment.dist.isClient()) {
                     handler.client((payload, ctx) -> {
                         try {
-                            channel.handleClientPayload(payload,
-                                new NeoForgePlayPayloadHandlingContext(ctx.workHandler()::execute,
-                                    ctx.player().orElse(null),
-                                    ctx.packetHandler()::disconnect));
+                            channel.handleClientPayload(payload, new NeoForgePlayPayloadHandlingContext(ctx));
                         } catch (PayloadHandlingSilentException e) {
                             // do nothing
                         } catch (PayloadHandlingDisconnectException e) {

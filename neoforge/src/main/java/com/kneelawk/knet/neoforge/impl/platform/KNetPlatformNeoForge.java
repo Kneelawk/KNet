@@ -9,11 +9,13 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
+import com.kneelawk.knet.neoforge.impl.proxy.CommonProxy;
 
 public class KNetPlatformNeoForge implements KNetPlatform {
     @Override
@@ -57,5 +59,10 @@ public class KNetPlatformNeoForge implements KNetPlatform {
     @Override
     public void sendPlayToTrackingChunk(ServerWorld world, ChunkPos pos, CustomPayload payload) {
         PacketDistributor.TRACKING_CHUNK.with(world.getChunk(pos.x, pos.z)).send(payload);
+    }
+
+    @Override
+    public void disconnectFromServer(Text message) {
+        CommonProxy.getInstance().disconnectFromServer(message);
     }
 }

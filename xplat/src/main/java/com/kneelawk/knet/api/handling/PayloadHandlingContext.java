@@ -23,39 +23,27 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl;
+package com.kneelawk.knet.api.handling;
 
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+/**
+ * Context used for applying a payload.
+ * <p>
+ * This is an abstraction over the various loader-specific contexts given when receiving a packet.
+ */
+public interface PayloadHandlingContext extends com.kneelawk.knet.api.util.PayloadSender {
+    /**
+     * Gets the executor for running things on the main thread instead of the netty packet-handler threads.
+     *
+     * @return the main-thread executor.
+     */
+    @NotNull
+    Executor getExecutor();
 
-public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx) implements PlayPayloadHandlingContext {
-    @Override
-    public @NotNull Executor getExecutor() {
-        return ctx.player().server;
-    }
-
-    @Override
-    public PlayerEntity getPlayer() {
-        return ctx.player();
-    }
-
-    @Override
-    public void disconnect(@NotNull Text message) {
-        ctx.responseSender().disconnect(message);
-    }
-
-    @Override
-    public void sendPayload(CustomPayload payload) {
-        ctx.responseSender().sendPacket(payload);
-    }
 }

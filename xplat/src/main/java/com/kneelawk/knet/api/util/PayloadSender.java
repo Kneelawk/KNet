@@ -1,0 +1,92 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2024 Kneelawk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+package com.kneelawk.knet.api.util;
+
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+
+import com.kneelawk.knet.impl.platform.KNetPlatform;
+
+/**
+ * Represents something capable of sending a payload to a receiver.
+ */
+public interface PayloadSender {
+    /**
+     * Creates a payload sender from a player.
+     *
+     * @param player the player to send payloads to.
+     * @return a payload sender for the given player.
+     */
+    static PayloadSender ofPlayer(ServerPlayerEntity player) {
+        return new PayloadSender() {
+            @Override
+            public void disconnect(@NotNull Text message) {
+                player.networkHandler.disconnect(message);
+            }
+
+            @Override
+            public void sendPayload(CustomPayload payload) {
+                KNetPlatform.INSTANCE.sendPlay(player, payload);
+            }
+        };
+    }
+
+    /**
+     * Creates a Payload sender that sends messages to the server.
+     *
+     * @return a payload sender that sends messages to the server.
+     */
+    static PayloadSender ofToServer() {
+        return new PayloadSender() {
+            @Override
+            public void disconnect(@NotNull Text message) {
+                KNetPlatform.INSTANCE.disconnectFromServer(message);
+            }
+
+            @Override
+            public void sendPayload(CustomPayload payload) {
+                KNetPlatform.INSTANCE.sendPlayToServer(payload);
+            }
+        };
+    }
+
+    /**
+     * Used to disconnect the client with the given message.
+     *
+     * @param message the message for the client to display when disconnected.
+     */
+    void disconnect(@NotNull Text message);
+
+    /**
+     * Used to send a response to the message that was just received.
+     *
+     * @param payload the payload to send as the response.
+     */
+    void sendPayload(CustomPayload payload);
+}

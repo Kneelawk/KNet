@@ -28,28 +28,35 @@ package com.kneelawk.knet.neoforge.impl;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
-public record NeoForgePlayPayloadHandlingContext(Executor executor, PlayerEntity player, Consumer<Text> disconnector)
-    implements PlayPayloadHandlingContext {
+public record NeoForgePlayPayloadHandlingContext(PlayPayloadContext ctx) implements PlayPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
-        return executor;
+        return ctx.workHandler()::execute;
     }
 
     @Override
     public @Nullable PlayerEntity getPlayer() {
-        return player;
+        return ctx.player().orElse(null);
     }
 
     @Override
     public void disconnect(@NotNull Text message) {
-        disconnector.accept(message);
+        ctx.replyHandler().disconnect(message);
+    }
+
+    @Override
+    public void sendPayload(CustomPayload payload) {
+        ctx.replyHandler().send(payload);
     }
 }

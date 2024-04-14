@@ -25,35 +25,26 @@
 
 package com.kneelawk.knet.api.handling;
 
-import java.util.concurrent.Executor;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 /**
- * Context used for applying a payload.
+ * Context used for applying a payload during the 'play' phase.
  * <p>
  * This is an abstraction over the various loader-specific contexts given when receiving a packet.
  */
-public interface PlayPayloadHandlingContext {
-    /**
-     * Gets the executor for running things on the main thread instead of the netty packet-handler threads.
-     *
-     * @return the main-thread executor.
-     */
-    @NotNull Executor getExecutor();
+public interface PlayPayloadHandlingContext extends PayloadHandlingContext {
 
     /**
      * Gets the player that received this payload.
      *
      * @return the receiver player.
      */
-    @Nullable PlayerEntity getPlayer();
+    @Nullable
+    PlayerEntity getPlayer();
 
     /**
      * Gets the world in which this payload was received.
@@ -89,11 +80,4 @@ public interface PlayPayloadHandlingContext {
         if (world == null) throw new PayloadHandlingErrorException("No world associated with this payload.");
         return world;
     }
-
-    /**
-     * Used to disconnect the client with the given message.
-     *
-     * @param message the message for the client to display when disconnected.
-     */
-    void disconnect(@NotNull Text message);
 }
