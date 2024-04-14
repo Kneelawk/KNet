@@ -43,11 +43,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.PayloadSender;
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
 
@@ -66,7 +67,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
     /**
      * Creates a new context-less channel.
      *
-     * @param id     the id of this channel. Must be the same as the id of the payloads being sent.
+     * @param id    the id of this channel. Must be the same as the id of the payloads being sent.
      * @param codec used for converting packets into payloads.
      */
     public NoContextPlayChannel(@NotNull CustomPayload.Id<P> id, @NotNull PacketCodec<? super NetByteBuf, P> codec) {
@@ -232,13 +233,44 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param players the players to send to.
      * @param payload the payload to send.
      */
-    public void send(@NotNull Collection<ServerPlayerEntity> players, @NotNull P payload) {
+    public void sendToPlayers(@NotNull Collection<ServerPlayerEntity> players, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, players.stream().map(player -> player.getGameProfile().getName())
                 .collect(Collectors.joining(", ", "[", "]")), payload);
         }
         KNetPlatform.INSTANCE.sendPlay(players, payload);
+    }
+
+    /**
+     * Sends a payload through a {@link PayloadSender}.
+     *
+     * @param sender  the payload sender that will send the payload.
+     * @param payload the payload to send.
+     */
+    public void send(@NotNull PayloadSender sender, @NotNull P payload) {
+        checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, sender.toString(), payload);
+        }
+        sender.sendPayload(payload);
+    }
+
+    /**
+     * Sends a payload to a collection of {@link PayloadSender}.
+     *
+     * @param senders the collection of payload senders that will send the payload.
+     * @param payload the payload to send.
+     */
+    public void sendToSenders(@NotNull Collection<PayloadSender> senders, @NotNull P payload) {
+        checkPayload(payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id,
+                senders.stream().map(PayloadSender::toString).collect(Collectors.joining(", ", "[", "]")), payload);
+        }
+        for (PayloadSender sender : senders) {
+            sender.sendPayload(payload);
+        }
     }
 
     /**
@@ -356,7 +388,8 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handleClientPayload(CustomPayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException {
+    public void handleClientPayload(CustomPayload payload, PlayPayloadHandlingContext ctx)
+        throws PayloadHandlingException {
         if (clientHandler != null) {
             clientHandler.handle((P) payload, ctx);
         }
@@ -364,7 +397,8 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handleServerPayload(CustomPayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException {
+    public void handleServerPayload(CustomPayload payload, PlayPayloadHandlingContext ctx)
+        throws PayloadHandlingException {
         if (serverHandler != null) {
             serverHandler.handle((P) payload, ctx);
         }

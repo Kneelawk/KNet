@@ -29,15 +29,15 @@ import java.util.concurrent.Executor;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
+import com.kneelawk.knet.api.util.PayloadSender;
 
 /**
  * Context used for applying a payload.
  * <p>
  * This is an abstraction over the various loader-specific contexts given when receiving a packet.
  */
-public interface PayloadHandlingContext extends com.kneelawk.knet.api.util.PayloadSender {
+public interface PayloadHandlingContext extends PayloadSender {
+
     /**
      * Gets the executor for running things on the main thread instead of the netty packet-handler threads.
      *
@@ -45,5 +45,4 @@ public interface PayloadHandlingContext extends com.kneelawk.knet.api.util.Paylo
      */
     @NotNull
     Executor getExecutor();
-
 }

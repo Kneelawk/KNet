@@ -54,6 +54,11 @@ public interface PayloadSender {
             public void sendPayload(CustomPayload payload) {
                 KNetPlatform.INSTANCE.sendPlay(player, payload);
             }
+
+            @Override
+            public String toString() {
+                return "PayloadSender(" + player.getGameProfile().getName() + ')';
+            }
         };
     }
 
@@ -72,6 +77,11 @@ public interface PayloadSender {
             @Override
             public void sendPayload(CustomPayload payload) {
                 KNetPlatform.INSTANCE.sendPlayToServer(payload);
+            }
+
+            @Override
+            public String toString() {
+                return "PayloadSender(to server)";
             }
         };
     }

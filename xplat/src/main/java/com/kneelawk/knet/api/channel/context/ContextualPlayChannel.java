@@ -45,10 +45,11 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 import com.kneelawk.knet.api.channel.PlayChannel;
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.PayloadSender;
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
 
@@ -158,13 +159,46 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void send(@NotNull Collection<ServerPlayerEntity> players, @NotNull C context, @NotNull P payload) {
+    public void sendToPlayers(@NotNull Collection<ServerPlayerEntity> players, @NotNull C context, @NotNull P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, players.stream().map(player -> player.getGameProfile().getName())
                 .collect(Collectors.joining(", ", "[", "]")), toSend);
         }
         KNetPlatform.INSTANCE.sendPlay(players, toSend);
+    }
+
+    /**
+     * Sends a payload through a payload sender.
+     *
+     * @param sender  the payload sender that will send the payload.
+     * @param context the context to send.
+     * @param payload the payload to send.
+     */
+    public void send(@NotNull PayloadSender sender, @NotNull C context, @NotNull P payload) {
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id, sender.toString(), toSend);
+        }
+        sender.sendPayload(toSend);
+    }
+
+    /**
+     * Sends a payload to a collection of {@link PayloadSender}.
+     *
+     * @param senders the collection of payload senders that will send the payload.
+     * @param context the context to send.
+     * @param payload the payload to send.
+     */
+    public void sendToSenders(@NotNull Collection<PayloadSender> senders, @NotNull C context, @NotNull P payload) {
+        Payload toSend = payload(context, payload);
+        if (KNetLog.debug) {
+            KNetLog.logSend(id,
+                senders.stream().map(PayloadSender::toString).collect(Collectors.joining(", ", "[", "]")), toSend);
+        }
+        for (PayloadSender sender : senders) {
+            sender.sendPayload(toSend);
+        }
     }
 
     /**
