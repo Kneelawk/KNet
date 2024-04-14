@@ -204,7 +204,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      *
      * @param payload the payload to send.
      */
-    public void sendPlayToAll(@NotNull P payload) {
+    public void sendToAll(@NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "all", payload);
@@ -218,7 +218,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param player  the player to send to.
      * @param payload the payload to send.
      */
-    public void sendPlay(@NotNull PlayerEntity player, @NotNull P payload) {
+    public void send(@NotNull PlayerEntity player, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, player.getGameProfile().toString(), payload);
@@ -232,7 +232,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param players the players to send to.
      * @param payload the payload to send.
      */
-    public void sendPlay(@NotNull Collection<ServerPlayerEntity> players, @NotNull P payload) {
+    public void send(@NotNull Collection<ServerPlayerEntity> players, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, players.stream().map(player -> player.getGameProfile().getName())
@@ -246,7 +246,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      *
      * @param payload the payload to send.
      */
-    public void sendPlayToServer(@NotNull P payload) {
+    public void sendToServer(@NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "server", payload);
@@ -260,7 +260,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param dim     the dimension to send to.
      * @param payload the payload to send.
      */
-    public void sendPlayToDimension(@NotNull RegistryKey<World> dim, @NotNull P payload) {
+    public void sendToDimension(@NotNull RegistryKey<World> dim, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "dimension " + dim.getValue(), payload);
@@ -274,7 +274,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param entity  the entity that all receiver players should be tracking.
      * @param payload the payload to send.
      */
-    public void sendPlayToTracking(@NotNull Entity entity, @NotNull P payload) {
+    public void sendToTracking(@NotNull Entity entity, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking entity " + entity, payload);
@@ -288,7 +288,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param entity  the entity that all receiver players should be tracking.
      * @param payload the payload to send.
      */
-    public void sendPlayToTrackingAndSelf(@NotNull Entity entity, @NotNull P payload) {
+    public void sendToTrackingAndSelf(@NotNull Entity entity, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking entity " + entity + " and self", payload);
@@ -303,7 +303,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param pos     the position of the chunk.
      * @param payload the payload to send.
      */
-    public void sendPlayToTracking(@NotNull ServerWorld world, @NotNull ChunkPos pos, @NotNull P payload) {
+    public void sendToTracking(@NotNull ServerWorld world, @NotNull ChunkPos pos, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking chunk " + pos, payload);
@@ -317,7 +317,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param be      the block entity that all receiver players should be tracking.
      * @param payload the payload.
      */
-    public void sendPlayToTracking(@NotNull BlockEntity be, @NotNull P payload) {
+    public void sendToTracking(@NotNull BlockEntity be, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking block-entity " + be + " @ " + be.getPos(), payload);
@@ -332,7 +332,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param pos     the position of the block.
      * @param payload the payload to send.
      */
-    public void sendPlayToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull P payload) {
+    public void sendToTracking(@NotNull ServerWorld world, @NotNull BlockPos pos, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking pos " + pos, payload);

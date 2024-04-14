@@ -112,7 +112,7 @@ public class FancyLightScreenHandler extends ScreenHandler {
 
     public void updateValue(int value, int index) {
         if (0 <= index && index < 3) {
-            COLOR_UPDATE_CHANNEL.sendPlayToServer(this, new ColorUpdatePayload((byte) value, (byte) index));
+            COLOR_UPDATE_CHANNEL.sendToServer(this, new ColorUpdatePayload((byte) value, (byte) index));
         }
     }
 }
