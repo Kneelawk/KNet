@@ -189,6 +189,37 @@ public class RegistryNetByteBuf extends NetByteBuf {
     }
 
     /**
+     * Creates a {@link PacketCodec} that converts a {@link RegistryNetByteBuf} back into a {@link RegistryByteBuf}.
+     *
+     * @param codec the codec that expects a {@link RegistryNetByteBuf}.
+     * @param <T>   the type the codec encodes/decodes.
+     * @return the codec that converts byte buffers.
+     */
+    public static <T> PacketCodec<RegistryNetByteBuf, T> revertRegistryCodec(
+        PacketCodec<? super RegistryByteBuf, T> codec) {
+        // Yes this loses some efficiency, but it should technically work.
+        // The better solution, having another buffer that extends RegistryByteBuf, will be a lot of work,
+        // but something I want to add before 1.0.
+        //                 PacketByteBuf
+        //                  /         \
+        //     RegistryByteBuf       NetByteBuf
+        //           |                   |
+        //   NetRegistryByteBuf<->RegistryNetByteBuf
+        // TODO: Add NetRegistryByteBuf
+        return new PacketCodec<>() {
+            @Override
+            public T decode(RegistryNetByteBuf buf) {
+                return codec.decode(new RegistryByteBuf(buf.getWrapped(), buf.registryManager));
+            }
+
+            @Override
+            public void encode(RegistryNetByteBuf buf, T value) {
+                codec.encode(new RegistryByteBuf(buf.getWrapped(), buf.registryManager), value);
+            }
+        };
+    }
+
+    /**
      * Creates a {@link PacketCodec} that wraps any {@link PacketByteBuf} passed to it in a {@link RegistryNetByteBuf},
      * attaching a registry manager.
      *
