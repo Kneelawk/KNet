@@ -1,8 +1,6 @@
 plugins {
     `maven-publish`
-    id("architectury-plugin")
     id("dev.architectury.loom")
-    id("com.github.johnrengelman.shadow")
     id("com.kneelawk.versioning")
 }
 
@@ -17,19 +15,7 @@ base {
 }
 
 base.libsDirectory.set(rootProject.layout.buildDirectory.map { it.dir("libs") })
-java.docsDir.set(rootProject.layout.buildDirectory.map { it.dir("docs").dir("${rootProject.name}-${project.name}") })
-
-architectury {
-    fabric()
-}
-
-configurations {
-    val common = create("common")
-    create("shadowCommon")
-    getByName("compileClasspath").extendsFrom(common)
-    getByName("runtimeClasspath").extendsFrom(common)
-    getByName("developmentFabric").extendsFrom(common)
-}
+java.docsDir.set(rootProject.layout.buildDirectory.map { it.dir("docs").dir(project.name) })
 
 repositories {
     mavenCentral()
@@ -57,15 +43,22 @@ dependencies {
     modCompileOnly("net.fabricmc.fabric-api:fabric-api:$fapi_version")
     modLocalRuntime("net.fabricmc.fabric-api:fabric-api:$fapi_version")
 
-    "common"(project(path = ":xplat", configuration = "namedElements")) { isTransitive = false }
-    "shadowCommon"(project(path = ":xplat", configuration = "transformProductionFabric")) {
-        isTransitive = false
-    }
+    compileOnly(project(path = ":xplat", configuration = "namedElements"))
+}
+
+java {
+    val java_version: String by project
+    val javaVersion = JavaVersion.toVersion(java_version)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+
+    withSourcesJar()
+    withJavadocJar()
 }
 
 tasks {
-    processResources {
-        from(project(":xplat").sourceSets.main.map { it.resources.asFileTree })
+    processResources.configure {
+        from(project(":xplat").sourceSets.main.map { it.resources })
 
         inputs.property("version", project.version)
 
@@ -77,39 +70,28 @@ tasks {
         }
     }
 
-    shadowJar {
-        exclude("architectury.common.json")
-        configurations = listOf(project.configurations["shadowCommon"])
-        archiveClassifier = "dev-shadow"
-    }
-
-    remapJar {
-        injectAccessWidener = true
-        inputFile.set(shadowJar.flatMap { it.archiveFile })
-        dependsOn(shadowJar)
-    }
-
-    withType<JavaCompile> {
+    withType<JavaCompile>().configureEach {
+        source(project(":xplat").sourceSets.main.map { it.allSource })
         options.encoding = "UTF-8"
-        options.release.set(17)
+        val java_version: String by project
+        options.release.set(java_version.toInt())
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-
-        withJavadocJar()
-        withSourcesJar()
-    }
-
-    jar {
+    jar.configure {
         from(rootProject.file("LICENSE")) {
             rename { "${it}_${archives_base_name}" }
         }
     }
 
-    javadoc {
-        source(project(":xplat").sourceSets.main.get().allJava)
+    named("sourcesJar", Jar::class).configure {
+        from(project(":xplat").sourceSets.main.map { it.allSource })
+        from(rootProject.file("LICENSE")) {
+            rename { "${it}_${rootProject.name}" }
+        }
+    }
+
+    javadoc.configure {
+        source(project(":xplat").sourceSets.main.map { it.allJava })
         exclude("com/kneelawk/knet/impl")
         exclude("com/kneelawk/knet/fabric/impl")
 
@@ -124,14 +106,8 @@ tasks {
         options.optionFiles(rootProject.file("javadoc-options.txt"))
     }
 
-    named("sourcesJar", Jar::class) {
-        val xplatSources = project(":xplat").tasks.named("sourcesJar", Jar::class)
-        dependsOn(xplatSources)
-        from(xplatSources.flatMap { task -> task.archiveFile.map { zipTree(it) } })
-    }
-
     afterEvaluate {
-        named("genSources") {
+        named("genSources").configure {
             setDependsOn(listOf("genSourcesWithVineflower"))
         }
     }
@@ -140,6 +116,7 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
+            artifactId = "${rootProject.name}-${project.name}"
             from(components["java"])
         }
     }

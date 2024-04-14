@@ -1,6 +1,4 @@
 plugins {
-    `maven-publish`
-    id("architectury-plugin")
     id("dev.architectury.loom")
     id("com.kneelawk.versioning")
 }
@@ -15,11 +13,6 @@ base {
 
 loom {
     accessWidenerPath.set(file("src/main/resources/knet_example.accesswidener"))
-}
-
-architectury {
-    val enabled_platforms: String by project
-    common(enabled_platforms.split(','))
 }
 
 repositories {
@@ -49,8 +42,17 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 }
 
+java {
+    val java_version: String by project
+    val javaVersion = JavaVersion.toVersion(java_version)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+
+    withSourcesJar()
+}
+
 tasks {
-    processResources {
+    processResources.configure {
         inputs.property("version", project.version)
 
         filesMatching("quilt.mod.json") {
@@ -60,31 +62,30 @@ tasks {
             expand(mapOf("version" to project.version))
         }
     }
-
-    withType<JavaCompile> {
+    withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        options.release.set(17)
+        val java_version: String by project
+        options.release.set(java_version.toInt())
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-
-        withSourcesJar()
-    }
-
-    jar {
+    jar.configure {
         from(rootProject.file("LICENSE")) {
             rename { "${it}_${archives_base_name}" }
         }
     }
 
-    test {
+    named("sourcesJar", Jar::class).configure {
+        from(rootProject.file("LICENSE")) {
+            rename { "${it}_${rootProject.name}" }
+        }
+    }
+
+    test.configure {
         useJUnit()
     }
 
     afterEvaluate {
-        named("genSources") {
+        named("genSources").configure {
             setDependsOn(listOf("genSourcesWithVineflower"))
         }
     }

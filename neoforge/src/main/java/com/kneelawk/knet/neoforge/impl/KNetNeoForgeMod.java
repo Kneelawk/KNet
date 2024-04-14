@@ -28,17 +28,13 @@ package com.kneelawk.knet.neoforge.impl;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
 
-import org.slf4j.Logger;
-
-import com.mojang.logging.LogUtils;
-
 import com.kneelawk.knet.impl.KNetImpl;
 import com.kneelawk.knet.impl.KNetLog;
 
 @Mod(KNetImpl.MOD_ID)
 public class KNetNeoForgeMod {
     public KNetNeoForgeMod() {
-        KNetLog.LOG.info("Initializing KNet " +
-            FMLLoader.getLoadingModList().getModFileById(KNetImpl.MOD_ID).getMods().get(0).getVersion());
+        KNetLog.LOG.info("Initializing KNet {}",
+            FMLLoader.getLoadingModList().getModFileById(KNetImpl.MOD_ID).versionString());
     }
 }

@@ -70,7 +70,7 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifactId = "${parent!!.name}-${project.name}"
+            artifactId = "${rootProject.name}-${parent!!.name}-${project.name}"
             artifact(mojmapJar) {
                 builtBy(mojmapJar)
                 classifier = ""

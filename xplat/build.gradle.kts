@@ -1,6 +1,5 @@
 plugins {
     `maven-publish`
-    id("architectury-plugin")
     id("dev.architectury.loom")
     id("com.kneelawk.versioning")
 }
@@ -13,12 +12,7 @@ base {
     archivesName.set("$archives_base_name-${project.name}-intermediary")
 }
 
-java.docsDir.set(rootProject.layout.buildDirectory.map { it.dir("docs").dir("${rootProject.name}-${project.name}") })
-
-architectury {
-    val enabled_platforms: String by project
-    common(enabled_platforms.split(','))
-}
+java.docsDir.set(rootProject.layout.buildDirectory.map { it.dir("docs").dir(project.name) })
 
 repositories {
     mavenCentral()
@@ -39,13 +33,22 @@ dependencies {
     // Fabric Loader
     val fabric_loader_version: String by project
     modCompileOnly("net.fabricmc:fabric-loader:$fabric_loader_version")
-    modLocalRuntime("net.fabricmc:fabric-loader:$fabric_loader_version")
 
     testImplementation("junit:junit:4.13.2")
 }
 
+java {
+    val java_version: String by project
+    val javaVersion = JavaVersion.toVersion(java_version)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+
+    withJavadocJar()
+    withSourcesJar()
+}
+
 tasks {
-    processResources {
+    processResources.configure {
         inputs.property("version", project.version)
 
         filesMatching("quilt.mod.json") {
@@ -56,26 +59,25 @@ tasks {
         }
     }
 
-    withType<JavaCompile> {
+    withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        options.release.set(17)
+        val java_version: String by project
+        options.release.set(java_version.toInt())
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-
-        withJavadocJar()
-        withSourcesJar()
-    }
-
-    jar {
+    jar.configure {
         from(rootProject.file("LICENSE")) {
             rename { "${it}_${archives_base_name}" }
         }
     }
 
-    javadoc {
+    named("sourcesJar", Jar::class).configure {
+        from(rootProject.file("LICENSE")) {
+            rename { "${it}_${rootProject.name}" }
+        }
+    }
+
+    javadoc.configure {
         exclude("com/kneelawk/knet/impl")
 
         val yarn_mappings: String by project
@@ -89,12 +91,12 @@ tasks {
         options.optionFiles(rootProject.file("javadoc-options.txt"))
     }
 
-    test {
+    test.configure {
         useJUnit()
     }
 
     afterEvaluate {
-        named("genSources") {
+        named("genSources").configure {
             setDependsOn(listOf("genSourcesWithVineflower"))
         }
     }
@@ -103,7 +105,7 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifactId = "${project.name}-intermediary"
+            artifactId = "${rootProject.name}-${project.name}-intermediary"
             from(components["java"])
         }
     }

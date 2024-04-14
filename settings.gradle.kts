@@ -15,23 +15,15 @@ pluginManagement {
         gradlePluginPortal()
     }
     plugins {
-        val loom_version: String by settings
-        id("fabric-loom") version loom_version
-        val architectury_version: String by settings
-        id("architectury-plugin") version architectury_version
         val architectury_loom_version: String by settings
         id("dev.architectury.loom") version architectury_loom_version
-        val shadow_version: String by settings
-        id("com.github.johnrengelman.shadow") version shadow_version
     }
 }
 
 include(":xplat")
+include(":xplat:mojmap")
 include(":fabric")
 include(":neoforge")
-
-include(":xplat:mojmap")
-project(":xplat:mojmap").projectDir = file("xplat/mojmap")
 
 include(":example-xplat")
 project(":example-xplat").projectDir = file("example/xplat")

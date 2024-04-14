@@ -1,8 +1,5 @@
 plugins {
-    `maven-publish`
-    id("architectury-plugin")
     id("dev.architectury.loom")
-    id("com.github.johnrengelman.shadow")
     id("com.kneelawk.versioning")
 }
 
@@ -22,23 +19,14 @@ loom {
     accessWidenerPath = project(":example-xplat").loom.accessWidenerPath
 
     runs {
-        named("client") {
+        named("client").configure {
+            ideConfigGenerated(true)
             programArgs("--width", "1280", "--height", "720")
         }
+        named("server").configure {
+            ideConfigGenerated(true)
+        }
     }
-}
-
-architectury {
-    platformSetupLoomIde()
-    neoForge()
-}
-
-configurations {
-    val common = create("common")
-    create("shadowCommon")
-    getByName("compileClasspath").extendsFrom(common)
-    getByName("runtimeClasspath").extendsFrom(common)
-    getByName("developmentNeoForge").extendsFrom(common)
 }
 
 repositories {
@@ -58,21 +46,30 @@ dependencies {
     val neoforge_version: String by project
     neoForge("net.neoforged:neoforge:$neoforge_version")
 
-    "common"(project(path = ":example-xplat", configuration = "namedElements")) { isTransitive = false }
-    "shadowCommon"(project(path = ":example-xplat", configuration = "transformProductionNeoForge")) {
-        isTransitive = false
-    }
+    compileOnly(project(path = ":example-xplat", configuration = "namedElements"))
 
     // KNet
-    compileOnly(project(":xplat", configuration = "namedElements"))
     compileOnly(project(":neoforge", configuration = "namedElements"))
     runtimeOnly(project(":neoforge", configuration = "dev"))
     include(project(":neoforge"))
+
+    testCompileOnly(project(":neoforge", configuration = "namedElements"))
+    testRuntimeOnly(project(":neoforge", configuration = "dev"))
+}
+
+java {
+    val java_version: String by project
+    val javaVersion = JavaVersion.toVersion(java_version)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+
+    withSourcesJar()
+    withJavadocJar()
 }
 
 tasks {
-    processResources {
-        from(project(":example-xplat").sourceSets.main.map { it.resources.asFileTree })
+    processResources.configure {
+        from(project(":example-xplat").sourceSets.main.map { it.resources })
 
         inputs.property("version", project.version)
 
@@ -81,40 +78,24 @@ tasks {
         }
     }
 
-    shadowJar {
-        exclude("architectury.common.json")
-        configurations = listOf(project.configurations["shadowCommon"])
-        archiveClassifier = "dev-shadow"
-    }
-
-    remapJar {
-        injectAccessWidener = true
-        inputFile.set(shadowJar.flatMap { it.archiveFile })
-        dependsOn(shadowJar)
-    }
-
-    withType<JavaCompile> {
+    withType<JavaCompile>().configureEach {
+        source(project(":example-xplat").sourceSets.main.map { it.allSource })
         options.encoding = "UTF-8"
-        options.release.set(17)
+        val java_version: String by project
+        options.release.set(java_version.toInt())
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-
-        withSourcesJar()
-    }
-
-    jar {
+    jar.configure {
         from(rootProject.file("LICENSE")) {
             rename { "${it}_${archives_base_name}" }
         }
     }
 
-    named("sourcesJar", Jar::class) {
-        val xplatSources = project(":example-xplat").tasks.named("sourcesJar", Jar::class)
-        dependsOn(xplatSources)
-        from(xplatSources.flatMap { task -> task.archiveFile.map { zipTree(it) } })
+    named("sourcesJar", Jar::class).configure {
+        from(project(":example-xplat").sourceSets.main.map { it.allSource })
+        from(rootProject.file("LICENSE")) {
+            rename { "${it}_${rootProject.name}" }
+        }
     }
 
     afterEvaluate {
