@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
-import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 
 /**
  * Like a {@link ChildPlayChannelContext}, wrapping another channel context, extracting more detailed context from it.
@@ -60,12 +60,12 @@ public class SimpleChildPlayChannelContext<PARENT, CHILD> implements PlayChannel
     }
 
     @Override
-    public @NotNull Object decodePayload(@NotNull NetByteBuf buf) {
+    public @NotNull Object decodePayload(@NotNull RegistryNetByteBuf buf) {
         return parentChannelContext.decodePayload(buf);
     }
 
     @Override
-    public void encodePayload(@NotNull Object payload, @NotNull NetByteBuf buf) {
+    public void encodePayload(@NotNull Object payload, @NotNull RegistryNetByteBuf buf) {
         parentChannelContext.encodePayload(payload, buf);
     }
 

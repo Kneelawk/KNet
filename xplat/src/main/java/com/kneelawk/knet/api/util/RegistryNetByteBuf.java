@@ -28,6 +28,7 @@ package com.kneelawk.knet.api.util;
 import java.util.function.Function;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
@@ -38,6 +39,51 @@ import net.minecraft.registry.DynamicRegistryManager;
  * A {@link NetByteBuf} bound to a particular {@link DynamicRegistryManager} instance.
  */
 public class RegistryNetByteBuf extends NetByteBuf {
+    /**
+     * Creates a new {@link RegistryNetByteBuf} without any initial capacity.
+     *
+     * @param registryManager the registry manager to attach to the buffer.
+     * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
+     */
+    public static RegistryNetByteBuf buffer(DynamicRegistryManager registryManager) {
+        return asNetByteBuf(Unpooled.buffer(), registryManager);
+    }
+
+    /**
+     * Creates a new {@link RegistryNetByteBuf} without any initial capacity.
+     *
+     * @param initialCapacity the buffer's initial capacity.
+     * @param registryManager the registry manager to attach to the buffer.
+     * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
+     */
+    public static RegistryNetByteBuf buffer(int initialCapacity, DynamicRegistryManager registryManager) {
+        return asNetByteBuf(Unpooled.buffer(initialCapacity), registryManager);
+    }
+
+    /**
+     * Creates a new {@link RegistryNetByteBuf} without any initial capacity.
+     *
+     * @param passthrough     whether to disable optimizations.
+     * @param registryManager the registry manager to attach to the buffer.
+     * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
+     */
+    public static RegistryNetByteBuf buffer(boolean passthrough, DynamicRegistryManager registryManager) {
+        return asNetByteBuf(Unpooled.buffer(), passthrough, registryManager);
+    }
+
+    /**
+     * Creates a new {@link RegistryNetByteBuf} without any initial capacity.
+     *
+     * @param initialCapacity the buffer's initial capacity.
+     * @param passthrough     whether to disable optimizations.
+     * @param registryManager the registry manager to attach to the buffer.
+     * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
+     */
+    public static RegistryNetByteBuf buffer(int initialCapacity, boolean passthrough,
+                                            DynamicRegistryManager registryManager) {
+        return asNetByteBuf(Unpooled.buffer(initialCapacity), passthrough, registryManager);
+    }
+
     /**
      * Returns the given {@link RegistryByteBuf} as a {@link NetByteBuf}.
      *

@@ -31,24 +31,19 @@ import net.minecraft.network.packet.CustomPayload;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 
 /**
- * A channel that can be registered with a platform.
+ * A channel that can be used during the 'play' phase and that can be registered with a platform.
  */
-public interface PlayChannel {
-    /**
-     * Gets this channel's id.
-     *
-     * @return this channel's id.
-     */
-    CustomPayload.Id<? extends CustomPayload> getId();
+public interface PlayChannel extends Channel {
 
     /**
      * Gets this channel's payload reader.
      *
      * @return this channel's payload reader.
      */
-    PacketCodec<? super NetByteBuf, ? extends CustomPayload> getCodec();
+    PacketCodec<? super RegistryNetByteBuf, ? extends CustomPayload> getCodec();
 
     /**
      * Called by net-util platform code when this channel receives a payload on the client-side.
@@ -67,22 +62,4 @@ public interface PlayChannel {
      * @throws PayloadHandlingException if an error occurred while handling the payload.
      */
     void handleServerPayload(CustomPayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException;
-
-    /**
-     * Gets whether this channel receives payloads on the server.
-     * <p>
-     * Note: channels can receive on both server and client.
-     *
-     * @return {@code true} if this channel receives on the server.
-     */
-    boolean isToServer();
-
-    /**
-     * Gets whether this channel receives payloads on the client.
-     * <p>
-     * Note: channels can receive on both server and client.
-     *
-     * @return {@code true} if this channel receives on the client.
-     */
-    boolean isToClient();
 }

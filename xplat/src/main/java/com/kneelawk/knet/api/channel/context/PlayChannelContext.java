@@ -32,6 +32,7 @@ import net.minecraft.network.codec.PacketCodec;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 
 /**
  * Describes something capable of supplying context to a channel.
@@ -45,7 +46,7 @@ public interface PlayChannelContext<C> {
      * @param buf the buffer to decode from.
      * @return the newly decoded payload.
      */
-    @NotNull Object decodePayload(@NotNull NetByteBuf buf);
+    @NotNull Object decodePayload(@NotNull RegistryNetByteBuf buf);
 
     /**
      * Encodes a payload to a buffer.
@@ -53,7 +54,7 @@ public interface PlayChannelContext<C> {
      * @param payload the payload to encodel
      * @param buf     the buffer to write to.
      */
-    void encodePayload(@NotNull Object payload, @NotNull NetByteBuf buf);
+    void encodePayload(@NotNull Object payload, @NotNull RegistryNetByteBuf buf);
 
     /**
      * Finds a context using a previously decoded payload.
