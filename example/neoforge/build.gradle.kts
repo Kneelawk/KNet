@@ -33,6 +33,7 @@ repositories {
     mavenCentral()
     maven("https://maven.quiltmc.org/repository/release") { name = "Quilt" }
     maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
+    maven("https://maven.firstdark.dev/snapshots") { name = "FirstDark" }
 
     mavenLocal()
 }
@@ -41,7 +42,10 @@ dependencies {
     val minecraft_version: String by project
     minecraft("com.mojang:minecraft:$minecraft_version")
     val yarn_mappings: String by project
-    mappings("net.fabricmc:yarn:$yarn_mappings:v2")
+    mappings(loom.layered {
+        mappings("net.fabricmc:yarn:$yarn_mappings:v2")
+        mappings(rootProject.file("mappings/neoforge-fix.tiny"))
+    })
 
     val neoforge_version: String by project
     neoForge("net.neoforged:neoforge:$neoforge_version")

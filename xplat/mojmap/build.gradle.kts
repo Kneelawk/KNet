@@ -59,11 +59,18 @@ tasks {
         dependsOn(mojmapSourcesJar)
     }
 
-    remapJar {
+    remapJar.configure {
         archiveClassifier.set("remapJar-disabled")
     }
-    remapSourcesJar {
+
+    remapSourcesJar.configure {
         archiveClassifier.set("remapSourcesJar-disabled")
+    }
+
+    afterEvaluate {
+        named("genSources").configure {
+            setDependsOn(listOf("genSourcesWithVineflower"))
+        }
     }
 }
 

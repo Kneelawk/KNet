@@ -41,7 +41,10 @@ dependencies {
     val minecraft_version: String by project
     minecraft("com.mojang:minecraft:$minecraft_version")
     val yarn_mappings: String by project
-    mappings("net.fabricmc:yarn:$yarn_mappings:v2")
+    mappings(loom.layered {
+        mappings("net.fabricmc:yarn:$yarn_mappings:v2")
+        mappings(rootProject.file("mappings/neoforge-fix.tiny"))
+    })
 
     // Using modCompileOnly & modLocalRuntime so that these dependencies don't get brought into any projects that depend
     // on this one.
