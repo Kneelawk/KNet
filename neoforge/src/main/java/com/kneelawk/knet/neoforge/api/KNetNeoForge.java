@@ -29,6 +29,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
@@ -37,6 +38,7 @@ import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.neoforge.impl.NeoForgePlayPayloadHandlingContext;
 
@@ -58,7 +60,7 @@ public class KNetNeoForge {
     @SuppressWarnings("unchecked")
     public static void registerPlay(IPayloadRegistrar registrar, PlayChannel channel) {
         registrar.play((CustomPayload.Id<CustomPayload>) channel.getId(),
-            (PacketCodec<PacketByteBuf, CustomPayload>) NetByteBuf.netCodec(channel.getCodec()), handler -> {
+            (PacketCodec<RegistryByteBuf, CustomPayload>) RegistryNetByteBuf.registryCodec(channel.getCodec()), handler -> {
                 if (channel.isToServer()) {
                     handler.server((payload, ctx) -> {
                         try {
