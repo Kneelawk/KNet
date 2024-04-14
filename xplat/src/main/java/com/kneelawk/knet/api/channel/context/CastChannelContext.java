@@ -35,22 +35,22 @@ import com.kneelawk.knet.api.util.NetByteBuf;
 /**
  * Creates a channel context that casts the parent into the child.
  *
- * @param <CHILD>  the child to cast into.
- * @param <PARENT> the parent to cast from.
+ * @param <TO>  the child to cast into.
+ * @param <FROM> the parent to cast from.
  */
-public class CastChannelContext<PARENT, CHILD extends PARENT> implements ChannelContext<CHILD> {
-    private final ChannelContext<PARENT> parentChannelContext;
-    private final Class<CHILD> childClass;
+public class CastChannelContext<FROM, TO> implements ChannelContext<TO> {
+    private final ChannelContext<FROM> parentChannelContext;
+    private final Class<TO> toClass;
 
     /**
      * Creates a new channel context that casts the parent into the child.
      *
      * @param parentChannelContext the parent channel context.
-     * @param childClass           the class of the child to cast into.
+     * @param toClass           the class of the child to cast into.
      */
-    public CastChannelContext(@NotNull ChannelContext<PARENT> parentChannelContext, @NotNull Class<CHILD> childClass) {
+    public CastChannelContext(@NotNull ChannelContext<FROM> parentChannelContext, @NotNull Class<TO> toClass) {
         this.parentChannelContext = parentChannelContext;
-        this.childClass = childClass;
+        this.toClass = toClass;
     }
 
     @Override
@@ -64,20 +64,21 @@ public class CastChannelContext<PARENT, CHILD extends PARENT> implements Channel
     }
 
     @Override
-    public @NotNull CHILD decodeContext(@NotNull Object payload, @NotNull PayloadHandlingContext ctx)
+    public @NotNull TO decodeContext(@NotNull Object payload, @NotNull PayloadHandlingContext ctx)
         throws PayloadHandlingException {
-        PARENT parent = parentChannelContext.decodeContext(payload, ctx);
+        FROM from = parentChannelContext.decodeContext(payload, ctx);
         try {
-            return childClass.cast(parent);
+            return toClass.cast(from);
         } catch (ClassCastException e) {
             throw new PayloadHandlingErrorException(
-                "Channel context cast failed. Tried to context into: " + childClass + ", but was: " + parent.getClass(),
+                "Channel context cast failed. Tried to context into: " + toClass + ", but was: " + from.getClass(),
                 e);
         }
     }
 
     @Override
-    public @NotNull Object encodeContext(@NotNull CHILD context) {
-        return parentChannelContext.encodeContext(context);
+    @SuppressWarnings("unchecked") // not technically safe, but whatever
+    public @NotNull Object encodeContext(@NotNull TO context) {
+        return parentChannelContext.encodeContext((FROM) context);
     }
 }
