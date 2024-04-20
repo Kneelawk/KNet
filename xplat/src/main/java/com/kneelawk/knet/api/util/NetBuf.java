@@ -243,6 +243,8 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * This method is identical to {@code buf.copy(buf.readerIndex(), buf.readableBytes())}.
      * This method does not modify {@code readerIndex} or {@code writerIndex} of
      * this buffer.
+     *
+     * @return a copy of this buffer.
      */
     ByteBuf copy();
 
@@ -268,6 +270,8 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * Please note that the behavior of this method is different
      * from that of NIO buffer, which sets the {@code limit} to
      * the {@code capacity} of the buffer.
+     *
+     * @return this buffer.
      */
     PacketByteBuf clear();
 
@@ -276,6 +280,8 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * reposition the current {@code readerIndex} to the marked
      * {@code readerIndex} by calling {@link #resetReaderIndex()}.
      * The initial value of the marked {@code readerIndex} is {@code 0}.
+     *
+     * @return this buffer.
      */
     PacketByteBuf markReaderIndex();
 
@@ -283,6 +289,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * Repositions the current {@code readerIndex} to the marked
      * {@code readerIndex} in this buffer.
      *
+     * @return this buffer.
      * @throws IndexOutOfBoundsException if the current {@code writerIndex} is less than the marked
      *                                   {@code readerIndex}
      */
@@ -308,6 +315,9 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * Writes a single boolean out to some position in this buffer. The boolean flag might be written to a new byte
      * (increasing the writerIndex) or it might be added to an existing byte that was written with a previous call to
      * this method.
+     *
+     * @param flag the boolean to write.
+     * @return this buffer.
      */
     PacketByteBuf writeBoolean(boolean flag);
 
@@ -315,6 +325,8 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * Reads a single boolean from some position in this buffer. The boolean flag might be read from a new byte
      * (increasing the readerIndex) or it might be read from a previous byte that was read with a previous call to this
      * method.
+     *
+     * @return the read boolean.
      */
     boolean readBoolean();
 
@@ -337,14 +349,32 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      */
     int readFixedBits(int length) throws IllegalArgumentException;
 
+    /**
+     * Writes an enum constant to this buf. An enum constant is represented
+     * by a var int indicating its ordinal.
+     *
+     * @param value the enum constant to write.
+     * @return this buf, for chaining.
+     * @see #readEnumConstant(Class)
+     */
     PacketByteBuf writeEnumConstant(Enum<?> value);
 
+    /**
+     * Reads an enum constant from this buf. An enum constant is represented
+     * by a var int indicating its ordinal.
+     *
+     * @param enumClass the enum class, for constant lookup.
+     * @param <E>       the type of enum to read.
+     * @return the read enum constant.
+     * @see #writeEnumConstant(Enum)
+     */
     <E extends Enum<E>> E readEnumConstant(Class<E> enumClass);
 
     /**
      * Writes out a {@link BlockPos} using 3 {@link #writeVarInt(int)}s rather than {@link BlockPos#asLong()}.
      *
      * @param pos the block position to write.
+     * @return this buffer.
      */
     PacketByteBuf writeBlockPos(BlockPos pos);
 
@@ -478,6 +508,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * @param value  the optional value to write.
      * @param writer the packet writer capable of writing the value.
      * @param <T>    the type this method optionally writes.
+     * @return this buffer.
      * @see #readNetOptional(PacketDecoder)
      */
     <T> B writeNetOptional(Optional<T> value, PacketEncoder<? super B, T> writer);
@@ -502,8 +533,16 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
          * The saved reader index.
          */
         public final int readerIndex;
-        final int readPartialOffset;
-        final int readPartialCache;
+
+        /**
+         * the saved reader index within the partial byte.
+         */
+        public final int readPartialOffset;
+
+        /**
+         * The saved value of the partial byte.
+         */
+        public final int readPartialCache;
 
         /**
          * Creates a SavedReaderIndex using the current state of the buffer.
