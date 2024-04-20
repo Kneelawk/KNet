@@ -28,7 +28,7 @@ package com.kneelawk.knet.api.handling;
 /**
  * Exception thrown when a payload cannot be handled.
  */
-public abstract class PayloadHandlingException extends Exception {
+public abstract class PayloadHandlingException extends RuntimeException {
     /**
      * Creates an empty payload handling exception.
      */
