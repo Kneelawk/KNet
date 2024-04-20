@@ -37,7 +37,9 @@ dependencies {
     val fabric_loader_version: String by project
     modCompileOnly("net.fabricmc:fabric-loader:$fabric_loader_version")
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 java {
@@ -95,7 +97,10 @@ tasks {
     }
 
     test.configure {
-        useJUnit()
+        useJUnitPlatform()
+        testLogging { 
+            events("passed", "skipped", "failed")
+        }
     }
 
     afterEvaluate {
