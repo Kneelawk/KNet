@@ -34,6 +34,7 @@ repositories {
     maven("https://maven.quiltmc.org/repository/release") { name = "Quilt" }
     maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
     maven("https://maven.firstdark.dev/snapshots") { name = "FirstDark" }
+    maven("https://kneelawk.com/maven") { name = "Kneelawk" }
 
     mavenLocal()
 }
@@ -57,6 +58,10 @@ dependencies {
     compileOnly(project(":neoforge", configuration = "namedElements"))
     runtimeOnly(project(":neoforge", configuration = "dev"))
     include(project(":neoforge"))
+
+    // :neoforge:dev doesn't export deps
+    val common_events_version: String by project
+    modRuntimeOnly("com.kneelawk:common-events-neoforge:$common_events_version")
 
     testCompileOnly(project(":neoforge", configuration = "namedElements"))
     testRuntimeOnly(project(":neoforge", configuration = "dev"))

@@ -17,6 +17,7 @@ java.docsDir.set(rootProject.layout.buildDirectory.map { it.dir("docs").dir(proj
 repositories {
     mavenCentral()
     maven("https://maven.quiltmc.org/repository/release") { name = "Quilt" }
+    maven("https://kneelawk.com/maven") { name = "Kneelawk" }
 
     mavenLocal()
 }
@@ -36,6 +37,10 @@ dependencies {
     // Fabric Loader
     val fabric_loader_version: String by project
     modCompileOnly("net.fabricmc:fabric-loader:$fabric_loader_version")
+    
+    // Common Events
+    val common_events_version: String by project
+    modApi("com.kneelawk:common-events-xplat-intermediary:$common_events_version")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")

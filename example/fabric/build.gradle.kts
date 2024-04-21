@@ -33,6 +33,7 @@ repositories {
     mavenCentral()
     maven("https://maven.quiltmc.org/repository/release") { name = "Quilt" }
     maven("https://maven.terraformersmc.com/releases/") { name = "TerraformersMC" }
+    maven("https://kneelawk.com/maven") { name = "Kneelawk" }
 
     mavenLocal()
 }
