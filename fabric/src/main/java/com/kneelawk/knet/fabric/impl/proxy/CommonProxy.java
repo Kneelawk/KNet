@@ -40,7 +40,7 @@ import net.minecraft.text.Text;
 import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
-import com.kneelawk.knet.api.util.RegistryNetByteBuf;
+import com.kneelawk.knet.api.util.NetBufs;
 import com.kneelawk.knet.fabric.impl.FabricPlayPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
 
@@ -74,11 +74,11 @@ public class CommonProxy {
         if (channel.isToClient()) {
             // payload types should be registered on both client and server
             PayloadTypeRegistry.playS2C().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) RegistryNetByteBuf.registryCodec(channel.getCodec()));
+                (PacketCodec<RegistryByteBuf, CustomPayload>) NetBufs.regNetToVanillaCodec(channel.getCodec()));
         }
         if (channel.isToServer()) {
             PayloadTypeRegistry.playC2S().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) RegistryNetByteBuf.registryCodec(channel.getCodec()));
+                (PacketCodec<RegistryByteBuf, CustomPayload>) NetBufs.regNetToVanillaCodec(channel.getCodec()));
             ServerPlayNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
                     channel.handleServerPayload(payload, new FabricPlayPayloadHandlingContext(ctx));

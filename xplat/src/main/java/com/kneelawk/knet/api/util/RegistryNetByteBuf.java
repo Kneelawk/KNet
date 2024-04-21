@@ -25,18 +25,28 @@
 
 package com.kneelawk.knet.api.util;
 
-import java.util.function.Function;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.DynamicRegistryManager;
 
 /**
- * A {@link NetByteBuf} bound to a particular {@link DynamicRegistryManager} instance.
+ * A {@link NetByteBuf} bound to a particular {@link DynamicRegistryManager} instance. This buffer is like a
+ * {@link NetRegistryByteBuf} except it extends {@link NetByteBuf} instead of {@link RegistryByteBuf}.
+ * <p>
+ * Class hierarchy:
+ * <pre>
+ *               {@link PacketByteBuf}
+ *                 /         \
+ *   {@link RegistryByteBuf}      {@link NetByteBuf}
+ *              |               |
+ * {@link NetRegistryByteBuf}&lt;-&gt;{@link RegistryNetByteBuf}
+ * </pre>
+ *
+ * @see NetByteBuf
+ * @see NetRegistryByteBuf
  */
 public class RegistryNetByteBuf extends NetByteBuf {
     /**
@@ -46,7 +56,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
      */
     public static RegistryNetByteBuf buffer(DynamicRegistryManager registryManager) {
-        return asNetByteBuf(Unpooled.buffer(), registryManager);
+        return of(Unpooled.buffer(), registryManager);
     }
 
     /**
@@ -57,7 +67,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
      */
     public static RegistryNetByteBuf buffer(int initialCapacity, DynamicRegistryManager registryManager) {
-        return asNetByteBuf(Unpooled.buffer(initialCapacity), registryManager);
+        return of(Unpooled.buffer(initialCapacity), registryManager);
     }
 
     /**
@@ -68,7 +78,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
      */
     public static RegistryNetByteBuf buffer(boolean passthrough, DynamicRegistryManager registryManager) {
-        return asNetByteBuf(Unpooled.buffer(), passthrough, registryManager);
+        return of(Unpooled.buffer(), passthrough, registryManager);
     }
 
     /**
@@ -81,7 +91,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      */
     public static RegistryNetByteBuf buffer(int initialCapacity, boolean passthrough,
                                             DynamicRegistryManager registryManager) {
-        return asNetByteBuf(Unpooled.buffer(initialCapacity), passthrough, registryManager);
+        return of(Unpooled.buffer(initialCapacity), passthrough, registryManager);
     }
 
     /**
@@ -90,18 +100,8 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @param buf the buffer to be converted into a {@link NetByteBuf}.
      * @return the given buffer as a {@link NetByteBuf}.
      */
-    public static RegistryNetByteBuf asNetByteBuf(RegistryByteBuf buf) {
-        return asNetByteBuf(buf, false);
-    }
-
-    /**
-     * Returns the given {@link RegistryByteBuf} as a {@link NetByteBuf} but with passthrough enabled.
-     *
-     * @param buf the buffer to be converted into a {@link NetByteBuf}.
-     * @return the given buffer as a {@link NetByteBuf}.
-     */
-    public static RegistryNetByteBuf asPassthroughNetByteBuf(RegistryByteBuf buf) {
-        return asNetByteBuf(buf, true);
+    public static RegistryNetByteBuf of(RegistryByteBuf buf) {
+        return of(buf, false);
     }
 
     /**
@@ -111,7 +111,28 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @param passthrough whether to disable optimizations on the resulting buffer.
      * @return the given buffer as a {@link NetByteBuf}.
      */
-    public static RegistryNetByteBuf asNetByteBuf(RegistryByteBuf buf, boolean passthrough) {
+    public static RegistryNetByteBuf of(RegistryByteBuf buf, boolean passthrough) {
+        return new RegistryNetByteBuf(buf, passthrough, buf.getRegistryManager());
+    }
+
+    /**
+     * Returns the given {@link NetRegistryByteBuf} as a {@link NetByteBuf}.
+     *
+     * @param buf the buffer to be converted into a {@link NetByteBuf}.
+     * @return the given buffer as a {@link NetByteBuf}.
+     */
+    public static RegistryNetByteBuf of(NetRegistryByteBuf buf) {
+        return of(buf, false);
+    }
+
+    /**
+     * Returns the given {@link NetRegistryByteBuf} as a {@link NetByteBuf}.
+     *
+     * @param buf         the buffer to be converted into a {@link NetByteBuf}.
+     * @param passthrough whether to disable optimizations.
+     * @return the given buffer as a {@link NetByteBuf}.
+     */
+    public static RegistryNetByteBuf of(NetRegistryByteBuf buf, boolean passthrough) {
         return new RegistryNetByteBuf(buf, passthrough, buf.getRegistryManager());
     }
 
@@ -122,20 +143,8 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @param registryManager the registry manager to attach.
      * @return the given buffer as a {@link RegistryNetByteBuf}.
      */
-    public static RegistryNetByteBuf asNetByteBuf(ByteBuf buf, DynamicRegistryManager registryManager) {
-        return asNetByteBuf(buf, false, registryManager);
-    }
-
-    /**
-     * Returns the given {@link ByteBuf} as a {@link RegistryNetByteBuf}, attaching a registry manager, but with
-     * passthrough enabled.
-     *
-     * @param buf             the buffer to be converted into a {@link RegistryNetByteBuf}.
-     * @param registryManager the registry manager to attach.
-     * @return the given buffer as a {@link RegistryNetByteBuf}.
-     */
-    public static RegistryNetByteBuf asPassthroughNetByteBuf(ByteBuf buf, DynamicRegistryManager registryManager) {
-        return asNetByteBuf(buf, true, registryManager);
+    public static RegistryNetByteBuf of(ByteBuf buf, DynamicRegistryManager registryManager) {
+        return of(buf, false, registryManager);
     }
 
     /**
@@ -147,100 +156,13 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @param registryManager the registry manager to attach.
      * @return the given buffer as a {@link RegistryNetByteBuf}.
      */
-    public static RegistryNetByteBuf asNetByteBuf(ByteBuf buf, boolean passthrough,
-                                                  DynamicRegistryManager registryManager) {
+    public static RegistryNetByteBuf of(ByteBuf buf, boolean passthrough, DynamicRegistryManager registryManager) {
         if (buf instanceof RegistryNetByteBuf registryNetBuf && registryNetBuf.passthrough == passthrough &&
             registryNetBuf.registryManager == registryManager) {
             return registryNetBuf;
         } else {
             return new RegistryNetByteBuf(buf, passthrough, registryManager);
         }
-    }
-
-    /**
-     * Creates a function that wraps a {@link ByteBuf}, attaching the given registry manager.
-     *
-     * @param registryManager the registry manager to attach.
-     * @return function that wraps any {@link ByteBuf} that is passed to it.
-     */
-    public static Function<ByteBuf, RegistryNetByteBuf> makeFactory(DynamicRegistryManager registryManager) {
-        return buf -> asNetByteBuf(buf, registryManager);
-    }
-
-    /**
-     * Creates a {@link PacketCodec} that converts any {@link RegistryByteBuf} passed to it into a {@link RegistryNetByteBuf}.
-     *
-     * @param codec the codec that expects a {@link RegistryNetByteBuf}.
-     * @param <T>   the type the codec encodes/decodes.
-     * @return the codec that converts byte buffers.
-     */
-    public static <T> PacketCodec<RegistryByteBuf, T> registryCodec(PacketCodec<? super RegistryNetByteBuf, T> codec) {
-        return new PacketCodec<>() {
-            @Override
-            public T decode(RegistryByteBuf buf) {
-                return codec.decode(asNetByteBuf(buf));
-            }
-
-            @Override
-            public void encode(RegistryByteBuf buf, T value) {
-                codec.encode(asNetByteBuf(buf), value);
-            }
-        };
-    }
-
-    /**
-     * Creates a {@link PacketCodec} that converts a {@link RegistryNetByteBuf} back into a {@link RegistryByteBuf}.
-     *
-     * @param codec the codec that expects a {@link RegistryNetByteBuf}.
-     * @param <T>   the type the codec encodes/decodes.
-     * @return the codec that converts byte buffers.
-     */
-    public static <T> PacketCodec<RegistryNetByteBuf, T> revertRegistryCodec(
-        PacketCodec<? super RegistryByteBuf, T> codec) {
-        // Yes this loses some efficiency, but it should technically work.
-        // The better solution, having another buffer that extends RegistryByteBuf, will be a lot of work,
-        // but something I want to add before 1.0.
-        //                 PacketByteBuf
-        //                  /         \
-        //     RegistryByteBuf       NetByteBuf
-        //           |                   |
-        //   NetRegistryByteBuf<->RegistryNetByteBuf
-        // TODO: Add NetRegistryByteBuf
-        return new PacketCodec<>() {
-            @Override
-            public T decode(RegistryNetByteBuf buf) {
-                return codec.decode(new RegistryByteBuf(buf.getWrapped(), buf.registryManager));
-            }
-
-            @Override
-            public void encode(RegistryNetByteBuf buf, T value) {
-                codec.encode(new RegistryByteBuf(buf.getWrapped(), buf.registryManager), value);
-            }
-        };
-    }
-
-    /**
-     * Creates a {@link PacketCodec} that wraps any {@link PacketByteBuf} passed to it in a {@link RegistryNetByteBuf},
-     * attaching a registry manager.
-     *
-     * @param codec           the codec that expects a {@link RegistryNetByteBuf}.
-     * @param registryManager the registry manager to attach.
-     * @param <T>             the type the codec encodes/decodes.
-     * @return the codec that wraps byte buffers.
-     */
-    public static <T> PacketCodec<PacketByteBuf, T> registryCodec(PacketCodec<? super RegistryNetByteBuf, T> codec,
-                                                                  DynamicRegistryManager registryManager) {
-        return new PacketCodec<>() {
-            @Override
-            public T decode(PacketByteBuf buf) {
-                return codec.decode(asNetByteBuf(buf, registryManager));
-            }
-
-            @Override
-            public void encode(PacketByteBuf buf, T value) {
-                codec.encode(asNetByteBuf(buf, registryManager), value);
-            }
-        };
     }
 
     private final DynamicRegistryManager registryManager;

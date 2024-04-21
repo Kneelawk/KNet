@@ -1,9 +1,26 @@
 /*
- * Copyright (c) 2019 AlexIIL
+ * MIT License
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ * Copyright (c) 2024 Kneelawk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
  */
 
 package com.kneelawk.knet.api.util;
@@ -17,19 +34,16 @@ import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketDecoder;
 import net.minecraft.network.codec.PacketEncoder;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * Special {@link PacketByteBuf} class that provides methods specific to "offset" reading and writing - like writing a
- * single bit to the stream, and auto-compacting it with similar bits into a single byte.
- * <p>
- * In addition this overrides a number of existing methods (like {@link #writeBoolean(boolean)},
- * {@link #writeEnumConstant(Enum)}, {@link #writeVarInt(int)}, {@link #writeVarLong(long)}, and a few more.
+ * Special {@link PacketByteBuf} that is like a {@link RegistryNetByteBuf} but that extends {@link RegistryByteBuf}
+ * instead of {@link NetByteBuf}.
  * <p>
  * Class hierarchy:
  * <pre>
@@ -40,54 +54,131 @@ import net.minecraft.util.math.BlockPos;
  * {@link NetRegistryByteBuf}&lt;-&gt;{@link RegistryNetByteBuf}
  * </pre>
  *
+ * @see NetByteBuf
+ * @see RegistryByteBuf
  * @see RegistryNetByteBuf
- * @see NetRegistryByteBuf
  */
-public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
+public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetRegistryByteBuf> {
 
     /**
-     * An empty {@link NetByteBuf}.
-     */
-    public static final NetByteBuf EMPTY_BUFFER = new NetByteBuf(Unpooled.EMPTY_BUFFER);
-
-    /**
-     * Creates a new {@link NetByteBuf} without any initial capacity.
+     * Creates a new {@link NetRegistryByteBuf} with the given registry manager.
      *
-     * @return A new {@link NetByteBuf} from {@link Unpooled#buffer()}
+     * @param registryManager the registry manager for the new buffer.
+     * @return the new buffer.
      */
-    public static NetByteBuf buffer() {
-        return of(Unpooled.buffer());
+    public static NetRegistryByteBuf buffer(DynamicRegistryManager registryManager) {
+        return of(Unpooled.buffer(), registryManager);
     }
 
     /**
-     * Creates a new {@link NetByteBuf} with the given initial capacity.
+     * Creates a new {@link NetRegistryByteBuf} with the given registry manager.
      *
-     * @param initialCapacity the buffer's initial capacity.
-     * @return A new {@link NetByteBuf} from {@link Unpooled#buffer(int)}
-     */
-    public static NetByteBuf buffer(int initialCapacity) {
-        return of(Unpooled.buffer(initialCapacity));
-    }
-
-    /**
-     * Creates a new {@link NetByteBuf} without any initial capacity while optionally disabling optimizations.
-     *
-     * @param passthrough whether to disable optimizations.
-     * @return A new {@link NetByteBuf} from {@link Unpooled#buffer()}
-     */
-    public static NetByteBuf buffer(boolean passthrough) {
-        return of(Unpooled.buffer(), passthrough);
-    }
-
-    /**
-     * Creates a new {@link NetByteBuf} with the given initial capacity while optionally disabling optimizations.
-     *
-     * @param initialCapacity the buffer's initial capacity.
+     * @param registryManager the registry manager for the new buffer.
      * @param passthrough     whether to disable optimizations.
-     * @return A new {@link NetByteBuf} from {@link Unpooled#buffer(int)}
+     * @return the new buffer.
      */
-    public static NetByteBuf buffer(int initialCapacity, boolean passthrough) {
-        return of(Unpooled.buffer(initialCapacity), passthrough);
+    public static NetRegistryByteBuf buffer(DynamicRegistryManager registryManager, boolean passthrough) {
+        return of(Unpooled.buffer(), registryManager, passthrough);
+    }
+
+    /**
+     * Creates a new {@link NetRegistryByteBuf} with the given initial capacity and registry manager.
+     *
+     * @param initialCapacity the initial capacity of the new buffer.
+     * @param registryManager the registry manager for the new buffer.
+     * @return the new buffer.
+     */
+    public static NetRegistryByteBuf buffer(int initialCapacity, DynamicRegistryManager registryManager) {
+        return of(Unpooled.buffer(initialCapacity), registryManager);
+    }
+
+    /**
+     * Creates a new {@link NetRegistryByteBuf} with the given initial capacity and registry manager.
+     *
+     * @param initialCapacity the initial capacity of the new buffer.
+     * @param registryManager the registry manager for the new buffer.
+     * @param passthrough     whether to disable optimizations.
+     * @return the new buffer.
+     */
+    public static NetRegistryByteBuf buffer(int initialCapacity, DynamicRegistryManager registryManager,
+                                            boolean passthrough) {
+        return of(Unpooled.buffer(initialCapacity), registryManager, passthrough);
+    }
+
+    /**
+     * Wraps a {@link RegistryByteBuf} into a {@link NetRegistryByteBuf}.
+     *
+     * @param buf the original buffer.
+     * @return the wrapping buffer.
+     */
+    public static NetRegistryByteBuf of(RegistryByteBuf buf) {
+        return of(buf, false);
+    }
+
+    /**
+     * Wraps a {@link RegistryByteBuf} into a {@link NetRegistryByteBuf}, with passthrough optionally enabled.
+     *
+     * @param buf         the original buffer.
+     * @param passthrough whether to disable optimizations.
+     * @return the wrapping buffer.
+     */
+    public static NetRegistryByteBuf of(RegistryByteBuf buf, boolean passthrough) {
+        return new NetRegistryByteBuf(buf, buf.getRegistryManager(), passthrough);
+    }
+
+    /**
+     * Wraps a {@link RegistryNetByteBuf} into a {@link NetRegistryByteBuf}.
+     * <p>
+     * Note: this will not use partial bytes from the original buffer. Make sure that the wrapping happens at the same
+     * place when decoding as when encoding.
+     *
+     * @param buf the original buffer.
+     * @return the wrapping buffer.
+     */
+    public static NetRegistryByteBuf of(RegistryNetByteBuf buf) {
+        return of(buf, false);
+    }
+
+    /**
+     * Wraps a {@link RegistryNetByteBuf} into a {@link NetRegistryByteBuf}.
+     * <p>
+     * Note: this will not use partial bytes from the original buffer. Make sure that the wrapping happens at the same
+     * place when decoding as when encoding.
+     *
+     * @param buf         the original buffer.
+     * @param passthrough the
+     * @return the wrapping buffer.
+     */
+    public static NetRegistryByteBuf of(RegistryNetByteBuf buf, boolean passthrough) {
+        return new NetRegistryByteBuf(buf, buf.getRegistryManager(), passthrough);
+    }
+
+    /**
+     * Wraps a {@link ByteBuf} into a {@link NetRegistryByteBuf}, attaching the given registry manager.
+     *
+     * @param buf             the original buffer.
+     * @param registryManager the registry manager to attach.
+     * @return the wrapping buffer.
+     */
+    public static NetRegistryByteBuf of(ByteBuf buf, DynamicRegistryManager registryManager) {
+        return of(buf, registryManager, false);
+    }
+
+    /**
+     * Wraps a {@link ByteBuf} into a {@link NetRegistryByteBuf}, attaching the given registry manager and with passthrough optionally enabled.
+     *
+     * @param buf             the original buffer.
+     * @param registryManager the registry manager to attach.
+     * @param passthrough     whether to disable optimizations.
+     * @return the wrapping buffer.
+     */
+    public static NetRegistryByteBuf of(ByteBuf buf, DynamicRegistryManager registryManager, boolean passthrough) {
+        if (buf instanceof NetRegistryByteBuf regBuf && regBuf.passthrough == passthrough &&
+            regBuf.getRegistryManager() == registryManager) {
+            return regBuf;
+        } else {
+            return new NetRegistryByteBuf(buf, registryManager, passthrough);
+        }
     }
 
     // Hold on to the wrapped buffer, so we can access it when changing passthrough-ness while wrapping.
@@ -97,7 +188,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
      * If true then all {@link PacketByteBuf} override methods that this {@link NetByteBuf} optimises will instead just
      * write using the normal minecraft methods, rather than the (potentially) optimised versions.
      */
-    public final boolean passthrough;
+    private final boolean passthrough;
 
     // Byte-based flag access
     private int readPartialOffset = 8;// so it resets down to 0 and reads a byte on read
@@ -121,54 +212,16 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     private int writePartialCache;
 
     /**
-     * Creates a new {@link NetByteBuf}, wrapping the given buffer.
+     * Creates a new {@link NetRegistryByteBuf}.
      *
-     * @param wrapped the buffer this buffer writes to.
+     * @param buf             the buffer to wrap.
+     * @param registryManager the registry manager for this buffer.
+     * @param passthrough     whether to disable optimizations.
      */
-    public NetByteBuf(ByteBuf wrapped) {
-        this(wrapped, false);
-    }
-
-    /**
-     * Creates a new {@link NetByteBuf}, wrapping the given buffer an optionally disabling optimizations.
-     *
-     * @param wrapped     the buffer this buffer writes to.
-     * @param passthrough whether to disable optimizations.
-     */
-    public NetByteBuf(ByteBuf wrapped, boolean passthrough) {
-        super(wrapped);
-        this.wrapped = wrapped;
+    public NetRegistryByteBuf(ByteBuf buf, DynamicRegistryManager registryManager, boolean passthrough) {
+        super(buf, registryManager);
+        this.wrapped = buf;
         this.passthrough = passthrough;
-    }
-
-    /**
-     * Returns the given {@link ByteBuf} as {@link NetByteBuf}. If the given instance is already a {@link NetByteBuf}
-     * then the given buffer is returned (note that this may result in unexpected consequences if multiple read/write
-     * Boolean methods are called on the given buffer before you called this).
-     *
-     * @param buf the buffer to be converted into a {@link NetByteBuf}.
-     * @return the given buffer as a {@link NetByteBuf}.
-     */
-    public static NetByteBuf of(ByteBuf buf) {
-        return of(buf, false);
-    }
-
-    /**
-     * Returns the given {@link ByteBuf} as {@link NetByteBuf}, but with passthrough mode enabled. If the given
-     * instance is already a {@link NetByteBuf} then the given buffer is returned (note that this may result in
-     * unexpected consequences if multiple read/write Boolean methods are called on the given buffer before you called
-     * this).
-     *
-     * @param buf         the buffer to be converted into a {@link NetByteBuf}.
-     * @param passthrough whether to disable optimizations on the resulting buffer.
-     * @return the given buffer as a {@link NetByteBuf}.
-     */
-    public static NetByteBuf of(ByteBuf buf, boolean passthrough) {
-        if (buf instanceof NetByteBuf netBuf && netBuf.passthrough == passthrough) {
-            return netBuf;
-        } else {
-            return new NetByteBuf(buf, passthrough);
-        }
     }
 
     @Override
@@ -272,17 +325,17 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf copy() {
-        return of(super.copy(), passthrough);
+    public NetRegistryByteBuf copy() {
+        return of(super.copy(), getRegistryManager(), passthrough);
     }
 
     @Override
-    public NetByteBuf readBytes(int length) {
-        return of(super.readBytes(length), passthrough);
+    public NetRegistryByteBuf readBytes(int length) {
+        return of(super.readBytes(length), getRegistryManager(), passthrough);
     }
 
     @Override
-    public NetByteBuf clear() {
+    public NetRegistryByteBuf clear() {
         super.clear();
         readPartialOffset = 8;
         readPartialCache = 0;
@@ -293,7 +346,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf markReaderIndex() {
+    public NetRegistryByteBuf markReaderIndex() {
         super.markReaderIndex();
         readPartialOffsetMark = readPartialOffset;
         readPartialCacheMark = readPartialCache;
@@ -301,7 +354,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf resetReaderIndex() {
+    public NetRegistryByteBuf resetReaderIndex() {
         super.resetReaderIndex();
         readPartialOffset = readPartialOffsetMark;
         readPartialCache = readPartialCacheMark;
@@ -314,7 +367,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf resetReaderIndex(SavedReaderIndex index) {
+    public NetRegistryByteBuf resetReaderIndex(SavedReaderIndex index) {
         readerIndex(index.readerIndex);
         readPartialOffset = index.readPartialOffset;
         readPartialCache = index.readPartialCache;
@@ -322,7 +375,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeBoolean(boolean flag) {
+    public NetRegistryByteBuf writeBoolean(boolean flag) {
         if (passthrough) {
             super.writeBoolean(flag);
             return this;
@@ -340,7 +393,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeFixedBits(int value, int length) throws IllegalArgumentException {
+    public NetRegistryByteBuf writeFixedBits(int value, int length) throws IllegalArgumentException {
         NetBufImplHelper.writeFixedBits(this, value, length);
         return this;
     }
@@ -351,7 +404,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeEnumConstant(Enum<?> value) {
+    public NetRegistryByteBuf writeEnumConstant(Enum<?> value) {
         if (passthrough) {
             super.writeEnumConstant(value);
             return this;
@@ -369,7 +422,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeBlockPos(BlockPos pos) {
+    public NetRegistryByteBuf writeBlockPos(BlockPos pos) {
         if (passthrough) {
             super.writeBlockPos(pos);
             return this;
@@ -387,7 +440,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeVarInt(int ival) {
+    public NetRegistryByteBuf writeVarInt(int ival) {
         if (passthrough) {
             super.writeVarInt(ival);
             return this;
@@ -405,7 +458,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeVarUnsignedInt(int ival) {
+    public NetRegistryByteBuf writeVarUnsignedInt(int ival) {
         super.writeVarInt(ival);
         return this;
     }
@@ -416,7 +469,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeVarLong(long lval) {
+    public NetRegistryByteBuf writeVarLong(long lval) {
         if (passthrough) {
             super.writeVarLong(lval);
             return this;
@@ -434,7 +487,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeVarUnsignedLong(long lval) {
+    public NetRegistryByteBuf writeVarUnsignedLong(long lval) {
         super.writeVarLong(lval);
         return this;
     }
@@ -445,7 +498,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeIdentifier(Identifier id) {
+    public NetRegistryByteBuf writeIdentifier(Identifier id) {
         super.writeIdentifier(id);
         return this;
     }
@@ -466,12 +519,13 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public <T> NetByteBuf writeNetOptional(Optional<T> value, PacketEncoder<? super NetByteBuf, T> writer) {
+    public <T> NetRegistryByteBuf writeNetOptional(Optional<T> value,
+                                                   PacketEncoder<? super NetRegistryByteBuf, T> writer) {
         return NetBufImplHelper.writeOptional(this, value, writer);
     }
 
     @Override
-    public <T> Optional<T> readNetOptional(PacketDecoder<? super NetByteBuf, T> reader) {
+    public <T> Optional<T> readNetOptional(PacketDecoder<? super NetRegistryByteBuf, T> reader) {
         return NetBufImplHelper.readOptional(this, reader);
     }
 }
