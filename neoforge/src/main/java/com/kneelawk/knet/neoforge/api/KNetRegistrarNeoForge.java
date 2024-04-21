@@ -25,7 +25,7 @@
 
 package com.kneelawk.knet.neoforge.api;
 
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import com.kneelawk.knet.api.KNetRegistrar;
 import com.kneelawk.knet.api.channel.ConfigChannel;
@@ -35,14 +35,14 @@ import com.kneelawk.knet.api.channel.PlayChannel;
  * NeoForge KNet registrar implementation that can be sent to common code to register channels.
  */
 public class KNetRegistrarNeoForge implements KNetRegistrar {
-    private final IPayloadRegistrar registrar;
+    private final PayloadRegistrar registrar;
 
     /**
      * Creates a new KNet registrar that can be sent to common code to register channels.
      *
-     * @param registrar the NeoForge {@link IPayloadRegistrar} retrieved during the {@link net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent} event.
+     * @param registrar the NeoForge {@link PayloadRegistrar} retrieved during the {@link net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent} event.
      */
-    public KNetRegistrarNeoForge(IPayloadRegistrar registrar) {
+    public KNetRegistrarNeoForge(PayloadRegistrar registrar) {
         this.registrar = registrar;
     }
 

@@ -27,7 +27,7 @@ package com.kneelawk.knet.neoforge.impl;
 
 import java.util.concurrent.Executor;
 
-import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -36,20 +36,20 @@ import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 
-public record NeoForgeConfigPayloadHandlingContext(ConfigurationPayloadContext ctx)
+public record NeoForgeConfigPayloadHandlingContext(IPayloadContext ctx)
     implements ConfigPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
-        return ctx.workHandler()::execute;
+        return ctx::enqueueWork;
     }
 
     @Override
     public void disconnect(@NotNull Text message) {
-        ctx.replyHandler().disconnect(message);
+        ctx.disconnect(message);
     }
 
     @Override
     public void sendPayload(CustomPayload payload) {
-        ctx.replyHandler().send(payload);
+        ctx.reply(payload);
     }
 }

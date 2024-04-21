@@ -27,7 +27,7 @@ package com.kneelawk.knet.example.neoforge;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.mojang.serialization.MapCodec;
@@ -63,7 +63,7 @@ public class KNetExampleNeoForge {
         modBus.addListener(this::onRegisterPayloadHandler);
     }
 
-    private void onRegisterPayloadHandler(RegisterPayloadHandlerEvent event) {
+    private void onRegisterPayloadHandler(RegisterPayloadHandlersEvent event) {
         KNetExample.registerChannels(new KNetRegistrarNeoForge(event.registrar(KNetExample.MOD_ID)));
     }
 }
