@@ -53,7 +53,7 @@ import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
 
 /**
- * Describes a {@link CustomPayload} channel that can have payloads sent and received.
+ * Describes a {@link CustomPayload} channel that can have payloads sent and received during the 'play' phase.
  *
  * @param <P> the type of payload this channel sends and receives.
  */

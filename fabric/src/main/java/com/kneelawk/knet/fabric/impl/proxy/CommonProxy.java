@@ -29,18 +29,22 @@ import java.lang.reflect.InvocationTargetException;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
+import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.util.NetBufs;
+import com.kneelawk.knet.fabric.impl.FabricConfigPayloadHandlingContext;
 import com.kneelawk.knet.fabric.impl.FabricPlayPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
 
@@ -85,8 +89,34 @@ public class CommonProxy {
                 } catch (PayloadHandlingSilentException e) {
                     // do nothing
                 } catch (PayloadHandlingDisconnectException e) {
-                    ctx.player().networkHandler.disconnect(
-                        Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                    ctx.responseSender()
+                        .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                } catch (Exception e) {
+                    // just log as an error by default
+                    KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
+                }
+            });
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void registerConfigChannel(ConfigChannel channel) {
+        if (channel.isToClient()) {
+            // payload types should be registered on both client and server
+            PayloadTypeRegistry.configurationS2C().register((CustomPayload.Id<CustomPayload>) channel.getId(),
+                (PacketCodec<PacketByteBuf, CustomPayload>) channel.getCodec());
+        }
+        if (channel.isToServer()) {
+            PayloadTypeRegistry.configurationC2S().register((CustomPayload.Id<CustomPayload>) channel.getId(),
+                (PacketCodec<PacketByteBuf, CustomPayload>) channel.getCodec());
+            ServerConfigurationNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
+                try {
+                    channel.handleServerPayload(payload, new FabricConfigPayloadHandlingContext(ctx));
+                } catch (PayloadHandlingSilentException e) {
+                    // do nothing
+                } catch (PayloadHandlingDisconnectException e) {
+                    ctx.responseSender()
+                        .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
                 } catch (Exception e) {
                     // just log as an error by default
                     KNetLog.LOG.error("Channel {} error:", channel.getId(), e);

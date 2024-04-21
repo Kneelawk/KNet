@@ -25,6 +25,7 @@
 
 package com.kneelawk.knet.fabric.api;
 
+import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.fabric.impl.proxy.CommonProxy;
 
@@ -43,5 +44,14 @@ public class KNetFabric {
      */
     public static void registerPlay(PlayChannel channel) {
         CommonProxy.getInstance().registerPlayChannel(channel);
+    }
+
+    /**
+     * Registers a channel for receiving packets during configuration state.
+     *
+     * @param channel the channel to register.
+     */
+    public static void registerConfig(ConfigChannel channel) {
+        CommonProxy.getInstance().registerConfigChannel(channel);
     }
 }

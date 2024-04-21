@@ -23,29 +23,24 @@
  *
  */
 
-package com.kneelawk.knet.fabric.api;
+package com.kneelawk.knet.api.channel;
 
-import com.kneelawk.knet.api.KNetRegistrar;
-import com.kneelawk.knet.api.channel.ConfigChannel;
-import com.kneelawk.knet.api.channel.PlayChannel;
+import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+import com.kneelawk.knet.api.handling.PayloadHandlingException;
 
 /**
- * Fabric KNet registrar implementation that can be sent to common code to register channels.
+ * Used for handling a payload.
+ *
+ * @param <P> the type of the payload handled.
  */
-public class KNetRegistrarFabric implements KNetRegistrar {
+@FunctionalInterface
+public interface NoContextConfigPayloadHandler<P> {
     /**
-     * Creates a new KNet registrar that can be sent to common code to register channels.
+     * Handle a payload.
+     *
+     * @param payload the payload.
+     * @param ctx     the associated context.
+     * @throws PayloadHandlingException if an error ocurred while handling the payload.
      */
-    public KNetRegistrarFabric() {
-    }
-
-    @Override
-    public void register(PlayChannel channel) {
-        KNetFabric.registerPlay(channel);
-    }
-
-    @Override
-    public void register(ConfigChannel channel) {
-        KNetFabric.registerConfig(channel);
-    }
+    void handle(P payload, ConfigPayloadHandlingContext ctx) throws PayloadHandlingException;
 }

@@ -23,29 +23,34 @@
  *
  */
 
-package com.kneelawk.knet.fabric.api;
+package com.kneelawk.knet.fabric.impl;
 
-import com.kneelawk.knet.api.KNetRegistrar;
-import com.kneelawk.knet.api.channel.ConfigChannel;
-import com.kneelawk.knet.api.channel.PlayChannel;
+import java.util.concurrent.Executor;
 
-/**
- * Fabric KNet registrar implementation that can be sent to common code to register channels.
- */
-public class KNetRegistrarFabric implements KNetRegistrar {
-    /**
-     * Creates a new KNet registrar that can be sent to common code to register channels.
-     */
-    public KNetRegistrarFabric() {
+import org.jetbrains.annotations.NotNull;
+
+import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
+
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.text.Text;
+
+import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+
+public record FabricConfigPayloadHandlingContext(ServerConfigurationNetworking.Context ctx) implements
+    ConfigPayloadHandlingContext {
+    @Override
+    public @NotNull Executor getExecutor() {
+        // Fabric invokes the handlers on the main thread
+        return Runnable::run;
     }
 
     @Override
-    public void register(PlayChannel channel) {
-        KNetFabric.registerPlay(channel);
+    public void disconnect(@NotNull Text message) {
+        ctx.responseSender().disconnect(message);
     }
 
     @Override
-    public void register(ConfigChannel channel) {
-        KNetFabric.registerConfig(channel);
+    public void sendPayload(CustomPayload payload) {
+        ctx.responseSender().sendPacket(payload);
     }
 }

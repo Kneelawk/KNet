@@ -41,7 +41,8 @@ import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx) implements PlayPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
-        return ctx.player().server;
+        // Fabric invokes the handlers on the main thread
+        return Runnable::run;
     }
 
     @Override

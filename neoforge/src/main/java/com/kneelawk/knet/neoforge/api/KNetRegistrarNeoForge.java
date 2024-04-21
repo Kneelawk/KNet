@@ -28,6 +28,7 @@ package com.kneelawk.knet.neoforge.api;
 import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
 import com.kneelawk.knet.api.KNetRegistrar;
+import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
 
 /**
@@ -48,5 +49,10 @@ public class KNetRegistrarNeoForge implements KNetRegistrar {
     @Override
     public void register(PlayChannel channel) {
         KNetNeoForge.registerPlay(registrar, channel);
+    }
+
+    @Override
+    public void register(ConfigChannel channel) {
+        KNetNeoForge.registerConfig(registrar, channel);
     }
 }

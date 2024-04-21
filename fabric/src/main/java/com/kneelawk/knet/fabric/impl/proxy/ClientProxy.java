@@ -25,15 +25,18 @@
 
 package com.kneelawk.knet.fabric.impl.proxy;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.text.Text;
 
+import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
+import com.kneelawk.knet.fabric.impl.client.ClientFabricConfigPayloadHandlingContext;
 import com.kneelawk.knet.fabric.impl.client.ClientFabricPlayPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
 
@@ -53,7 +56,27 @@ public class ClientProxy extends CommonProxy {
                 } catch (PayloadHandlingSilentException e) {
                     // do nothing
                 } catch (PayloadHandlingDisconnectException e) {
-                    ctx.player().networkHandler.getConnection()
+                    ctx.responseSender()
+                        .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                } catch (Exception e) {
+                    // just log as an error by default
+                    KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void registerConfigChannel(ConfigChannel channel) {
+        super.registerConfigChannel(channel);
+        if (channel.isToClient()) {
+            ClientConfigurationNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
+                try {
+                    channel.handleClientPayload(payload, new ClientFabricConfigPayloadHandlingContext(ctx));
+                } catch (PayloadHandlingSilentException e) {
+                    // do nothing
+                } catch (PayloadHandlingDisconnectException e) {
+                    ctx.responseSender()
                         .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
                 } catch (Exception e) {
                     // just log as an error by default

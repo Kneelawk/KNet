@@ -25,6 +25,7 @@
 
 package com.kneelawk.knet.api;
 
+import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
 
 /**
@@ -39,4 +40,11 @@ public interface KNetRegistrar {
      * @param channel the channel to register.
      */
     void register(PlayChannel channel);
+
+    /**
+     * Registers a channel so that it can send and receive packets.
+     *
+     * @param channel the channel to register.
+     */
+    void register(ConfigChannel channel);
 }

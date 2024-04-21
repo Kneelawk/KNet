@@ -42,7 +42,8 @@ public record ClientFabricPlayPayloadHandlingContext(ClientPlayNetworking.Contex
     PlayPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
-        return ctx.client();
+        // Fabric invokes the handlers on the main thread
+        return Runnable::run;
     }
 
     @Override
