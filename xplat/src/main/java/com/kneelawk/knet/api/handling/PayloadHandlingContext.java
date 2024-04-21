@@ -29,14 +29,14 @@ import java.util.concurrent.Executor;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.kneelawk.knet.api.util.PayloadSender;
+import com.kneelawk.knet.api.util.PayloadConnection;
 
 /**
  * Context used for applying a payload.
  * <p>
  * This is an abstraction over the various loader-specific contexts given when receiving a packet.
  */
-public interface PayloadHandlingContext extends PayloadSender {
+public interface PayloadHandlingContext extends PayloadConnection {
 
     /**
      * Gets the executor for running things on the main thread instead of the netty packet-handler threads.

@@ -25,74 +25,9 @@
 
 package com.kneelawk.knet.api.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 
-import com.kneelawk.knet.impl.platform.KNetPlatform;
-
-/**
- * Represents something capable of sending a payload to a receiver.
- */
 public interface PayloadSender {
-    /**
-     * Creates a payload sender from a player.
-     *
-     * @param player the player to send payloads to.
-     * @return a payload sender for the given player.
-     */
-    static PayloadSender ofPlayer(ServerPlayerEntity player) {
-        return new PayloadSender() {
-            @Override
-            public void disconnect(@NotNull Text message) {
-                player.networkHandler.disconnect(message);
-            }
-
-            @Override
-            public void sendPayload(CustomPayload payload) {
-                KNetPlatform.INSTANCE.sendPlay(player, payload);
-            }
-
-            @Override
-            public String toString() {
-                return "PayloadSender(" + player.getGameProfile().getName() + ')';
-            }
-        };
-    }
-
-    /**
-     * Creates a Payload sender that sends messages to the server during the 'play' phase.
-     *
-     * @return a payload sender that sends messages to the server during the 'play' phase.
-     */
-    static PayloadSender ofPlayToServer() {
-        return new PayloadSender() {
-            @Override
-            public void disconnect(@NotNull Text message) {
-                KNetPlatform.INSTANCE.disconnectFromServer(message);
-            }
-
-            @Override
-            public void sendPayload(CustomPayload payload) {
-                KNetPlatform.INSTANCE.sendPlayToServer(payload);
-            }
-
-            @Override
-            public String toString() {
-                return "PayloadSender(to server)";
-            }
-        };
-    }
-
-    /**
-     * Used to disconnect the client with the given message.
-     *
-     * @param message the message for the client to display when disconnected.
-     */
-    void disconnect(@NotNull Text message);
-
     /**
      * Used to send a response to the message that was just received.
      *

@@ -169,7 +169,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
     }
 
     /**
-     * Sends a payload through a payload sender.
+     * Sends a payload through a {@link PayloadSender}.
      *
      * @param sender  the payload sender that will send the payload.
      * @param context the context to send.
