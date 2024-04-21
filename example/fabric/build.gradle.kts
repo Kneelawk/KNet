@@ -81,7 +81,6 @@ java {
     targetCompatibility = javaVersion
 
     withSourcesJar()
-    withJavadocJar()
 }
 
 tasks {
