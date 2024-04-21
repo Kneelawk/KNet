@@ -25,13 +25,19 @@
 
 package com.kneelawk.knet.fabric.impl;
 
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
+import net.minecraft.network.packet.Packet;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerConfigurationTask;
+import net.minecraft.util.Identifier;
 
 import com.kneelawk.knet.impl.KNetImpl;
 import com.kneelawk.knet.impl.KNetLog;
@@ -41,10 +47,24 @@ public class KNetFabricMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        KNetLog.LOG.info("Initializing KNet " +
+        KNetLog.LOG.info("Initializing KNet {}",
             FabricLoader.getInstance().getModContainer(KNetImpl.MOD_ID).get().getMetadata().getVersion());
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> currentServer = server);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> currentServer = null);
+
+        ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
+            handler.addTask(new ServerPlayerConfigurationTask() {
+                @Override
+                public void sendPacket(Consumer<Packet<?>> sender) {
+                    handler.completeTask(getKey());
+                }
+
+                @Override
+                public Key getKey() {
+                    return new Key(new Identifier("test").toString());
+                }
+            });
+        });
     }
 }

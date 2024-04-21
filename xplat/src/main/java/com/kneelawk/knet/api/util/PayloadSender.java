@@ -63,11 +63,11 @@ public interface PayloadSender {
     }
 
     /**
-     * Creates a Payload sender that sends messages to the server.
+     * Creates a Payload sender that sends messages to the server during the 'play' phase.
      *
-     * @return a payload sender that sends messages to the server.
+     * @return a payload sender that sends messages to the server during the 'play' phase.
      */
-    static PayloadSender ofToServer() {
+    static PayloadSender ofPlayToServer() {
         return new PayloadSender() {
             @Override
             public void disconnect(@NotNull Text message) {

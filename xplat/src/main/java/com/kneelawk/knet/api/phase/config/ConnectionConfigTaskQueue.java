@@ -23,36 +23,24 @@
  *
  */
 
-package com.kneelawk.knet.api.channel;
+package com.kneelawk.knet.api.phase.config;
+
+import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.text.Text;
+
+import com.kneelawk.knet.api.channel.Channel;
 
 /**
- * A channel that can be registered with a platform.
+ * Used for enqueueing connection-configure tasks.
  */
-public interface Channel {
-    /**
-     * Gets this channel's id.
-     *
-     * @return this channel's id.
-     */
-    CustomPayload.Id<?> getId();
+public interface ConnectionConfigTaskQueue {
+    boolean clientHasChannel(@NotNull CustomPayload.Id<?> channel);
 
-    /**
-     * Gets whether this channel receives payloads on the server.
-     * <p>
-     * Note: channels can receive on both server and client.
-     *
-     * @return {@code true} if this channel receives on the server.
-     */
-    boolean isToServer();
+    default boolean clientHasChannel(@NotNull Channel channel) {
+        return clientHasChannel(channel.getId());
+    }
 
-    /**
-     * Gets whether this channel receives payloads on the client.
-     * <p>
-     * Note: channels can receive on both server and client.
-     *
-     * @return {@code true} if this channel receives on the client.
-     */
-    boolean isToClient();
+    void disconnect(@NotNull Text message);
 }

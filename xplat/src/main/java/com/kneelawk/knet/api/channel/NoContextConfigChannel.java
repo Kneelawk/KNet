@@ -47,7 +47,7 @@ import com.kneelawk.knet.impl.KNetLog;
  *
  * @param <P> the type of payload this channel sends and receives.
  */
-public class NoContextConfigChannel<P extends CustomPayload> implements ConfigChannel {
+public class NoContextConfigChannel<P extends CustomPayload> implements ConfigChannel, NoContextChannel<P> {
     private final CustomPayload.Id<P> id;
     private final PacketCodec<? super NetByteBuf, P> codec;
 
@@ -192,6 +192,7 @@ public class NoContextConfigChannel<P extends CustomPayload> implements ConfigCh
      * @param sender  the payload sender that will send the payload.
      * @param payload the payload to send.
      */
+    @Override
     public void send(@NotNull PayloadSender sender, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
@@ -206,6 +207,7 @@ public class NoContextConfigChannel<P extends CustomPayload> implements ConfigCh
      * @param senders the collection of payload senders that will send the payload.
      * @param payload the payload to send.
      */
+    @Override
     public void sendToSenders(@NotNull Collection<PayloadSender> senders, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
@@ -222,7 +224,7 @@ public class NoContextConfigChannel<P extends CustomPayload> implements ConfigCh
     }
 
     @Override
-    public CustomPayload.Id<? extends CustomPayload> getId() {
+    public CustomPayload.Id<?> getId() {
         return id;
     }
 

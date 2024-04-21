@@ -48,7 +48,6 @@ import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
-import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.api.util.PayloadSender;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.impl.KNetLog;
@@ -315,7 +314,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
     }
 
     @Override
-    public CustomPayload.Id<? extends CustomPayload> getId() {
+    public CustomPayload.Id<?> getId() {
         return id;
     }
 

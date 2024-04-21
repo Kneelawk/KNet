@@ -25,34 +25,34 @@
 
 package com.kneelawk.knet.api.channel;
 
+import java.util.Collection;
+
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.network.packet.CustomPayload;
 
+import com.kneelawk.knet.api.util.PayloadSender;
+
 /**
- * A channel that can be registered with a platform.
+ * Interface for all no-context channels.
+ *
+ * @param <P> the type of payload this channel sends and receives.
  */
-public interface Channel {
-    /**
-     * Gets this channel's id.
-     *
-     * @return this channel's id.
-     */
-    CustomPayload.Id<?> getId();
+public interface NoContextChannel<P extends CustomPayload> extends Channel {
 
     /**
-     * Gets whether this channel receives payloads on the server.
-     * <p>
-     * Note: channels can receive on both server and client.
+     * Sends a payload through a {@link PayloadSender}.
      *
-     * @return {@code true} if this channel receives on the server.
+     * @param sender  the payload sender that will send the payload.
+     * @param payload the payload to send.
      */
-    boolean isToServer();
+    void send(@NotNull PayloadSender sender, @NotNull P payload);
 
     /**
-     * Gets whether this channel receives payloads on the client.
-     * <p>
-     * Note: channels can receive on both server and client.
+     * Sends a payload to a collection of {@link PayloadSender}.
      *
-     * @return {@code true} if this channel receives on the client.
+     * @param senders the collection of payload senders that will send the payload.
+     * @param payload the payload to send.
      */
-    boolean isToClient();
+    void sendToSenders(@NotNull Collection<PayloadSender> senders, @NotNull P payload);
 }

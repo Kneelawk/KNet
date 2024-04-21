@@ -25,16 +25,40 @@
 
 package com.kneelawk.knet.neoforge.impl;
 
+import java.util.function.Consumer;
+
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
+
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.util.Identifier;
 
 import com.kneelawk.knet.impl.KNetImpl;
 import com.kneelawk.knet.impl.KNetLog;
 
 @Mod(KNetImpl.MOD_ID)
 public class KNetNeoForgeMod {
-    public KNetNeoForgeMod() {
+    public KNetNeoForgeMod(IEventBus modBus) {
         KNetLog.LOG.info("Initializing KNet {}",
             FMLLoader.getLoadingModList().getModFileById(KNetImpl.MOD_ID).versionString());
+        
+        modBus.addListener(this::onRegisterConfigurationTasks);
+    }
+    
+    private void onRegisterConfigurationTasks(RegisterConfigurationTasksEvent event) {
+        event.register(new ICustomConfigurationTask() {
+            @Override
+            public void run(Consumer<CustomPayload> consumer) {
+                event.getListener().onTaskFinished(getKey());
+            }
+
+            @Override
+            public Key getKey() {
+                return new Key(new Identifier("test"));
+            }
+        });
     }
 }

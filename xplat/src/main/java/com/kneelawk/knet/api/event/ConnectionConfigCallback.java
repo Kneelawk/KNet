@@ -23,36 +23,33 @@
  *
  */
 
-package com.kneelawk.knet.api.channel;
+package com.kneelawk.knet.api.event;
 
-import net.minecraft.network.packet.CustomPayload;
+import org.jetbrains.annotations.NotNull;
+
+import com.kneelawk.commonevents.api.Event;
+import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 
 /**
- * A channel that can be registered with a platform.
+ * Callback for initiating configure tasks from the server during the 'configure' phase of player connection.
  */
-public interface Channel {
+@FunctionalInterface
+public interface ConnectionConfigCallback {
     /**
-     * Gets this channel's id.
-     *
-     * @return this channel's id.
+     * Used to listen for {@link ConnectionConfigCallback}s.
+     * <p>
+     * This event is fired on the server whenever a player connects to the server and enters the 'configure' stage.
      */
-    CustomPayload.Id<?> getId();
+    Event<ConnectionConfigCallback> EVENT = Event.create(ConnectionConfigCallback.class, callbacks -> queue -> {
+        for (ConnectionConfigCallback callback : callbacks) {
+            callback.enqueueTasks(queue);
+        }
+    });
 
     /**
-     * Gets whether this channel receives payloads on the server.
-     * <p>
-     * Note: channels can receive on both server and client.
+     * Used to enqueue tasks to the task queue.
      *
-     * @return {@code true} if this channel receives on the server.
+     * @param queue the queue to add tasks to.
      */
-    boolean isToServer();
-
-    /**
-     * Gets whether this channel receives payloads on the client.
-     * <p>
-     * Note: channels can receive on both server and client.
-     *
-     * @return {@code true} if this channel receives on the client.
-     */
-    boolean isToClient();
+    void enqueueTasks(@NotNull ConnectionConfigTaskQueue queue);
 }

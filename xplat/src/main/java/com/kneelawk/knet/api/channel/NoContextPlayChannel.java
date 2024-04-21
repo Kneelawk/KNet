@@ -57,7 +57,7 @@ import com.kneelawk.knet.impl.platform.KNetPlatform;
  *
  * @param <P> the type of payload this channel sends and receives.
  */
-public class NoContextPlayChannel<P extends CustomPayload> implements PlayChannel {
+public class NoContextPlayChannel<P extends CustomPayload> implements PlayChannel, NoContextChannel<P> {
     private final CustomPayload.Id<P> id;
     private final PacketCodec<? super RegistryNetByteBuf, P> codec;
 
@@ -249,6 +249,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param sender  the payload sender that will send the payload.
      * @param payload the payload to send.
      */
+    @Override
     public void send(@NotNull PayloadSender sender, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
@@ -263,6 +264,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param senders the collection of payload senders that will send the payload.
      * @param payload the payload to send.
      */
+    @Override
     public void sendToSenders(@NotNull Collection<PayloadSender> senders, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
@@ -378,7 +380,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
     }
 
     @Override
-    public CustomPayload.Id<? extends CustomPayload> getId() {
+    public CustomPayload.Id<?> getId() {
         return id;
     }
 
