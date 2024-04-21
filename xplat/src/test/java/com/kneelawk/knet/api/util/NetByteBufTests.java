@@ -36,15 +36,60 @@ public class NetByteBufTests {
         buf.writeBoolean(true);
         buf.writeBoolean(false);
         buf.writeBoolean(true);
-        assertEquals(buf.readByte(), (byte) 0b101, "writeBoolean(true...false...true) should produce 0b101");
+        assertEquals((byte) 0b101, buf.readByte(), "writeBoolean(true...false...true) should produce 0b101");
     }
 
     @Test
     void readBoolean() {
         NetByteBuf buf = NetByteBuf.buffer();
         buf.writeByte(0b101);
-        assertEquals(buf.readBoolean(), true);
-        assertEquals(buf.readBoolean(), false);
-        assertEquals(buf.readBoolean(), true);
+        assertEquals(true, buf.readBoolean());
+        assertEquals(false, buf.readBoolean());
+        assertEquals(true, buf.readBoolean());
+    }
+
+    @Test
+    void writeFixedBits() {
+        NetByteBuf buf = NetByteBuf.buffer();
+        buf.writeFixedBits(0b10101010, 5);
+        assertEquals((byte) 0b01010, buf.getByte(0));
+
+        buf.writeFixedBits(0b11001100, 5);
+        assertEquals((byte) 0b01101010, buf.getByte(0));
+        assertEquals((byte) 0b00, buf.getByte(1));
+        
+        buf.writeFixedBits(0b11011011011011011, 17);
+        assertEquals((byte) 0b11011000, buf.getByte(1));
+        assertEquals((byte) 0b11011011, buf.getByte(2));
+        assertEquals((byte) 0b011, buf.getByte(3));
+    }
+
+    @Test
+    void readFixedBits() {
+        NetByteBuf buf = NetByteBuf.buffer();
+        buf.writeByte(0b11001100);
+        buf.writeByte(0b10101010);
+        buf.writeByte(0b11100111);
+        buf.writeByte(0b01100110);
+        assertEquals(0b01100, buf.readFixedBits(5));
+        assertEquals(0b11010, buf.readFixedBits(5));
+        assertEquals(0b10101011100111110, buf.readFixedBits(17));
+    }
+    
+    @Test
+    void writeVarInt() {
+        NetByteBuf buf = NetByteBuf.buffer();
+        buf.writeVarInt(0b0001001000110100);
+        assertEquals((byte) 0b10110100, buf.getByte(0));
+        assertEquals((byte) 0b00100100, buf.getByte(1));
+    }
+    
+    @Test
+    void readVarInt() {
+        NetByteBuf buf = NetByteBuf.buffer();
+        buf.writeByte(0b11010101);
+        buf.writeByte(0b10001011);
+        buf.writeByte(0b01110010);
+        assertEquals(0b11111111111100110111101000101010, buf.readVarInt());
     }
 }
