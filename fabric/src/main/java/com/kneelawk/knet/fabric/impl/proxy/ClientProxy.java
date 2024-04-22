@@ -25,6 +25,8 @@
 
 package com.kneelawk.knet.fabric.impl.proxy;
 
+import java.util.concurrent.Executor;
+
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
@@ -98,5 +100,10 @@ public class ClientProxy extends CommonProxy {
     @Override
     public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
         return ClientPlayNetworking.canSend(channel);
+    }
+
+    @Override
+    public Executor getClientExecutor() {
+        return MinecraftClient.getInstance();
     }
 }

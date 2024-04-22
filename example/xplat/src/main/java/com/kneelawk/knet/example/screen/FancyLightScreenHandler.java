@@ -35,8 +35,9 @@ import net.minecraft.world.World;
 
 import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.context.ContextualPlayChannel;
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.example.KNetExample;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
 import com.kneelawk.knet.example.net.BlockPosPayload;
@@ -80,6 +81,7 @@ public class FancyLightScreenHandler extends ScreenHandler {
     }
 
     private void recv(ColorUpdatePayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingErrorException {
+        KNetExample.LOGGER.info("Screen received payload: {}", payload);
         switch (payload.index()) {
             case 0 -> entity.updateRed(payload.value());
             case 1 -> entity.updateGreen(payload.value());

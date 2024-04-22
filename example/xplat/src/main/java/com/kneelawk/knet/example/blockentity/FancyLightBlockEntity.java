@@ -45,6 +45,7 @@ import com.kneelawk.knet.api.channel.context.ContextualPlayChannel;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
+import com.kneelawk.knet.example.KNetExample;
 import com.kneelawk.knet.example.net.BlockPosPayload;
 import com.kneelawk.knet.example.net.ColorUpdatePayload;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
@@ -100,6 +101,7 @@ public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHan
     }
 
     private void recv(ColorUpdatePayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingErrorException {
+        KNetExample.LOGGER.info("BlockEntity received payload: {}", payload);
         switch (payload.index()) {
             case 0 -> red = payload.value() & 0xFF;
             case 1 -> green = payload.value() & 0xFF;

@@ -41,7 +41,9 @@ public record FabricConfigPayloadHandlingContext(ServerConfigurationNetworking.C
     ConfigPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
-        // Fabric invokes the handlers on the main thread
+        // Configuration payload handling *is* actually done on a netty thread after all
+        Executor executor = KNetFabricMod.currentServer;
+        if (executor != null) return executor;
         return Runnable::run;
     }
 

@@ -26,6 +26,7 @@
 package com.kneelawk.knet.fabric.impl.proxy;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.Executor;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -132,5 +133,9 @@ public class CommonProxy {
 
     public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
         return false;
+    }
+    
+    public Executor getClientExecutor() {
+        return Runnable::run;
     }
 }

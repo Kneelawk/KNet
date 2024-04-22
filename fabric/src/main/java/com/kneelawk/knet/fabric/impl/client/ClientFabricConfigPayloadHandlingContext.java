@@ -36,13 +36,14 @@ import net.minecraft.server.network.ServerPlayerConfigurationTask;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+import com.kneelawk.knet.fabric.impl.proxy.CommonProxy;
 
 public record ClientFabricConfigPayloadHandlingContext(ClientConfigurationNetworking.Context ctx) implements
     ConfigPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
-        // Fabric invokes the handlers on the main thread
-        return Runnable::run;
+        // Configuration payload handling *is* actually done on a netty thread after all
+        return CommonProxy.getInstance().getClientExecutor();
     }
 
     @Override
