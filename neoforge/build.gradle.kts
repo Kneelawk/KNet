@@ -31,6 +31,16 @@ repositories {
     maven("https://maven.firstdark.dev/snapshots") { name = "FirstDark" }
     maven("https://kneelawk.com/maven") { name = "Kneelawk" }
 
+    val neoforge_pr: String by project
+    if (neoforge_pr.toIntOrNull() != null) {
+        maven("https://prmaven.neoforged.net/NeoForge/pr$neoforge_pr") {
+            name = "NeoForged PR#$neoforge_pr"
+            content {
+                includeModule("net.neoforged", "neoforge")
+            }
+        }
+    }
+
     mavenLocal()
 }
 
