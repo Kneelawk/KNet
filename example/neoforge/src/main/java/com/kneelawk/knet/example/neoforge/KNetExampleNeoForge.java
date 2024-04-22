@@ -42,6 +42,7 @@ import com.kneelawk.knet.neoforge.api.KNetRegistrarNeoForge;
 
 @Mod(KNetExample.MOD_ID)
 public class KNetExampleNeoForge {
+    public static final String NETWORK_VERSION = "1";
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(KNetExample.MOD_ID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(KNetExample.MOD_ID);
     public static final DeferredRegister<MapCodec<? extends Block>> BLOCK_TYPES =
@@ -64,6 +65,6 @@ public class KNetExampleNeoForge {
     }
 
     private void onRegisterPayloadHandler(RegisterPayloadHandlersEvent event) {
-        KNetExample.registerChannels(new KNetRegistrarNeoForge(event.registrar(KNetExample.MOD_ID)));
+        KNetExample.registerChannels(new KNetRegistrarNeoForge(event.registrar(NETWORK_VERSION)));
     }
 }
