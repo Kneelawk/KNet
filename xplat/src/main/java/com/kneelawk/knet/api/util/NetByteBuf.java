@@ -17,7 +17,6 @@ import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketDecoder;
 import net.minecraft.network.codec.PacketEncoder;
 import net.minecraft.util.Identifier;
@@ -56,7 +55,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
      * @return A new {@link NetByteBuf} from {@link Unpooled#buffer()}
      */
     public static NetByteBuf buffer() {
-        return of(Unpooled.buffer());
+        return netOf(Unpooled.buffer());
     }
 
     /**
@@ -66,7 +65,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
      * @return A new {@link NetByteBuf} from {@link Unpooled#buffer(int)}
      */
     public static NetByteBuf buffer(int initialCapacity) {
-        return of(Unpooled.buffer(initialCapacity));
+        return netOf(Unpooled.buffer(initialCapacity));
     }
 
     /**
@@ -76,7 +75,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
      * @return A new {@link NetByteBuf} from {@link Unpooled#buffer()}
      */
     public static NetByteBuf buffer(boolean passthrough) {
-        return of(Unpooled.buffer(), passthrough);
+        return netOf(Unpooled.buffer(), passthrough);
     }
 
     /**
@@ -87,7 +86,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
      * @return A new {@link NetByteBuf} from {@link Unpooled#buffer(int)}
      */
     public static NetByteBuf buffer(int initialCapacity, boolean passthrough) {
-        return of(Unpooled.buffer(initialCapacity), passthrough);
+        return netOf(Unpooled.buffer(initialCapacity), passthrough);
     }
 
     // Hold on to the wrapped buffer, so we can access it when changing passthrough-ness while wrapping.
@@ -149,8 +148,8 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
      * @param buf the buffer to be converted into a {@link NetByteBuf}.
      * @return the given buffer as a {@link NetByteBuf}.
      */
-    public static NetByteBuf of(ByteBuf buf) {
-        return of(buf, false);
+    public static NetByteBuf netOf(ByteBuf buf) {
+        return netOf(buf, false);
     }
 
     /**
@@ -163,7 +162,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
      * @param passthrough whether to disable optimizations on the resulting buffer.
      * @return the given buffer as a {@link NetByteBuf}.
      */
-    public static NetByteBuf of(ByteBuf buf, boolean passthrough) {
+    public static NetByteBuf netOf(ByteBuf buf, boolean passthrough) {
         if (buf instanceof NetByteBuf netBuf && netBuf.passthrough == passthrough) {
             return netBuf;
         } else {
@@ -273,12 +272,12 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
 
     @Override
     public NetByteBuf copy() {
-        return of(super.copy(), passthrough);
+        return netOf(super.copy(), passthrough);
     }
 
     @Override
     public NetByteBuf readBytes(int length) {
-        return of(super.readBytes(length), passthrough);
+        return netOf(super.readBytes(length), passthrough);
     }
 
     @Override

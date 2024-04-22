@@ -25,6 +25,9 @@
 
 package com.kneelawk.knet.example;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -33,19 +36,24 @@ import com.kneelawk.knet.api.KNetRegistrar;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
 import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
+import com.kneelawk.knet.example.net.NetEventListeners;
 import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 import com.kneelawk.knet.example.screen.KNEScreenHandlers;
 
 public class KNetExample {
     public static final String MOD_ID = "knet_example";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static void init() {
+        LOGGER.info("KNetExample initializing...");
+
         KNEBlocks.init();
         KNEBlockEntities.init();
         KNEScreenHandlers.init();
     }
 
     public static void registerChannels(KNetRegistrar registrar) {
+        registrar.register(NetEventListeners.CONFIG_CHANNEL);
         registrar.register(FancyLightBlockEntity.COLOR_UPDATE_CHANNEL);
         registrar.register(FancyLightScreenHandler.COLOR_UPDATE_CHANNEL);
     }

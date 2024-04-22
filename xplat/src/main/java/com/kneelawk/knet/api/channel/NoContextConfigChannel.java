@@ -220,7 +220,8 @@ public class NoContextConfigChannel<P extends CustomPayload> implements ConfigCh
     }
 
     private void checkPayload(P payload) {
-        if (payload.getId().equals(id)) throw new IllegalStateException("Payload id does not match channel id");
+        if (!payload.getId().equals(id)) throw new IllegalStateException(
+            "Payload id does not match channel id. Payload id: " + payload.getId() + ", channel id: " + id);
     }
 
     @Override

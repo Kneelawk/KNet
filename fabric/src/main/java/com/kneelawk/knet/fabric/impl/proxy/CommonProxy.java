@@ -44,6 +44,7 @@ import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.util.NetBufs;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.fabric.impl.FabricConfigPayloadHandlingContext;
 import com.kneelawk.knet.fabric.impl.FabricPlayPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
@@ -104,11 +105,11 @@ public class CommonProxy {
         if (channel.isToClient()) {
             // payload types should be registered on both client and server
             PayloadTypeRegistry.configurationS2C().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<PacketByteBuf, CustomPayload>) channel.getCodec());
+                (PacketCodec<PacketByteBuf, CustomPayload>) NetBufs.netToVanillaCodec(channel.getCodec()));
         }
         if (channel.isToServer()) {
             PayloadTypeRegistry.configurationC2S().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<PacketByteBuf, CustomPayload>) channel.getCodec());
+                (PacketCodec<PacketByteBuf, CustomPayload>) NetBufs.netToVanillaCodec(channel.getCodec()));
             ServerConfigurationNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
                     channel.handleServerPayload(payload, new FabricConfigPayloadHandlingContext(ctx));

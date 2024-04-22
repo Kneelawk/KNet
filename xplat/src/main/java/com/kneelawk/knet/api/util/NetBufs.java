@@ -65,12 +65,12 @@ public final class NetBufs {
         return new PacketCodec<>() {
             @Override
             public T decode(PacketByteBuf buf) {
-                return codec.decode(NetByteBuf.of(buf));
+                return codec.decode(NetByteBuf.netOf(buf));
             }
 
             @Override
             public void encode(PacketByteBuf buf, T value) {
-                codec.encode(NetByteBuf.of(buf), value);
+                codec.encode(NetByteBuf.netOf(buf), value);
             }
         };
     }
@@ -87,12 +87,12 @@ public final class NetBufs {
         return new PacketCodec<>() {
             @Override
             public T decode(RegistryByteBuf buf) {
-                return codec.decode(RegistryNetByteBuf.of(buf));
+                return codec.decode(RegistryNetByteBuf.regNetOf(buf));
             }
 
             @Override
             public void encode(RegistryByteBuf buf, T value) {
-                codec.encode(RegistryNetByteBuf.of(buf), value);
+                codec.encode(RegistryNetByteBuf.regNetOf(buf), value);
             }
         };
     }
@@ -109,12 +109,12 @@ public final class NetBufs {
         return new PacketCodec<>() {
             @Override
             public T decode(RegistryByteBuf buf) {
-                return codec.decode(NetRegistryByteBuf.of(buf));
+                return codec.decode(NetRegistryByteBuf.netRegOf(buf));
             }
 
             @Override
             public void encode(RegistryByteBuf buf, T value) {
-                codec.encode(NetRegistryByteBuf.of(buf), value);
+                codec.encode(NetRegistryByteBuf.netRegOf(buf), value);
             }
         };
     }
@@ -131,12 +131,12 @@ public final class NetBufs {
         return new PacketCodec<>() {
             @Override
             public T decode(RegistryNetByteBuf buf) {
-                return codec.decode(NetRegistryByteBuf.of(buf));
+                return codec.decode(NetRegistryByteBuf.netRegOf(buf));
             }
 
             @Override
             public void encode(RegistryNetByteBuf buf, T value) {
-                codec.encode(NetRegistryByteBuf.of(buf), value);
+                codec.encode(NetRegistryByteBuf.netRegOf(buf), value);
             }
         };
     }
@@ -153,12 +153,12 @@ public final class NetBufs {
         return new PacketCodec<>() {
             @Override
             public T decode(NetRegistryByteBuf buf) {
-                return codec.decode(RegistryNetByteBuf.of(buf));
+                return codec.decode(RegistryNetByteBuf.regNetOf(buf));
             }
 
             @Override
             public void encode(NetRegistryByteBuf buf, T value) {
-                codec.encode(RegistryNetByteBuf.of(buf), value);
+                codec.encode(RegistryNetByteBuf.regNetOf(buf), value);
             }
         };
     }
@@ -171,7 +171,7 @@ public final class NetBufs {
      * @return the function that wraps buffers.
      */
     public static Function<ByteBuf, RegistryNetByteBuf> regNetFactory(DynamicRegistryManager registryManager) {
-        return buf -> RegistryNetByteBuf.of(buf, registryManager);
+        return buf -> RegistryNetByteBuf.regNetOf(buf, registryManager);
     }
 
     /**
@@ -182,6 +182,6 @@ public final class NetBufs {
      * @return the function that wraps buffers.
      */
     public static Function<ByteBuf, NetRegistryByteBuf> netRegFactory(DynamicRegistryManager registryManager) {
-        return buf -> NetRegistryByteBuf.of(buf, registryManager);
+        return buf -> NetRegistryByteBuf.netRegOf(buf, registryManager);
     }
 }
