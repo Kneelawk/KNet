@@ -23,45 +23,37 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl.client;
-
-import java.util.concurrent.Executor;
+package com.kneelawk.knet.fabric.impl.phase.config;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.server.network.ServerConfigurationNetworkHandler;
 import net.minecraft.server.network.ServerPlayerConfigurationTask;
 import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 
-public record ClientFabricConfigPayloadHandlingContext(ClientConfigurationNetworking.Context ctx) implements
-    ConfigPayloadHandlingContext {
+public record FabricConfigTaskQueue(ServerConfigurationNetworkHandler handler) implements ConnectionConfigTaskQueue {
     @Override
-    public @NotNull Executor getExecutor() {
-        // Fabric invokes the handlers on the main thread
-        return Runnable::run;
+    public boolean clientHasChannel(CustomPayload.@NotNull Id<?> channel) {
+        return ServerConfigurationNetworking.canSend(handler, channel);
     }
 
     @Override
     public void disconnect(@NotNull Text message) {
-        ctx.responseSender().disconnect(message);
+        handler.disconnect(message);
     }
 
     @Override
-    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
-        return ClientConfigurationNetworking.canSend(channel);
-    }
-
-    @Override
-    public void sendPayload(CustomPayload payload) {
-        ctx.responseSender().sendPacket(payload);
+    public void enqueueRaw(@NotNull ServerPlayerConfigurationTask task) {
+        handler.addTask(task);
     }
 
     @Override
     public void completeTask(ServerPlayerConfigurationTask.@NotNull Key taskId) {
-        throw new UnsupportedOperationException("Configuration tasks cannot be completed from the client.");
+        handler.completeTask(taskId);
     }
 }

@@ -23,28 +23,26 @@
  *
  */
 
-package com.kneelawk.knet.neoforge.impl;
+package com.kneelawk.knet.api.phase.config;
 
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
+import net.minecraft.util.Identifier;
 
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
-import com.kneelawk.knet.impl.KNetImpl;
-import com.kneelawk.knet.impl.KNetLog;
-import com.kneelawk.knet.neoforge.impl.phase.config.NeoForgeConfigTaskQueue;
+import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+import com.kneelawk.knet.api.util.PayloadSender;
 
-@Mod(KNetImpl.MOD_ID)
-public class KNetNeoForgeMod {
-    public KNetNeoForgeMod(IEventBus modBus) {
-        KNetLog.LOG.info("Initializing KNet {}",
-            FMLLoader.getLoadingModList().getModFileById(KNetImpl.MOD_ID).versionString());
-
-        modBus.addListener(this::onRegisterConfigurationTasks);
-    }
-
-    private void onRegisterConfigurationTasks(RegisterConfigurationTasksEvent event) {
-        ConnectionConfigCallback.EVENT.invoker().enqueueTasks(new NeoForgeConfigTaskQueue(event));
-    }
+/**
+ * Simplified version of {@link net.minecraft.server.network.ServerPlayerConfigurationTask}.
+ * <p>
+ * This is used to initiate a chain of back-and-forth messages to configure a specific aspect of the client. When
+ * configuration is complete, the implementor must call either {@link ConnectionConfigTaskQueue#completeTask(Identifier)}
+ * or {@link ConfigPayloadHandlingContext#completeTask(Identifier)}, to allow configuration to proceed to the next task.
+ */
+@FunctionalInterface
+public interface ConnectionConfigTask {
+    /**
+     * Sends the initial payload to the client.
+     *
+     * @param sender the payload sender that can send the payload to the client.
+     */
+    void sendInitialPayload(PayloadSender sender);
 }

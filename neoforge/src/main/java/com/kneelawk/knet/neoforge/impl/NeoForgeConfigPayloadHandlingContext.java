@@ -32,6 +32,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.server.network.ServerPlayerConfigurationTask;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
@@ -57,5 +58,10 @@ public record NeoForgeConfigPayloadHandlingContext(IPayloadContext ctx)
     @Override
     public void sendPayload(CustomPayload payload) {
         ctx.reply(payload);
+    }
+
+    @Override
+    public void completeTask(ServerPlayerConfigurationTask.@NotNull Key taskId) {
+        ctx.finishCurrentTask(taskId);
     }
 }

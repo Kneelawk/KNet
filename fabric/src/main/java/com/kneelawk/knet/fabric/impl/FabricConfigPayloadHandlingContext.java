@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.server.network.ServerPlayerConfigurationTask;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
@@ -57,5 +58,10 @@ public record FabricConfigPayloadHandlingContext(ServerConfigurationNetworking.C
     @Override
     public void sendPayload(CustomPayload payload) {
         ctx.responseSender().sendPacket(payload);
+    }
+
+    @Override
+    public void completeTask(ServerPlayerConfigurationTask.@NotNull Key taskId) {
+        ctx.networkHandler().completeTask(taskId);
     }
 }

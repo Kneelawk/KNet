@@ -23,45 +23,36 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl.client;
+package com.kneelawk.knet.neoforge.impl.phase.config;
 
-import java.util.concurrent.Executor;
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 
 import org.jetbrains.annotations.NotNull;
-
-import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerConfigurationTask;
 import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 
-public record ClientFabricConfigPayloadHandlingContext(ClientConfigurationNetworking.Context ctx) implements
-    ConfigPayloadHandlingContext {
+public record NeoForgeConfigTaskQueue(RegisterConfigurationTasksEvent event) implements ConnectionConfigTaskQueue {
     @Override
-    public @NotNull Executor getExecutor() {
-        // Fabric invokes the handlers on the main thread
-        return Runnable::run;
+    public boolean clientHasChannel(CustomPayload.@NotNull Id<?> channel) {
+        return event.getListener().hasChannel(channel);
     }
 
     @Override
     public void disconnect(@NotNull Text message) {
-        ctx.responseSender().disconnect(message);
+        event.getListener().disconnect(message);
     }
 
     @Override
-    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
-        return ClientConfigurationNetworking.canSend(channel);
-    }
-
-    @Override
-    public void sendPayload(CustomPayload payload) {
-        ctx.responseSender().sendPacket(payload);
+    public void enqueueRaw(@NotNull ServerPlayerConfigurationTask task) {
+        event.register(task);
     }
 
     @Override
     public void completeTask(ServerPlayerConfigurationTask.@NotNull Key taskId) {
-        throw new UnsupportedOperationException("Configuration tasks cannot be completed from the client.");
+        event.getListener().onTaskFinished(taskId);
     }
 }

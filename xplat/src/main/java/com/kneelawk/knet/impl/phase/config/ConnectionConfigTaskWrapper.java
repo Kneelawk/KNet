@@ -23,45 +23,36 @@
  *
  */
 
-package com.kneelawk.knet.fabric.impl.client;
+package com.kneelawk.knet.impl.phase.config;
 
-import java.util.concurrent.Executor;
-
-import org.jetbrains.annotations.NotNull;
-
-import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
+import java.util.function.Consumer;
 
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerConfigurationTask;
-import net.minecraft.text.Text;
 
-import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+import com.kneelawk.knet.api.phase.config.ConnectionConfigTask;
+import com.kneelawk.knet.api.util.PayloadSender;
 
-public record ClientFabricConfigPayloadHandlingContext(ClientConfigurationNetworking.Context ctx) implements
-    ConfigPayloadHandlingContext {
+public record ConnectionConfigTaskWrapper(Key key, ConnectionConfigTask task) implements ServerPlayerConfigurationTask {
     @Override
-    public @NotNull Executor getExecutor() {
-        // Fabric invokes the handlers on the main thread
-        return Runnable::run;
+    public void sendPacket(Consumer<Packet<?>> sender) {
+        task.sendInitialPayload(new PayloadSender() {
+            @Override
+            public void sendPayload(CustomPayload payload) {
+                sender.accept(new CustomPayloadS2CPacket(payload));
+            }
+
+            @Override
+            public String toString() {
+                return "config task sender " + key.id();
+            }
+        });
     }
 
     @Override
-    public void disconnect(@NotNull Text message) {
-        ctx.responseSender().disconnect(message);
-    }
-
-    @Override
-    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
-        return ClientConfigurationNetworking.canSend(channel);
-    }
-
-    @Override
-    public void sendPayload(CustomPayload payload) {
-        ctx.responseSender().sendPacket(payload);
-    }
-
-    @Override
-    public void completeTask(ServerPlayerConfigurationTask.@NotNull Key taskId) {
-        throw new UnsupportedOperationException("Configuration tasks cannot be completed from the client.");
+    public Key getKey() {
+        return key;
     }
 }

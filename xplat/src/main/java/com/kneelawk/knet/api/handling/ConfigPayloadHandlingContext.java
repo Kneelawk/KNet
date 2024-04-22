@@ -25,10 +25,30 @@
 
 package com.kneelawk.knet.api.handling;
 
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.server.network.ServerPlayerConfigurationTask;
+import net.minecraft.util.Identifier;
+
 /**
  * Context used for applying a payload during the 'configuration' phase.
  * <p>
  * This is an abstraction over the various loader-specific contexts given when receiving a packet.
  */
 public interface ConfigPayloadHandlingContext extends PayloadHandlingContext {
+    /**
+     * Marks the given task as completed, so that the configuration can continue with the next task.
+     *
+     * @param taskId the id of the task that has been completed.
+     */
+    void completeTask(@NotNull ServerPlayerConfigurationTask.Key taskId);
+
+    /**
+     * Marks the given task as completed, so that the configuration can continue with the next task.
+     *
+     * @param taskId the id of the task that has been completed.
+     */
+    default void completeTask(@NotNull Identifier taskId) {
+        completeTask(new ServerPlayerConfigurationTask.Key(taskId.toString()));
+    }
 }

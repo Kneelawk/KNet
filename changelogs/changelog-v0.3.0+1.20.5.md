@@ -5,3 +5,5 @@ Changes:
 * Made `PayloadHandlingException` unchecked.
 * Added family of `NetBuf` buffer types similar to the `NetByteBuf`.
 * Added `config`-phase channels.
+* Added dependency on Common Events.
+* Added event for enqueueing configuration tasks.
