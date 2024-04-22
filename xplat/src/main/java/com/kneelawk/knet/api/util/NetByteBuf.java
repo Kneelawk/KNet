@@ -13,7 +13,6 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
@@ -43,51 +42,6 @@ import net.minecraft.util.math.BlockPos;
  * @see NetRegistryByteBuf
  */
 public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
-
-    /**
-     * An empty {@link NetByteBuf}.
-     */
-    public static final NetByteBuf EMPTY_BUFFER = new NetByteBuf(Unpooled.EMPTY_BUFFER);
-
-    /**
-     * Creates a new {@link NetByteBuf} without any initial capacity.
-     *
-     * @return A new {@link NetByteBuf} from {@link Unpooled#buffer()}
-     */
-    public static NetByteBuf buffer() {
-        return netOf(Unpooled.buffer());
-    }
-
-    /**
-     * Creates a new {@link NetByteBuf} with the given initial capacity.
-     *
-     * @param initialCapacity the buffer's initial capacity.
-     * @return A new {@link NetByteBuf} from {@link Unpooled#buffer(int)}
-     */
-    public static NetByteBuf buffer(int initialCapacity) {
-        return netOf(Unpooled.buffer(initialCapacity));
-    }
-
-    /**
-     * Creates a new {@link NetByteBuf} without any initial capacity while optionally disabling optimizations.
-     *
-     * @param passthrough whether to disable optimizations.
-     * @return A new {@link NetByteBuf} from {@link Unpooled#buffer()}
-     */
-    public static NetByteBuf buffer(boolean passthrough) {
-        return netOf(Unpooled.buffer(), passthrough);
-    }
-
-    /**
-     * Creates a new {@link NetByteBuf} with the given initial capacity while optionally disabling optimizations.
-     *
-     * @param initialCapacity the buffer's initial capacity.
-     * @param passthrough     whether to disable optimizations.
-     * @return A new {@link NetByteBuf} from {@link Unpooled#buffer(int)}
-     */
-    public static NetByteBuf buffer(int initialCapacity, boolean passthrough) {
-        return netOf(Unpooled.buffer(initialCapacity), passthrough);
-    }
 
     // Hold on to the wrapped buffer, so we can access it when changing passthrough-ness while wrapping.
     private final ByteBuf wrapped;
@@ -138,36 +92,6 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
         super(wrapped);
         this.wrapped = wrapped;
         this.passthrough = passthrough;
-    }
-
-    /**
-     * Returns the given {@link ByteBuf} as {@link NetByteBuf}. If the given instance is already a {@link NetByteBuf}
-     * then the given buffer is returned (note that this may result in unexpected consequences if multiple read/write
-     * Boolean methods are called on the given buffer before you called this).
-     *
-     * @param buf the buffer to be converted into a {@link NetByteBuf}.
-     * @return the given buffer as a {@link NetByteBuf}.
-     */
-    public static NetByteBuf netOf(ByteBuf buf) {
-        return netOf(buf, false);
-    }
-
-    /**
-     * Returns the given {@link ByteBuf} as {@link NetByteBuf}, but with passthrough mode enabled. If the given
-     * instance is already a {@link NetByteBuf} then the given buffer is returned (note that this may result in
-     * unexpected consequences if multiple read/write Boolean methods are called on the given buffer before you called
-     * this).
-     *
-     * @param buf         the buffer to be converted into a {@link NetByteBuf}.
-     * @param passthrough whether to disable optimizations on the resulting buffer.
-     * @return the given buffer as a {@link NetByteBuf}.
-     */
-    public static NetByteBuf netOf(ByteBuf buf, boolean passthrough) {
-        if (buf instanceof NetByteBuf netBuf && netBuf.passthrough == passthrough) {
-            return netBuf;
-        } else {
-            return new NetByteBuf(buf, passthrough);
-        }
     }
 
     @Override
@@ -272,12 +196,12 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
 
     @Override
     public NetByteBuf copy() {
-        return netOf(super.copy(), passthrough);
+        return NetBufs.netOf(super.copy(), passthrough);
     }
 
     @Override
     public NetByteBuf readBytes(int length) {
-        return netOf(super.readBytes(length), passthrough);
+        return NetBufs.netOf(super.readBytes(length), passthrough);
     }
 
     @Override

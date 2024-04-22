@@ -1,26 +1,9 @@
 /*
- * MIT License
+ * Copyright (c) 2019 AlexIIL
  *
- * Copyright (c) 2024 Kneelawk.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 package com.kneelawk.knet.api.util;
@@ -30,7 +13,6 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
@@ -60,127 +42,6 @@ import net.minecraft.util.math.BlockPos;
  */
 public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetRegistryByteBuf> {
 
-    /**
-     * Creates a new {@link NetRegistryByteBuf} with the given registry manager.
-     *
-     * @param registryManager the registry manager for the new buffer.
-     * @return the new buffer.
-     */
-    public static NetRegistryByteBuf buffer(DynamicRegistryManager registryManager) {
-        return netRegOf(Unpooled.buffer(), registryManager);
-    }
-
-    /**
-     * Creates a new {@link NetRegistryByteBuf} with the given registry manager.
-     *
-     * @param registryManager the registry manager for the new buffer.
-     * @param passthrough     whether to disable optimizations.
-     * @return the new buffer.
-     */
-    public static NetRegistryByteBuf buffer(DynamicRegistryManager registryManager, boolean passthrough) {
-        return netRegOf(Unpooled.buffer(), registryManager, passthrough);
-    }
-
-    /**
-     * Creates a new {@link NetRegistryByteBuf} with the given initial capacity and registry manager.
-     *
-     * @param initialCapacity the initial capacity of the new buffer.
-     * @param registryManager the registry manager for the new buffer.
-     * @return the new buffer.
-     */
-    public static NetRegistryByteBuf buffer(int initialCapacity, DynamicRegistryManager registryManager) {
-        return netRegOf(Unpooled.buffer(initialCapacity), registryManager);
-    }
-
-    /**
-     * Creates a new {@link NetRegistryByteBuf} with the given initial capacity and registry manager.
-     *
-     * @param initialCapacity the initial capacity of the new buffer.
-     * @param registryManager the registry manager for the new buffer.
-     * @param passthrough     whether to disable optimizations.
-     * @return the new buffer.
-     */
-    public static NetRegistryByteBuf buffer(int initialCapacity, DynamicRegistryManager registryManager,
-                                            boolean passthrough) {
-        return netRegOf(Unpooled.buffer(initialCapacity), registryManager, passthrough);
-    }
-
-    /**
-     * Wraps a {@link RegistryByteBuf} into a {@link NetRegistryByteBuf}.
-     *
-     * @param buf the original buffer.
-     * @return the wrapping buffer.
-     */
-    public static NetRegistryByteBuf netRegOf(RegistryByteBuf buf) {
-        return netRegOf(buf, false);
-    }
-
-    /**
-     * Wraps a {@link RegistryByteBuf} into a {@link NetRegistryByteBuf}, with passthrough optionally enabled.
-     *
-     * @param buf         the original buffer.
-     * @param passthrough whether to disable optimizations.
-     * @return the wrapping buffer.
-     */
-    public static NetRegistryByteBuf netRegOf(RegistryByteBuf buf, boolean passthrough) {
-        return new NetRegistryByteBuf(buf, buf.getRegistryManager(), passthrough);
-    }
-
-    /**
-     * Wraps a {@link RegistryNetByteBuf} into a {@link NetRegistryByteBuf}.
-     * <p>
-     * Note: this will not use partial bytes from the original buffer. Make sure that the wrapping happens at the same
-     * place when decoding as when encoding.
-     *
-     * @param buf the original buffer.
-     * @return the wrapping buffer.
-     */
-    public static NetRegistryByteBuf netRegOf(RegistryNetByteBuf buf) {
-        return netRegOf(buf, false);
-    }
-
-    /**
-     * Wraps a {@link RegistryNetByteBuf} into a {@link NetRegistryByteBuf}.
-     * <p>
-     * Note: this will not use partial bytes from the original buffer. Make sure that the wrapping happens at the same
-     * place when decoding as when encoding.
-     *
-     * @param buf         the original buffer.
-     * @param passthrough the
-     * @return the wrapping buffer.
-     */
-    public static NetRegistryByteBuf netRegOf(RegistryNetByteBuf buf, boolean passthrough) {
-        return new NetRegistryByteBuf(buf, buf.getRegistryManager(), passthrough);
-    }
-
-    /**
-     * Wraps a {@link ByteBuf} into a {@link NetRegistryByteBuf}, attaching the given registry manager.
-     *
-     * @param buf             the original buffer.
-     * @param registryManager the registry manager to attach.
-     * @return the wrapping buffer.
-     */
-    public static NetRegistryByteBuf netRegOf(ByteBuf buf, DynamicRegistryManager registryManager) {
-        return netRegOf(buf, registryManager, false);
-    }
-
-    /**
-     * Wraps a {@link ByteBuf} into a {@link NetRegistryByteBuf}, attaching the given registry manager and with passthrough optionally enabled.
-     *
-     * @param buf             the original buffer.
-     * @param registryManager the registry manager to attach.
-     * @param passthrough     whether to disable optimizations.
-     * @return the wrapping buffer.
-     */
-    public static NetRegistryByteBuf netRegOf(ByteBuf buf, DynamicRegistryManager registryManager, boolean passthrough) {
-        if (buf instanceof NetRegistryByteBuf regBuf && regBuf.passthrough == passthrough &&
-            regBuf.getRegistryManager() == registryManager) {
-            return regBuf;
-        } else {
-            return new NetRegistryByteBuf(buf, registryManager, passthrough);
-        }
-    }
-
     // Hold on to the wrapped buffer, so we can access it when changing passthrough-ness while wrapping.
     private final ByteBuf wrapped;
 
@@ -188,7 +49,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
      * If true then all {@link PacketByteBuf} override methods that this {@link NetByteBuf} optimises will instead just
      * write using the normal minecraft methods, rather than the (potentially) optimised versions.
      */
-    private final boolean passthrough;
+    public final boolean passthrough;
 
     // Byte-based flag access
     private int readPartialOffset = 8;// so it resets down to 0 and reads a byte on read
@@ -326,12 +187,12 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
 
     @Override
     public NetRegistryByteBuf copy() {
-        return netRegOf(super.copy(), getRegistryManager(), passthrough);
+        return NetBufs.netRegOf(super.copy(), getRegistryManager(), passthrough);
     }
 
     @Override
     public NetRegistryByteBuf readBytes(int length) {
-        return netRegOf(super.readBytes(length), getRegistryManager(), passthrough);
+        return NetBufs.netRegOf(super.readBytes(length), getRegistryManager(), passthrough);
     }
 
     @Override

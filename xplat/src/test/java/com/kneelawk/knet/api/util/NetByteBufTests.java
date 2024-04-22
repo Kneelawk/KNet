@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NetByteBufTests {
     @Test
     void writeBoolean() {
-        NetByteBuf buf = NetByteBuf.buffer();
+        NetByteBuf buf = NetBufs.netBuf();
         buf.writeBoolean(true);
         buf.writeBoolean(false);
         buf.writeBoolean(true);
@@ -41,7 +41,7 @@ public class NetByteBufTests {
 
     @Test
     void readBoolean() {
-        NetByteBuf buf = NetByteBuf.buffer();
+        NetByteBuf buf = NetBufs.netBuf();
         buf.writeByte(0b101);
         assertEquals(true, buf.readBoolean());
         assertEquals(false, buf.readBoolean());
@@ -50,7 +50,7 @@ public class NetByteBufTests {
 
     @Test
     void writeFixedBits() {
-        NetByteBuf buf = NetByteBuf.buffer();
+        NetByteBuf buf = NetBufs.netBuf();
         buf.writeFixedBits(0b10101010, 5);
         assertEquals((byte) 0b01010, buf.getByte(0));
 
@@ -66,7 +66,7 @@ public class NetByteBufTests {
 
     @Test
     void readFixedBits() {
-        NetByteBuf buf = NetByteBuf.buffer();
+        NetByteBuf buf = NetBufs.netBuf();
         buf.writeByte(0b11001100);
         buf.writeByte(0b10101010);
         buf.writeByte(0b11100111);
@@ -78,7 +78,7 @@ public class NetByteBufTests {
     
     @Test
     void writeVarInt() {
-        NetByteBuf buf = NetByteBuf.buffer();
+        NetByteBuf buf = NetBufs.netBuf();
         buf.writeVarInt(0b0001001000110100);
         assertEquals((byte) 0b10110100, buf.getByte(0));
         assertEquals((byte) 0b00100100, buf.getByte(1));
@@ -86,7 +86,7 @@ public class NetByteBufTests {
     
     @Test
     void readVarInt() {
-        NetByteBuf buf = NetByteBuf.buffer();
+        NetByteBuf buf = NetBufs.netBuf();
         buf.writeByte(0b11010101);
         buf.writeByte(0b10001011);
         buf.writeByte(0b01110010);
