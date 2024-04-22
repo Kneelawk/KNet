@@ -27,6 +27,9 @@ package com.kneelawk.knet.api.util;
 
 import net.minecraft.network.packet.CustomPayload;
 
+/**
+ * Represents something capable of sending a payload to a receiver.
+ */
 public interface PayloadSender {
     /**
      * Used to send a response to the message that was just received.

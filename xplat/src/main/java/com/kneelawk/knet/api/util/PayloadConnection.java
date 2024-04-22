@@ -35,7 +35,7 @@ import com.kneelawk.knet.api.channel.Channel;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
 
 /**
- * Represents something capable of sending a payload to a receiver.
+ * Represents a connection capable of sending a payload to a receiver.
  */
 public interface PayloadConnection extends PayloadSender {
     /**
