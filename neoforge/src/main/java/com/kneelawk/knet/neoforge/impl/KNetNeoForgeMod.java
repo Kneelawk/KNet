@@ -44,10 +44,10 @@ public class KNetNeoForgeMod {
     public KNetNeoForgeMod(IEventBus modBus) {
         KNetLog.LOG.info("Initializing KNet {}",
             FMLLoader.getLoadingModList().getModFileById(KNetImpl.MOD_ID).versionString());
-        
+
         modBus.addListener(this::onRegisterConfigurationTasks);
     }
-    
+
     private void onRegisterConfigurationTasks(RegisterConfigurationTasksEvent event) {
         event.register(new ICustomConfigurationTask() {
             @Override

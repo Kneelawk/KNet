@@ -36,6 +36,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.neoforge.impl.proxy.CommonProxy;
 
 public record NeoForgePlayPayloadHandlingContext(IPayloadContext ctx) implements PlayPayloadHandlingContext {
     @Override
@@ -51,6 +52,11 @@ public record NeoForgePlayPayloadHandlingContext(IPayloadContext ctx) implements
     @Override
     public void disconnect(@NotNull Text message) {
         ctx.disconnect(message);
+    }
+
+    @Override
+    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+        return CommonProxy.getInstance().hasChannel(ctx.connection().getPacketListener(), channel);
     }
 
     @Override

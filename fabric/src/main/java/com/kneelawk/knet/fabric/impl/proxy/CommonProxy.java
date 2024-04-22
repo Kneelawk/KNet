@@ -128,4 +128,8 @@ public class CommonProxy {
     public void disconnectFromServer(Text message) {
         KNetLog.LOG.warn("Attempted to disconnect from the server on the server side, with the message: {}", message);
     }
+
+    public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
+        return false;
+    }
 }

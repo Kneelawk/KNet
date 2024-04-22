@@ -50,6 +50,11 @@ public record ClientFabricConfigPayloadHandlingContext(ClientConfigurationNetwor
     }
 
     @Override
+    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+        return ClientConfigurationNetworking.canSend(channel);
+    }
+
+    @Override
     public void sendPayload(CustomPayload payload) {
         ctx.responseSender().sendPacket(payload);
     }

@@ -25,8 +25,13 @@
 
 package com.kneelawk.knet.neoforge.impl.proxy;
 
+import net.neoforged.neoforge.common.extensions.IClientCommonPacketListenerExtension;
+import net.neoforged.neoforge.common.extensions.IServerCommonPacketListenerExtension;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.listener.PacketListener;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
 public class ClientProxy extends CommonProxy {
@@ -41,5 +46,26 @@ public class ClientProxy extends CommonProxy {
         if (networkHandler != null) {
             networkHandler.getConnection().disconnect(message);
         }
+    }
+
+    @Override
+    public boolean hasChannel(PacketListener packetListener, CustomPayload.Id<?> channel) {
+        if (packetListener instanceof IServerCommonPacketListenerExtension extension) {
+            return extension.hasChannel(channel);
+        } else if (packetListener instanceof IClientCommonPacketListenerExtension extension) {
+            return extension.hasChannel(channel);
+        } else {
+            throw new AssertionError("PacketListener " + packetListener +
+                " is not a Server/ClientCommonPacketListener. It came from a non-play, non-configuration phase");
+        }
+    }
+
+    @Override
+    public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
+        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+        if (networkHandler != null) {
+            return networkHandler.hasChannel(channel);
+        }
+        return false;
     }
 }

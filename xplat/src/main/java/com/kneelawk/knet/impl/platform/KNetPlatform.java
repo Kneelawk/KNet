@@ -77,4 +77,8 @@ public interface KNetPlatform {
     }
 
     void disconnectFromServer(Text message);
+
+    boolean clientHasPlayChannel(ServerPlayerEntity player, CustomPayload.Id<?> channel);
+
+    boolean serverHasPlayChannel(CustomPayload.Id<?> channel);
 }

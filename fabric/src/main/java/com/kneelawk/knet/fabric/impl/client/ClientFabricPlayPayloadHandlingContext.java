@@ -57,6 +57,11 @@ public record ClientFabricPlayPayloadHandlingContext(ClientPlayNetworking.Contex
     }
 
     @Override
+    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+        return ClientPlayNetworking.canSend(channel);
+    }
+
+    @Override
     public void sendPayload(CustomPayload payload) {
         ctx.responseSender().sendPacket(payload);
     }

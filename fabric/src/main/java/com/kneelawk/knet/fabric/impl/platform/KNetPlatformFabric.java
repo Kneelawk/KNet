@@ -99,4 +99,14 @@ public class KNetPlatformFabric implements KNetPlatform {
     public void disconnectFromServer(Text message) {
         CommonProxy.getInstance().disconnectFromServer(message);
     }
+
+    @Override
+    public boolean clientHasPlayChannel(ServerPlayerEntity player, CustomPayload.Id<?> channel) {
+        return ServerPlayNetworking.canSend(player, channel);
+    }
+
+    @Override
+    public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
+        return CommonProxy.getInstance().serverHasPlayChannel(channel);
+    }
 }

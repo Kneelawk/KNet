@@ -28,6 +28,7 @@ package com.kneelawk.knet.neoforge.api;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
@@ -116,8 +117,8 @@ public class KNetNeoForge {
     @SuppressWarnings("unchecked")
     public static void registerConfig(PayloadRegistrar registrar, ConfigChannel channel) {
         if (channel.isToServer() && channel.isToClient()) {
-            registrar.playBidirectional((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetBufs.regNetToVanillaCodec(channel.getCodec()),
+            registrar.configurationBidirectional((CustomPayload.Id<CustomPayload>) channel.getId(),
+                (PacketCodec<PacketByteBuf, CustomPayload>) NetBufs.netToVanillaCodec(channel.getCodec()),
                 (payload, ctx) -> {
                     if (ctx.flow().isServerbound()) {
                         handleServerConfig(channel, payload, ctx);
@@ -126,12 +127,12 @@ public class KNetNeoForge {
                     }
                 });
         } else if (channel.isToServer()) {
-            registrar.playToServer((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetBufs.regNetToVanillaCodec(channel.getCodec()),
+            registrar.configurationToServer((CustomPayload.Id<CustomPayload>) channel.getId(),
+                (PacketCodec<PacketByteBuf, CustomPayload>) NetBufs.netToVanillaCodec(channel.getCodec()),
                 (payload, ctx) -> handleServerConfig(channel, payload, ctx));
         } else if (channel.isToClient()) {
-            registrar.playToClient((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetBufs.regNetToVanillaCodec(channel.getCodec()),
+            registrar.configurationToClient((CustomPayload.Id<CustomPayload>) channel.getId(),
+                (PacketCodec<PacketByteBuf, CustomPayload>) NetBufs.netToVanillaCodec(channel.getCodec()),
                 (payload, ctx) -> handleClientConfig(channel, payload, ctx));
         }
     }

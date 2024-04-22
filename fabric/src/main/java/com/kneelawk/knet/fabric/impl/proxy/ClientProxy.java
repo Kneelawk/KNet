@@ -30,6 +30,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.channel.ConfigChannel;
@@ -92,5 +93,10 @@ public class ClientProxy extends CommonProxy {
         if (networkHandler != null) {
             networkHandler.getConnection().disconnect(message);
         }
+    }
+
+    @Override
+    public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
+        return ClientPlayNetworking.canSend(channel);
     }
 }

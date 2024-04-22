@@ -31,6 +31,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import com.kneelawk.knet.api.channel.Channel;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
 
 /**
@@ -53,6 +54,11 @@ public interface PayloadConnection extends PayloadSender {
             @Override
             public void sendPayload(CustomPayload payload) {
                 KNetPlatform.INSTANCE.sendPlay(player, payload);
+            }
+
+            @Override
+            public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+                return KNetPlatform.INSTANCE.clientHasPlayChannel(player, channel);
             }
 
             @Override
@@ -80,6 +86,11 @@ public interface PayloadConnection extends PayloadSender {
             }
 
             @Override
+            public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+                return KNetPlatform.INSTANCE.serverHasPlayChannel(channel);
+            }
+
+            @Override
             public String toString() {
                 return "PayloadSender(to server)";
             }
@@ -92,4 +103,22 @@ public interface PayloadConnection extends PayloadSender {
      * @param message the message for the client to display when disconnected.
      */
     void disconnect(@NotNull Text message);
+
+    /**
+     * Gets whether the receiving end of this connection has declared the ability to receive on the given channel.
+     *
+     * @param channel the channel to check if the receiver has.
+     * @return {@code true} if the receiver has declared the ability to receive on the given channel.
+     */
+    boolean receiverHasChannel(CustomPayload.Id<?> channel);
+
+    /**
+     * Gets whether the receiving end of this connection has declared the ability to receive on the given channel.
+     *
+     * @param channel the channel to check if the receiver has.
+     * @return {@code true} if the receiver has declared the ability to receive on the given channel.
+     */
+    default boolean receiverHasChannel(Channel channel) {
+        return receiverHasChannel(channel.getId());
+    }
 }

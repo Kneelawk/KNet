@@ -65,4 +65,14 @@ public class KNetPlatformNeoForge implements KNetPlatform {
     public void disconnectFromServer(Text message) {
         CommonProxy.getInstance().disconnectFromServer(message);
     }
+
+    @Override
+    public boolean clientHasPlayChannel(ServerPlayerEntity player, CustomPayload.Id<?> channel) {
+        return player.networkHandler.hasChannel(channel);
+    }
+
+    @Override
+    public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
+        return CommonProxy.getInstance().serverHasPlayChannel(channel);
+    }
 }
