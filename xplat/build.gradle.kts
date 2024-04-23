@@ -14,6 +14,12 @@ base {
 
 java.docsDir.set(rootProject.layout.buildDirectory.map { it.dir("docs").dir(project.name) })
 
+loom {
+    mixin {
+        defaultRefmapName.set("knet.refmap.json")
+    }
+}
+
 repositories {
     mavenCentral()
     maven("https://maven.quiltmc.org/repository/release") { name = "Quilt" }

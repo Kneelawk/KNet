@@ -22,7 +22,9 @@
       }
     ]
   },
-  "mixins": [ ],
+  "mixins": [
+    "knet.xplat.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.15.0",
     "fabric-api": "*",
