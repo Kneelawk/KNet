@@ -13,6 +13,7 @@ pluginManagement {
             name = "NeoForged"
         }
         gradlePluginPortal()
+        mavenLocal()
     }
     plugins {
         val architectury_loom_version: String by settings
