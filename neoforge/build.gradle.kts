@@ -72,6 +72,10 @@ tasks {
         filesMatching("META-INF/neoforge.mods.toml") {
             expand(mapOf("version" to project.version))
         }
+        
+        filesMatching("*.mixins.json") {
+            filter { if (it.contains("refmap")) "" else it }
+        }
     }
 
     withType<JavaCompile>().configureEach {
