@@ -1,5 +1,27 @@
 # Kneelawk's Networking Library
 
+[![Github Release Status]][Github Release] [![Maven Status]][Maven] [![Javadoc Badge]][Javadoc] [![Discord Badge]][Discord] [![Ko-fi Badge]][Ko-fi]
+
+[Github Release Status]: https://img.shields.io/github/v/release/Kneelawk/KNet?include_prereleases&sort=semver&display_name=release&style=flat-square&logo=github
+
+[Github Release]: https://github.com/Kneelawk/KNet/releases/latest
+
+[Maven Status]: https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fkneelawk.com%2Fmaven%2Fcom%2Fkneelawk%2Fknet-xplat-intermediary%2Fmaven-metadata.xml&style=flat-square&logo=apachemaven&logoColor=blue
+
+[Maven]: https://kneelawk.com/maven#com/kneelawk/knet-xplat-intermediary
+
+[Javadoc Badge]: https://img.shields.io/badge/-javadoc-green?style=flat-square
+
+[Javadoc]: https://kneelawk.com/docs#knet
+
+[Discord Badge]: https://img.shields.io/discord/988299232731607110?style=flat-square&logo=discord
+
+[Discord]: https://discord.gg/6vgpHcKmxg
+
+[Ko-fi Badge]: https://img.shields.io/badge/ko--fi-donate-blue?style=flat-square&logo=kofi
+
+[Ko-fi]: https://ko-fi.com/kneelawk
+
 KNet is a cross-platform Minecraft networking abstraction and utility library.
 
 KNet is inspired by [LibNetworkStack], but fundamentally different in some key ways:
