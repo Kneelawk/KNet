@@ -43,7 +43,8 @@ import net.minecraft.util.math.BlockPos;
  */
 public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
 
-    // Hold on to the wrapped buffer, so we can access it when changing passthrough-ness while wrapping.
+    // Hold on to the wrapped buffer, just in case we're wrapping a RegistryByteBuf or something.
+    // Though you should really be using a RegistryNetByteBuf in that case.
     private final ByteBuf wrapped;
 
     /**
