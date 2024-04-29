@@ -572,6 +572,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * @param value  the value to write.
      * @param writer the writer for the given type.
      * @param <T>    the type to write.
+     * @return this buffer.
      * @see #readNetNullable(PacketDecoder)
      */
     default <T> B writeNetNullable(@Nullable T value, PacketEncoder<? super B, T> writer) {
