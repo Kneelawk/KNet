@@ -12,6 +12,8 @@ import io.netty.buffer.ByteBuf;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketDecoder;
+import net.minecraft.network.codec.PacketEncoder;
 import net.minecraft.registry.DynamicRegistryManager;
 
 /**
@@ -64,5 +66,29 @@ public class RegistryNetByteBuf extends NetByteBuf {
      */
     public DynamicRegistryManager getRegistryManager() {
         return registryManager;
+    }
+
+    /**
+     * Convenience method for writing something that expects a {@link NetRegistryByteBuf} or parent.
+     *
+     * @param value  the value to write.
+     * @param writer the writer for the given type.
+     * @param <T>    the type to write.
+     * @return this buffer.
+     */
+    public <T> RegistryNetByteBuf writeReg(T value, PacketEncoder<? super NetRegistryByteBuf, T> writer) {
+        writer.encode(NetBufs.netRegOf(this), value);
+        return this;
+    }
+
+    /**
+     * Convenience method for reading something that expects a {@link NetRegistryByteBuf} or parent.
+     *
+     * @param reader the reader for the given type.
+     * @param <T>    the type to read.
+     * @return the read value.
+     */
+    public <T> T readReg(PacketDecoder<? super NetRegistryByteBuf, T> reader) {
+        return reader.decode(NetBufs.netRegOf(this));
     }
 }

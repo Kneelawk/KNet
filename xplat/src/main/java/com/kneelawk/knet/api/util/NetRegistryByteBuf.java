@@ -8,8 +8,6 @@
 
 package com.kneelawk.knet.api.util;
 
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
@@ -402,5 +400,29 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     @Override
     public String readString() {
         return readString(Short.MAX_VALUE);
+    }
+
+    /**
+     * Convenience method for writing something that expects a {@link RegistryNetByteBuf} or parent.
+     *
+     * @param value  the value to write.
+     * @param writer the writer for the given type.
+     * @param <T>    the type to write.
+     * @return this buffer.
+     */
+    public <T> NetRegistryByteBuf writeReg(T value, PacketEncoder<? super RegistryNetByteBuf, T> writer) {
+        writer.encode(NetBufs.regNetOf(this), value);
+        return this;
+    }
+
+    /**
+     * Convenience method for reading something that expects a {@link RegistryNetByteBuf} or parent.
+     *
+     * @param reader the reader for the given type.
+     * @param <T>    the type to read.
+     * @return the read value.
+     */
+    public <T> T readReg(PacketDecoder<? super RegistryNetByteBuf, T> reader) {
+        return reader.decode(NetBufs.regNetOf(this));
     }
 }

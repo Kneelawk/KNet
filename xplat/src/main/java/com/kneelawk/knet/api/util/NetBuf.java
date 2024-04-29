@@ -8,7 +8,14 @@
 
 package com.kneelawk.knet.api.util;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.IntFunction;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -555,6 +562,188 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      */
     default <T> Optional<T> readNetOptional(PacketDecoder<? super B, T> reader) {
         return readBoolean() ? Optional.of(reader.decode(self())) : Optional.empty();
+    }
+
+    /**
+     * Writes a nullable value to this buf. A nullable value is represented by
+     * a boolean indicating if the value is not null, followed by the value only if
+     * the value is not null.
+     *
+     * @param value  the value to write.
+     * @param writer the writer for the given type.
+     * @param <T>    the type to write.
+     * @see #readNetNullable(PacketDecoder)
+     */
+    default <T> B writeNetNullable(@Nullable T value, PacketEncoder<? super B, T> writer) {
+        if (value != null) {
+            writeBoolean(true);
+            writer.encode(self(), value);
+        } else {
+            writeBoolean(false);
+        }
+        return self();
+    }
+
+    /**
+     * Reads a nullable value from this buf. A nullable value is represented by
+     * a boolean indicating if the value is not null, followed by the value only if
+     * the value is not null.
+     *
+     * @param reader the reader for the given type.
+     * @param <T>    the type to write.
+     * @return the read nullable value
+     * @see #writeNetNullable(Object, PacketEncoder)
+     */
+    default <T> @Nullable T readNetNullable(PacketDecoder<? super B, T> reader) {
+        return readBoolean() ? reader.decode(self()) : null;
+    }
+
+    /**
+     * Writes an array of values to this buf. The array is represented by a length
+     * {@linkplain #writeVarUnsignedInt(int) unsigned var int}, followed by values written via the writer.
+     *
+     * @param array  the array to write.
+     * @param writer the writer for the given type.
+     * @param <T>    the type of the array to write.
+     * @return this buffer.
+     */
+    default <T> B writeNetArray(T[] array, PacketEncoder<? super B, T> writer) {
+        writeVarUnsignedInt(array.length);
+        for (T obj : array) {
+            writer.encode(self(), obj);
+        }
+        return self();
+    }
+
+    /**
+     * Reads an array of values from this buf. The array is represented by a length
+     * {@linkplain #readVarUnsignedInt() unsigned var int}, followed by values read via the reader.
+     *
+     * @param arrayCtor the array constructor.
+     * @param reader    the reader for the given type.
+     * @param <T>       the type of the array to read.
+     * @return the read array.
+     */
+    default <T> T[] readNetArray(IntFunction<T[]> arrayCtor, PacketDecoder<? super B, T> reader) {
+        int length = readVarUnsignedInt();
+        T[] array = arrayCtor.apply(length);
+        for (int i = 0; i < length; i++) {
+            array[i] = reader.decode(self());
+        }
+        return array;
+    }
+
+    /**
+     * Writes a collection to this buf. The collection is represented by a length
+     * {@linkplain #readVarUnsignedInt() unsigned var int}, followed by values written via the writer.
+     *
+     * @param collection the collection to write.
+     * @param writer     the writer for the given type.
+     * @param <T>        the type within the collection to write.
+     * @return this buffer.
+     */
+    default <T> B writeNetCollection(Collection<T> collection, PacketEncoder<? super B, T> writer) {
+        writeVarUnsignedInt(collection.size());
+
+        for (T obj : collection) {
+            writer.encode(self(), obj);
+        }
+
+        return self();
+    }
+
+    /**
+     * Reads a collection from this buf. The collection is represented by a length
+     * {@linkplain #readVarUnsignedInt() unsigned var int}, followed by the values read via the reader.
+     *
+     * @param collectionCtor the collection constructor.
+     * @param reader         the reader for the given type.
+     * @param <T>            the type of value in the collection.
+     * @param <C>            the type of collection.
+     * @return the read collection.
+     */
+    default <T, C extends Collection<T>> C readNetCollection(IntFunction<C> collectionCtor,
+                                                             PacketDecoder<? super B, T> reader) {
+        int length = readVarUnsignedInt();
+        C collection = collectionCtor.apply(length);
+
+        for (int i = 0; i < length; i++) {
+            collection.add(reader.decode(self()));
+        }
+
+        return collection;
+    }
+
+    /**
+     * Reads a list via {@link #readNetCollection(IntFunction, PacketDecoder)}.
+     *
+     * @param reader the reader to read list elements.
+     * @param <T>    the type of value in the list.
+     * @return the read list.
+     */
+    default <T> List<T> readNetList(PacketDecoder<? super B, T> reader) {
+        return readNetCollection(Lists::newArrayListWithCapacity, reader);
+    }
+
+    /**
+     * Writes a map to this buf. The map is represented by a length
+     * {@linkplain #writeVarUnsignedInt(int) unsigned var int}, followed by key-value pairs.
+     *
+     * @param map         the map to write.
+     * @param keyWriter   the writer for the keys.
+     * @param valueWriter the write for the values.
+     * @param <K>         the key type.
+     * @param <V>         the value type.
+     * @return this buffer.
+     */
+    default <K, V> B writeNetMap(Map<K, V> map, PacketEncoder<? super B, K> keyWriter,
+                                 PacketEncoder<? super B, V> valueWriter) {
+        writeVarUnsignedInt(map.size());
+        map.forEach((key, value) -> {
+            keyWriter.encode(self(), key);
+            valueWriter.encode(self(), value);
+        });
+        return self();
+    }
+
+    /**
+     * Reads a map from this buf. The map is represented by a length
+     * {@linkplain #readVarUnsignedInt() unsigned var int}, followed by key-value pairs.
+     *
+     * @param mapCtor     the map's constructor.
+     * @param keyReader   the reader for keys.
+     * @param valueReader the reader for values.
+     * @param <K>         the key type.
+     * @param <V>         the value type.
+     * @param <M>         the map type.
+     * @return the read map.
+     */
+    default <K, V, M extends Map<K, V>> M readNetMap(IntFunction<M> mapCtor, PacketDecoder<? super B, K> keyReader,
+                                                     PacketDecoder<? super B, V> valueReader) {
+        int length = readVarUnsignedInt();
+        M map = mapCtor.apply(length);
+
+        for (int i = 0; i < length; i++) {
+            K key = keyReader.decode(self());
+            V value = valueReader.decode(self());
+            map.put(key, value);
+        }
+
+        return map;
+    }
+
+    /**
+     * Reads a map from this buf via {@link #readNetMap(IntFunction, PacketDecoder, PacketDecoder)}.
+     *
+     * @param keyReader   the reader for keys.
+     * @param valueReader the reader for values.
+     * @param <K>         the key type.
+     * @param <V>         the value type.
+     * @return the read map.
+     */
+    default <K, V> Map<K, V> readNetMap(PacketDecoder<? super B, K> keyReader,
+                                        PacketDecoder<? super B, V> valueReader) {
+        return readNetMap(Maps::newHashMapWithExpectedSize, keyReader, valueReader);
     }
 
     /**
