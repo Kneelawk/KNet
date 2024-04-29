@@ -30,6 +30,8 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 
 /**
  * NetBuf Codec utilities.
@@ -48,6 +50,18 @@ public class NetCodecs {
      */
     public static final PacketCodec<NetByteBuf, Boolean> BOOL =
         PacketCodec.ofStatic(NetBuf::writeBoolean, NetBuf::readBoolean);
+
+    /**
+     * KNet optimized {@link ChunkPos} codec.
+     */
+    public static final PacketCodec<NetByteBuf, ChunkPos> CHUNK_POS =
+        PacketCodec.ofStatic(NetBuf::writeChunkPos, NetBuf::readChunkPos);
+
+    /**
+     * KNet optimized {@link ChunkSectionPos} codec.
+     */
+    public static final PacketCodec<NetByteBuf, ChunkSectionPos> CHUNK_SECTION_POS =
+        PacketCodec.ofStatic(NetBuf::writeChunkSectionPos, NetByteBuf::readChunkSectionPos);
 
     /**
      * Version of {@link PacketCodecs#VAR_INT} that handles negative integers properly.

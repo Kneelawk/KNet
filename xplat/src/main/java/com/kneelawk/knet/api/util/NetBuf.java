@@ -19,6 +19,8 @@ import net.minecraft.network.codec.PacketDecoder;
 import net.minecraft.network.codec.PacketEncoder;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 
 /**
  * Super-interface for all net buffers to make sure they have the same interface and implement the same methods.
@@ -80,11 +82,11 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
     int MAX_VAR_U_INT_4_BYTES = 1 << 7 * 4;
 
     /**
-     * Gets this buffer as a {@link PacketByteBuf}.
+     * Gets this buffer as a {@link B}.
      *
-     * @return this buffer as a {@link PacketByteBuf}.
+     * @return this buffer as a {@link B}.
      */
-    PacketByteBuf self();
+    B self();
 
     /**
      * Gets the buffer that this is wrapping.
@@ -321,7 +323,10 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * @return This buffer.
      * @throws IllegalArgumentException if the length argument was less than 1 or greater than 32.
      */
-    B writeFixedBits(int value, int length) throws IllegalArgumentException;
+    default B writeFixedBits(int value, int length) throws IllegalArgumentException {
+        NetBufImplHelper.writeFixedBits(this, value, length);
+        return self();
+    }
 
     /**
      * Reads a fixed number of bits from the given stream.
@@ -330,7 +335,9 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * @return The read bits, compacted into an int.
      * @throws IllegalArgumentException if the length argument was less than 1 or greater than 32.
      */
-    int readFixedBits(int length) throws IllegalArgumentException;
+    default int readFixedBits(int length) throws IllegalArgumentException {
+        return NetBufImplHelper.readFixedBits(this, length);
+    }
 
     /**
      * Writes an enum constant to this buf. An enum constant is represented
@@ -367,6 +374,36 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * @return the read block position.
      */
     BlockPos readBlockPos();
+
+    /**
+     * Writes out a {@link ChunkPos} using 2 {@link #writeVarInt(int)}s rather than a {@link ChunkPos#toLong()}.
+     *
+     * @param pos the chunk position to write.
+     * @return this buffer.
+     */
+    PacketByteBuf writeChunkPos(ChunkPos pos);
+
+    /**
+     * Reads a {@link ChunkPos} using 2 {@link #readVarInt()}s rather than a {@link ChunkPos#ChunkPos(long)}.
+     *
+     * @return the read chunk pos.
+     */
+    ChunkPos readChunkPos();
+
+    /**
+     * Writes out a {@link ChunkSectionPos} using 3 {@link #writeVarInt(int)}s rather than a {@link ChunkSectionPos#asLong()}.
+     *
+     * @param pos the cunk section position to write.
+     * @return this buffer.
+     */
+    PacketByteBuf writeChunkSectionPos(ChunkSectionPos pos);
+
+    /**
+     * Reads a {@link ChunkSectionPos} using 3 {@link #readVarInt()}s rather than a {@link ChunkSectionPos#from(long)}.
+     *
+     * @return the read chunk section pos.
+     */
+    ChunkSectionPos readChunkSectionPos();
 
     /**
      * Writes out an integer using a variable number of bytes.
@@ -468,6 +505,8 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
     /**
      * Like {@link PacketByteBuf#readIdentifier()}, but returns null instead of throwing an error if the read string was
      * invalid.
+     * <p>
+     * <b>Note:</b> this <em>will</em> attempt to read a string from the buffer regardless of whether that string is a valid {@link Identifier}.
      *
      * @return the valid identifier read, or {@code null} if the read string did not represent a valid identifier.
      */
@@ -494,7 +533,15 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * @return this buffer.
      * @see #readNetOptional(PacketDecoder)
      */
-    <T> B writeNetOptional(Optional<T> value, PacketEncoder<? super B, T> writer);
+    default <T> B writeNetOptional(Optional<T> value, PacketEncoder<? super B, T> writer) {
+        if (value.isPresent()) {
+            writeBoolean(true);
+            writer.encode(self(), value.get());
+        } else {
+            writeBoolean(false);
+        }
+        return self();
+    }
 
     /**
      * Reads an optional value from this buf. An optional value is represented by
@@ -506,7 +553,9 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
      * @return the read optional value
      * @see #writeNetOptional(Optional, PacketEncoder)
      */
-    <T> Optional<T> readNetOptional(PacketDecoder<? super B, T> reader);
+    default <T> Optional<T> readNetOptional(PacketDecoder<? super B, T> reader) {
+        return readBoolean() ? Optional.of(reader.decode(self())) : Optional.empty();
+    }
 
     /**
      * Holds an index into a {@link NetByteBuf} that can be restored.

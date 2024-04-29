@@ -8,12 +8,9 @@
 
 package com.kneelawk.knet.api.util;
 
-import java.util.Optional;
-
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.codec.PacketDecoder;
-import net.minecraft.network.codec.PacketEncoder;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -298,6 +295,52 @@ public final class NetBufImplHelper {
     }
 
     /**
+     * Writes a chunk pos.
+     *
+     * @param buf the buffer to write to.
+     * @param pos the pos to write.
+     * @see NetBuf#writeChunkPos(ChunkPos)
+     */
+    public static void writeChunkPos(NetBuf<?> buf, ChunkPos pos) {
+        buf.writeVarInt(pos.x);
+        buf.writeVarInt(pos.z);
+    }
+
+    /**
+     * Reads a chunk pos.
+     *
+     * @param buf the buffer to read from.
+     * @return the read chunk pos.
+     */
+    public static ChunkPos readChunkPos(NetBuf<?> buf) {
+        return new ChunkPos(buf.readVarInt(), buf.readVarInt());
+    }
+
+    /**
+     * Writes a chunk section pos.
+     *
+     * @param buf the buffer to write to.
+     * @param pos the pos to write.
+     * @see NetBuf#writeChunkSectionPos(ChunkSectionPos)
+     */
+    public static void writeChunkSectionPos(NetBuf<?> buf, ChunkSectionPos pos) {
+        buf.writeVarInt(pos.getX());
+        buf.writeVarInt(pos.getY());
+        buf.writeVarInt(pos.getZ());
+    }
+
+    /**
+     * Reads a chunk section pos.
+     *
+     * @param buf the buffer to read from.
+     * @return the read chunk section pos.
+     * @see NetBuf#readChunkSectionPos()
+     */
+    public static ChunkSectionPos readChunkSectionPos(NetBuf<?> buf) {
+        return ChunkSectionPos.from(buf.readVarInt(), buf.readVarInt(), buf.readVarInt());
+    }
+
+    /**
      * Writes a variable-length integer.
      *
      * @param buf  the buffer to write to.
@@ -411,42 +454,5 @@ public final class NetBufImplHelper {
             lval |= (read & 0x7f) << count++ * 7;
         } while (count < 10);
         return lval;
-    }
-
-    /**
-     * Writes an optional value.
-     *
-     * @param buf    the buffer to write to.
-     * @param value  the optional to write.
-     * @param writer the writer for the optional's value.
-     * @param <T>    the type to write.
-     * @param <B>    the type of buffer.
-     * @return the buffer being written to.
-     * @see PacketByteBuf#writeOptional(Optional, PacketEncoder)
-     */
-    public static <T, B extends PacketByteBuf & NetBuf<B>> B writeOptional(B buf, Optional<T> value,
-                                                                           PacketEncoder<? super B, T> writer) {
-        if (value.isPresent()) {
-            buf.writeBoolean(true);
-            writer.encode(buf, value.get());
-        } else {
-            buf.writeBoolean(false);
-        }
-        return buf;
-    }
-
-    /**
-     * Reads an optional value.
-     *
-     * @param buf    the buffer to read from.
-     * @param reader the reader for the optional's value.
-     * @param <T>    the type to read.
-     * @param <B>    the type of buffer.
-     * @return the read optional.
-     * @see PacketByteBuf#readOptional(PacketDecoder)
-     */
-    public static <T, B extends PacketByteBuf & NetBuf<B>> Optional<T> readOptional(B buf,
-                                                                                    PacketDecoder<? super B, T> reader) {
-        return buf.readBoolean() ? Optional.of(reader.decode(buf)) : Optional.empty();
     }
 }

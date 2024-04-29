@@ -7,3 +7,4 @@ Changes:
 * Added `config`-phase channels.
 * Added dependency on Common Events.
 * Added event for enqueueing configuration tasks.
+* Added more utility methods to `NetByteBuf` family of buffers.

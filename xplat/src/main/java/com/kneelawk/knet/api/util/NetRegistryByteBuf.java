@@ -22,6 +22,8 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 
 /**
  * Special {@link PacketByteBuf} that is like a {@link RegistryNetByteBuf} but that extends {@link RegistryByteBuf}
@@ -86,7 +88,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     }
 
     @Override
-    public PacketByteBuf self() {
+    public NetRegistryByteBuf self() {
         return this;
     }
 
@@ -254,17 +256,6 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     }
 
     @Override
-    public NetRegistryByteBuf writeFixedBits(int value, int length) throws IllegalArgumentException {
-        NetBufImplHelper.writeFixedBits(this, value, length);
-        return this;
-    }
-
-    @Override
-    public int readFixedBits(int length) throws IllegalArgumentException {
-        return NetBufImplHelper.readFixedBits(this, length);
-    }
-
-    @Override
     public NetRegistryByteBuf writeEnumConstant(Enum<?> value) {
         if (passthrough) {
             super.writeEnumConstant(value);
@@ -298,6 +289,40 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
             return super.readBlockPos();
         }
         return NetBufImplHelper.readBlockPos(this);
+    }
+
+    @Override
+    public PacketByteBuf writeChunkPos(ChunkPos pos) {
+        if (passthrough) {
+            return super.writeChunkPos(pos);
+        }
+        NetBufImplHelper.writeChunkPos(this, pos);
+        return this;
+    }
+
+    @Override
+    public ChunkPos readChunkPos() {
+        if (passthrough) {
+            return super.readChunkPos();
+        }
+        return NetBufImplHelper.readChunkPos(this);
+    }
+
+    @Override
+    public PacketByteBuf writeChunkSectionPos(ChunkSectionPos pos) {
+        if (passthrough) {
+            return super.writeChunkSectionPos(pos);
+        }
+        NetBufImplHelper.writeChunkSectionPos(this, pos);
+        return this;
+    }
+
+    @Override
+    public ChunkSectionPos readChunkSectionPos() {
+        if (passthrough) {
+            return super.readChunkSectionPos();
+        }
+        return NetBufImplHelper.readChunkSectionPos(this);
     }
 
     @Override
@@ -377,16 +402,5 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     @Override
     public String readString() {
         return readString(Short.MAX_VALUE);
-    }
-
-    @Override
-    public <T> NetRegistryByteBuf writeNetOptional(Optional<T> value,
-                                                   PacketEncoder<? super NetRegistryByteBuf, T> writer) {
-        return NetBufImplHelper.writeOptional(this, value, writer);
-    }
-
-    @Override
-    public <T> Optional<T> readNetOptional(PacketDecoder<? super NetRegistryByteBuf, T> reader) {
-        return NetBufImplHelper.readOptional(this, reader);
     }
 }
