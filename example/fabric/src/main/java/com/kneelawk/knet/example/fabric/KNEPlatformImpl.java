@@ -50,7 +50,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
-import com.kneelawk.knet.api.util.NetBufs;
+import com.kneelawk.knet.api.util.NetCodecs;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
@@ -83,7 +83,7 @@ public class KNEPlatformImpl implements KNEPlatform {
                                                                                                   ExtraScreenHandlerDecoder<T, P> factory,
                                                                                                   PacketCodec<? super RegistryNetByteBuf, P> codec) {
         ScreenHandlerType<T> type =
-            new ExtendedScreenHandlerType<>(factory::create, NetBufs.regNetToVanillaCodec(codec));
+            new ExtendedScreenHandlerType<>(factory::create, NetCodecs.regNetToVanilla(codec));
         KNetExampleFabric.SCREEN_HANDLERS.add(new Pair<>(id(path), type));
         return () -> type;
     }

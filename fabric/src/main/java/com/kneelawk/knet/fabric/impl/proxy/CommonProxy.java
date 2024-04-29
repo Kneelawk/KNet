@@ -44,8 +44,7 @@ import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
-import com.kneelawk.knet.api.util.NetBufs;
-import com.kneelawk.knet.api.util.RegistryNetByteBuf;
+import com.kneelawk.knet.api.util.NetCodecs;
 import com.kneelawk.knet.fabric.impl.FabricConfigPayloadHandlingContext;
 import com.kneelawk.knet.fabric.impl.FabricPlayPayloadHandlingContext;
 import com.kneelawk.knet.impl.KNetLog;
@@ -80,11 +79,11 @@ public class CommonProxy {
         if (channel.isToClient()) {
             // payload types should be registered on both client and server
             PayloadTypeRegistry.playS2C().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetBufs.regNetToVanillaCodec(channel.getCodec()));
+                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.regNetToVanilla(channel.getCodec()));
         }
         if (channel.isToServer()) {
             PayloadTypeRegistry.playC2S().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetBufs.regNetToVanillaCodec(channel.getCodec()));
+                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.regNetToVanilla(channel.getCodec()));
             ServerPlayNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
                     channel.handleServerPayload(payload, new FabricPlayPayloadHandlingContext(ctx));
@@ -106,11 +105,11 @@ public class CommonProxy {
         if (channel.isToClient()) {
             // payload types should be registered on both client and server
             PayloadTypeRegistry.configurationS2C().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<PacketByteBuf, CustomPayload>) NetBufs.netToVanillaCodec(channel.getCodec()));
+                (PacketCodec<PacketByteBuf, CustomPayload>) NetCodecs.netToVanilla(channel.getCodec()));
         }
         if (channel.isToServer()) {
             PayloadTypeRegistry.configurationC2S().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<PacketByteBuf, CustomPayload>) NetBufs.netToVanillaCodec(channel.getCodec()));
+                (PacketCodec<PacketByteBuf, CustomPayload>) NetCodecs.netToVanilla(channel.getCodec()));
             ServerConfigurationNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
                     channel.handleServerPayload(payload, new FabricConfigPayloadHandlingContext(ctx));

@@ -15,7 +15,6 @@ import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.DynamicRegistryManager;
 
 /**
@@ -42,115 +41,6 @@ public final class NetBufs {
     public static final NetByteBuf EMPTY_BUFFER = new NetByteBuf(Unpooled.EMPTY_BUFFER);
 
     private NetBufs() {}
-
-    /**
-     * Converts a {@link NetByteBuf} codec into a {@link PacketByteBuf} codec.
-     *
-     * @param codec the codec to convert.
-     * @param <T>   the type of object the codec encodes/decodes.
-     * @return the new codec.
-     */
-    public static <T> PacketCodec<PacketByteBuf, T> netToVanillaCodec(PacketCodec<? super NetByteBuf, T> codec) {
-        return new PacketCodec<>() {
-            @Override
-            public T decode(PacketByteBuf buf) {
-                return codec.decode(netOf(buf));
-            }
-
-            @Override
-            public void encode(PacketByteBuf buf, T value) {
-                codec.encode(netOf(buf), value);
-            }
-        };
-    }
-
-    /**
-     * Converts a {@link RegistryNetByteBuf} codec into a {@link RegistryByteBuf} codec.
-     *
-     * @param codec the codec to convert.
-     * @param <T>   the type of object the codec encodes/decodes.
-     * @return the new codec.
-     */
-    public static <T> PacketCodec<RegistryByteBuf, T> regNetToVanillaCodec(
-        PacketCodec<? super RegistryNetByteBuf, T> codec) {
-        return new PacketCodec<>() {
-            @Override
-            public T decode(RegistryByteBuf buf) {
-                return codec.decode(regNetOf(buf));
-            }
-
-            @Override
-            public void encode(RegistryByteBuf buf, T value) {
-                codec.encode(regNetOf(buf), value);
-            }
-        };
-    }
-
-    /**
-     * Converts a {@link NetRegistryByteBuf} codec into a {@link RegistryByteBuf} codec.
-     *
-     * @param codec the codec to convert.
-     * @param <T>   the type of object the codec encodes/decodes.
-     * @return the new codec.
-     */
-    public static <T> PacketCodec<RegistryByteBuf, T> netRegToVanillaCodec(
-        PacketCodec<? super NetRegistryByteBuf, T> codec) {
-        return new PacketCodec<>() {
-            @Override
-            public T decode(RegistryByteBuf buf) {
-                return codec.decode(netRegOf(buf));
-            }
-
-            @Override
-            public void encode(RegistryByteBuf buf, T value) {
-                codec.encode(netRegOf(buf), value);
-            }
-        };
-    }
-
-    /**
-     * Converts a {@link NetRegistryByteBuf} codec into a {@link RegistryNetByteBuf} codec.
-     *
-     * @param codec the codec to convert.
-     * @param <T>   the type of object the codec encodes/decodes.
-     * @return the new codec.
-     */
-    public static <T> PacketCodec<RegistryNetByteBuf, T> netToRegCodec(
-        PacketCodec<? super NetRegistryByteBuf, T> codec) {
-        return new PacketCodec<>() {
-            @Override
-            public T decode(RegistryNetByteBuf buf) {
-                return codec.decode(netRegOf(buf));
-            }
-
-            @Override
-            public void encode(RegistryNetByteBuf buf, T value) {
-                codec.encode(netRegOf(buf), value);
-            }
-        };
-    }
-
-    /**
-     * Converts a {@link RegistryNetByteBuf} codec into a {@link NetRegistryByteBuf} codec.
-     *
-     * @param codec the codec to convert.
-     * @param <T>   the type of object the codec encodes/decodes.
-     * @return the new codec.
-     */
-    public static <T> PacketCodec<NetRegistryByteBuf, T> regToNetCodec(
-        PacketCodec<? super RegistryNetByteBuf, T> codec) {
-        return new PacketCodec<>() {
-            @Override
-            public T decode(NetRegistryByteBuf buf) {
-                return codec.decode(regNetOf(buf));
-            }
-
-            @Override
-            public void encode(NetRegistryByteBuf buf, T value) {
-                codec.encode(regNetOf(buf), value);
-            }
-        };
-    }
 
     /**
      * Creates a function that wraps a {@link ByteBuf} in a {@link RegistryNetByteBuf}, attaching the given registry

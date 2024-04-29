@@ -44,7 +44,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import com.kneelawk.knet.api.util.NetBufs;
+import com.kneelawk.knet.api.util.NetCodecs;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
@@ -72,7 +72,7 @@ public class KNEPlatformImpl implements KNEPlatform {
                                                                                                   PacketCodec<? super RegistryNetByteBuf, P> codec) {
         return KNetExampleNeoForge.SCREEN_HANDLERS.register(path, () -> IMenuTypeExtension.create(
             (syncId, playerInv, buf) -> factory.create(syncId, playerInv,
-                NetBufs.regNetToVanillaCodec(codec).decode(buf))));
+                NetCodecs.regNetToVanilla(codec).decode(buf))));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class KNEPlatformImpl implements KNEPlatform {
     public void openScreen(ServerPlayerEntity player, NamedScreenHandlerFactory factory) {
         if (factory instanceof ExtraScreenHandlerFactory<?> extra) {
             player.openMenu(extra,
-                buf -> ((PacketCodec<RegistryByteBuf, Object>) NetBufs.regNetToVanillaCodec(extra.getCodec())).encode(
+                buf -> ((PacketCodec<RegistryByteBuf, Object>) NetCodecs.regNetToVanilla(extra.getCodec())).encode(
                     buf, extra.getExtra(player)));
         } else {
             player.openHandledScreen(factory);
