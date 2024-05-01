@@ -34,7 +34,7 @@ import net.minecraft.util.math.ChunkSectionPos;
  *
  * @param <B> the implementing buffer.
  */
-public interface NetBuf<B extends PacketByteBuf & NetBuf<B>> {
+public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
     /**
      * The minimum value that can fit within a single byte when using signed var-int encoding.
      */
