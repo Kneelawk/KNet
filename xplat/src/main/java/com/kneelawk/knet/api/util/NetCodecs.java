@@ -64,6 +64,21 @@ public class NetCodecs {
         PacketCodec.ofStatic(NetBuf::writeChunkSectionPos, NetByteBuf::readChunkSectionPos);
 
     /**
+     * Codec to write an array of integers.
+     */
+    public static final PacketCodec<PacketByteBuf, int[]> INT_ARRAY = new PacketCodec<>() {
+        @Override
+        public int[] decode(PacketByteBuf buf) {
+            return buf.readIntArray();
+        }
+
+        @Override
+        public void encode(PacketByteBuf buf, int[] value) {
+            buf.writeIntArray(value);
+        }
+    };
+
+    /**
      * Version of {@link PacketCodecs#VAR_INT} that handles negative integers properly.
      * <p>
      * Use {@link PacketCodecs#VAR_INT} for unsigned integers.
