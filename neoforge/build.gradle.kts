@@ -69,6 +69,8 @@ tasks {
 
         inputs.property("version", project.version)
 
+        exclude("fabric.mod.json")
+
         filesMatching("META-INF/neoforge.mods.toml") {
             expand(mapOf("version" to project.version))
         }
