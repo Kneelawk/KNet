@@ -31,6 +31,7 @@ import net.minecraft.network.packet.CustomPayload;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 
 /**
@@ -43,7 +44,7 @@ public interface PlayChannel extends Channel {
      *
      * @return this channel's payload reader.
      */
-    PacketCodec<? super RegistryNetByteBuf, ? extends CustomPayload> getCodec();
+    PacketCodec<? super NetRegistryByteBuf, ? extends CustomPayload> getCodec();
 
     /**
      * Called by net-util platform code when this channel receives a payload on the client-side.

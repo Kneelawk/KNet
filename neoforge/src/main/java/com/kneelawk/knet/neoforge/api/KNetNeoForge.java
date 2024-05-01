@@ -62,7 +62,7 @@ public class KNetNeoForge {
     public static void registerPlay(PayloadRegistrar registrar, PlayChannel channel) {
         if (channel.isToServer() && channel.isToClient()) {
             registrar.playBidirectional((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.regNetToVanilla(channel.getCodec()),
+                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
                 (payload, ctx) -> {
                     if (ctx.flow().isServerbound()) {
                         handleServerPlay(channel, payload, ctx);
@@ -72,11 +72,11 @@ public class KNetNeoForge {
                 });
         } else if (channel.isToServer()) {
             registrar.playToServer((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.regNetToVanilla(channel.getCodec()),
+                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
                 (payload, ctx) -> handleServerPlay(channel, payload, ctx));
         } else if (channel.isToClient()) {
             registrar.playToClient((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.regNetToVanilla(channel.getCodec()),
+                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
                 (payload, ctx) -> handleClientPlay(channel, payload, ctx));
         }
     }

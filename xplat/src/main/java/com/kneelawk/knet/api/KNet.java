@@ -37,6 +37,7 @@ import com.kneelawk.knet.api.channel.context.PlayChannelContext;
 import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 
 /**
  * KNet xplat public interface.
@@ -65,7 +66,7 @@ public class KNet {
         }, context -> new BlockEntityPayload(context.getPos()));
 
     private record BlockEntityPayload(BlockPos pos) {
-        public static final PacketCodec<NetByteBuf, BlockEntityPayload> CODEC =
+        public static final PacketCodec<NetRegistryByteBuf, BlockEntityPayload> CODEC =
             PacketCodec.ofStatic((buf, obj) -> buf.writeBlockPos(obj.pos()),
                 buf -> new BlockEntityPayload(buf.readBlockPos()));
     }
@@ -90,7 +91,7 @@ public class KNet {
         }, context -> new EntityPayload(context.getId()));
 
     private record EntityPayload(int entityId) {
-        public static final PacketCodec<NetByteBuf, EntityPayload> CODEC =
+        public static final PacketCodec<NetRegistryByteBuf, EntityPayload> CODEC =
             PacketCodec.ofStatic((buf, obj) -> buf.writeInt(obj.entityId()), buf -> new EntityPayload(buf.readInt()));
     }
 
@@ -122,7 +123,7 @@ public class KNet {
         }, context -> new ScreenHandlerPayload(context.syncId));
 
     private record ScreenHandlerPayload(int syncId) {
-        public static final PacketCodec<NetByteBuf, ScreenHandlerPayload> CODEC =
+        public static final PacketCodec<NetRegistryByteBuf, ScreenHandlerPayload> CODEC =
             PacketCodec.ofStatic((buf, obj) -> buf.writeInt(obj.syncId()),
                 buf -> new ScreenHandlerPayload(buf.readInt()));
     }

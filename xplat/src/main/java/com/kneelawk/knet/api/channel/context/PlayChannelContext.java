@@ -32,7 +32,7 @@ import net.minecraft.network.codec.PacketCodec;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
-import com.kneelawk.knet.api.util.RegistryNetByteBuf;
+import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 
 /**
  * Describes something capable of supplying context to a channel.
@@ -46,7 +46,7 @@ public interface PlayChannelContext<C> {
      * @param buf the buffer to decode from.
      * @return the newly decoded payload.
      */
-    @NotNull Object decodePayload(@NotNull RegistryNetByteBuf buf);
+    @NotNull Object decodePayload(@NotNull NetRegistryByteBuf buf);
 
     /**
      * Encodes a payload to a buffer.
@@ -54,7 +54,7 @@ public interface PlayChannelContext<C> {
      * @param payload the payload to encodel
      * @param buf     the buffer to write to.
      */
-    void encodePayload(@NotNull Object payload, @NotNull RegistryNetByteBuf buf);
+    void encodePayload(@NotNull Object payload, @NotNull NetRegistryByteBuf buf);
 
     /**
      * Finds a context using a previously decoded payload.
@@ -97,7 +97,7 @@ public interface PlayChannelContext<C> {
      * @param <P>          the child-specific payload type.
      * @return a new channel context that gets the child from the parent channel context.
      */
-    default <T, P> @NotNull PlayChannelContext<T> child(@NotNull PacketCodec<? super NetByteBuf, P> codec,
+    default <T, P> @NotNull PlayChannelContext<T> child(@NotNull PacketCodec<? super NetRegistryByteBuf, P> codec,
                                                         @NotNull ChildPlayContextDecoder<C, T, P> decoder,
                                                         @NotNull ContextEncoder<T, P> encoder,
                                                         @NotNull ParentContextFinder<C, T> parentFinder) {

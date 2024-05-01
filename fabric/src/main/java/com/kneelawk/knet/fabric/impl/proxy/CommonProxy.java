@@ -79,11 +79,11 @@ public class CommonProxy {
         if (channel.isToClient()) {
             // payload types should be registered on both client and server
             PayloadTypeRegistry.playS2C().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.regNetToVanilla(channel.getCodec()));
+                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.netRegToVanilla(channel.getCodec()));
         }
         if (channel.isToServer()) {
             PayloadTypeRegistry.playC2S().register((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.regNetToVanilla(channel.getCodec()));
+                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.netRegToVanilla(channel.getCodec()));
             ServerPlayNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
                     channel.handleServerPayload(payload, new FabricPlayPayloadHandlingContext(ctx));

@@ -31,7 +31,7 @@ import net.minecraft.network.codec.PacketCodec;
 
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
-import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 
 /**
@@ -43,7 +43,7 @@ import com.kneelawk.knet.api.util.RegistryNetByteBuf;
  */
 public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChannelContext<CHILD> {
     private final PlayChannelContext<PARENT> parentChannelContext;
-    private final PacketCodec<? super RegistryNetByteBuf, PAYLOAD> codec;
+    private final PacketCodec<? super NetRegistryByteBuf, PAYLOAD> codec;
     private final ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder;
     private final ContextEncoder<CHILD, PAYLOAD> encoder;
     private final ParentContextFinder<PARENT, CHILD> parentFinder;
@@ -58,7 +58,7 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
      * @param parentFinder         the way to get the parent when given the child.
      */
     public ChildPlayChannelContext(@NotNull PlayChannelContext<PARENT> parentChannelContext,
-                                   @NotNull PacketCodec<? super RegistryNetByteBuf, PAYLOAD> codec,
+                                   @NotNull PacketCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
                                    @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
                                    @NotNull ContextEncoder<CHILD, PAYLOAD> encoder,
                                    @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
@@ -70,7 +70,7 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
     }
 
     @Override
-    public @NotNull Object decodePayload(@NotNull RegistryNetByteBuf buf) {
+    public @NotNull Object decodePayload(@NotNull NetRegistryByteBuf buf) {
         Object parentPayload = parentChannelContext.decodePayload(buf);
         PAYLOAD payload = codec.decode(buf);
         return new Payload(parentPayload, payload);
@@ -78,7 +78,7 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
 
     @SuppressWarnings("unchecked")
     @Override
-    public void encodePayload(@NotNull Object payload, @NotNull RegistryNetByteBuf buf) {
+    public void encodePayload(@NotNull Object payload, @NotNull NetRegistryByteBuf buf) {
         Payload myPayload = (Payload) payload;
         parentChannelContext.encodePayload(myPayload.parentPayload, buf);
         codec.encode(buf, myPayload.payload);
