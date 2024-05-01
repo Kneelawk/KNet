@@ -76,6 +76,7 @@ public class Palette<T> {
      * @param buf    the buffer to decode from.
      * @param reader the function for decoding palette'd objects from the buffer.
      * @param <T>    the type of object this palette associates.
+     * @param <B>    the type of buffer to write to.
      * @return a filled palette.
      */
     public static <T, B extends PacketByteBuf & NetBuf<? super B>> Palette<T> decode(@NotNull B buf, @NotNull
@@ -145,6 +146,7 @@ public class Palette<T> {
      *
      * @param buf    the buffer to write to.
      * @param writer the function for encoding palette'd objects into the buffer.
+     * @param <B>    the type of buffer to write to.
      */
     public <B extends PacketByteBuf & NetBuf<? super B>> void encode(@NotNull B buf,
                                                                      @NotNull PacketEncoder<? super B, T> writer) {
