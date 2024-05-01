@@ -28,9 +28,7 @@ package com.kneelawk.knet.neoforge.impl.proxy;
 import java.lang.reflect.InvocationTargetException;
 
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.common.extensions.IServerCommonPacketListenerExtension;
 
-import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
@@ -63,16 +61,6 @@ public class CommonProxy {
 
     public void disconnectFromServer(Text message) {
         KNetLog.LOG.warn("Attempted to disconnect from the server on the server side, with the message: {}", message);
-    }
-
-    public boolean hasChannel(PacketListener packetListener, CustomPayload.Id<?> channel) {
-        // TODO: use the better method once NeoForge adds the extension I need
-        if (packetListener instanceof IServerCommonPacketListenerExtension extension) {
-            return extension.hasChannel(channel);
-        } else {
-            throw new AssertionError("PacketListener " + packetListener +
-                " is not a ServerCommonPacketListener. It came from a non-play, non-configuration phase");
-        }
     }
 
     public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {

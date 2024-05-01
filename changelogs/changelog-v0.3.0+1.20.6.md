@@ -1,6 +1,6 @@
 Changes:
 
-* Updated to Minecraft 1.20.5.
+* Updated to Minecraft 1.20.6.
 * Renamed existing channels to play-channels, because they are used for sending messages during the 'play' phase.
 * Made `PayloadHandlingException` unchecked.
 * Added family of `NetBuf` buffer types similar to the `NetByteBuf`.

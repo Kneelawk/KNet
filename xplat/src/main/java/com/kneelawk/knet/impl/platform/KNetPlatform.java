@@ -32,13 +32,11 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
 
 public interface KNetPlatform {
     KNetPlatform INSTANCE = ServiceLoader.load(KNetPlatform.class).findFirst()
@@ -50,7 +48,7 @@ public interface KNetPlatform {
 
     void sendPlayToServer(CustomPayload payload);
 
-    void sendPlayToDimension(RegistryKey<World> dim, CustomPayload payload);
+    void sendPlayToDimension(ServerWorld dim, CustomPayload payload);
 
     void sendPlayToTrackingEntity(Entity entity, CustomPayload payload);
 

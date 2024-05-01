@@ -35,13 +35,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
@@ -295,10 +293,10 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param dim     the dimension to send to.
      * @param payload the payload to send.
      */
-    public void sendToDimension(@NotNull RegistryKey<World> dim, @NotNull P payload) {
+    public void sendToDimension(@NotNull ServerWorld dim, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
-            KNetLog.logSend(id, "dimension " + dim.getValue(), payload);
+            KNetLog.logSend(id, "dimension " + dim.getRegistryKey().getValue(), payload);
         }
         KNetPlatform.INSTANCE.sendPlayToDimension(dim, payload);
     }

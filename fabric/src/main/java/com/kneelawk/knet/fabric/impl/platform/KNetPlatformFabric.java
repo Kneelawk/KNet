@@ -1,20 +1,16 @@
 package com.kneelawk.knet.fabric.impl.platform;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
 
 import com.kneelawk.knet.fabric.impl.KNetFabricMod;
 import com.kneelawk.knet.fabric.impl.proxy.CommonProxy;
@@ -52,20 +48,8 @@ public class KNetPlatformFabric implements KNetPlatform {
     }
 
     @Override
-    public void sendPlayToDimension(RegistryKey<World> dim, CustomPayload payload) {
-        if (KNetFabricMod.currentServer != null) {
-            ServerWorld world = KNetFabricMod.currentServer.getWorld(dim);
-            if (world != null) {
-                PlayerLookup.world(world).forEach(player -> ServerPlayNetworking.send(player, payload));
-            } else {
-                KNetLog.LOG.warn("Attempted to send payload {} to world {} but that world does not exist.",
-                    payload.getId().id(), dim.getValue());
-            }
-        } else {
-            KNetLog.LOG.warn(
-                "Attempted to send payload {} to all clients in world {} but no server is running on this side.",
-                payload.getId().id(), dim.getValue());
-        }
+    public void sendPlayToDimension(ServerWorld dim, CustomPayload payload) {
+        PlayerLookup.world(dim).forEach(player -> ServerPlayNetworking.send(player, payload));
     }
 
     @Override
