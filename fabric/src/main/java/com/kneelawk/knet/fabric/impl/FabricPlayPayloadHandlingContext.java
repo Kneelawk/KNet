@@ -41,7 +41,10 @@ import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx) implements PlayPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
-        // Fabric invokes the handlers on the main thread
+        // Fabric currently invokes the handlers on the main thread, but I'm not sure if that's part of the API contract.
+        // Client and server executors will run immediately if on the main thread.
+        Executor executor = KNetFabricMod.currentServer;
+        if (executor != null) return executor;
         return Runnable::run;
     }
 

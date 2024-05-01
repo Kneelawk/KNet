@@ -37,13 +37,15 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.text.Text;
 
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.fabric.impl.proxy.CommonProxy;
 
 public record ClientFabricPlayPayloadHandlingContext(ClientPlayNetworking.Context ctx) implements
     PlayPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
-        // Fabric invokes the handlers on the main thread
-        return Runnable::run;
+        // Fabric currently invokes the handlers on the main thread, but I'm not sure if that's part of the API contract.
+        // Client and server executors will run immediately if on the main thread.
+        return CommonProxy.getInstance().getClientExecutor();
     }
 
     @Override
