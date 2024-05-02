@@ -42,8 +42,9 @@ import net.minecraft.util.math.BlockPos;
 
 import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.context.ContextualPlayChannel;
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.NetBufs;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.KNetExample;
 import com.kneelawk.knet.example.net.BlockPosPayload;
@@ -59,8 +60,8 @@ public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHan
 
     public static final ContextualPlayChannel<FancyLightBlockEntity, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
         new ContextualPlayChannel<>(id("fancy_light_color_update"),
-            KNet.BLOCK_ENTITY_CONTEXT.cast(FancyLightBlockEntity.class), ColorUpdatePayload.CODEC).recvClient(
-            FancyLightBlockEntity::recv);
+            KNet.BLOCK_ENTITY_CONTEXT.cast(FancyLightBlockEntity.class),
+            ColorUpdatePayload.CODEC.mapBuf(NetBufs::netOf)).recvClient(FancyLightBlockEntity::recv);
 
     private int red = 255;
     private int green = 255;

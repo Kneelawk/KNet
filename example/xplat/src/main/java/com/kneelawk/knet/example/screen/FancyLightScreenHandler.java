@@ -37,6 +37,7 @@ import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.context.ContextualPlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.NetBufs;
 import com.kneelawk.knet.example.KNetExample;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
@@ -48,8 +49,8 @@ import static com.kneelawk.knet.example.KNetExample.id;
 public class FancyLightScreenHandler extends ScreenHandler {
     public static final ContextualPlayChannel<FancyLightScreenHandler, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
         new ContextualPlayChannel<>(id("fancy_light_screen_color_update"),
-            KNet.SCREEN_HANDLER_CONTEXT.cast(FancyLightScreenHandler.class), ColorUpdatePayload.CODEC).recvServer(
-            FancyLightScreenHandler::recv);
+            KNet.SCREEN_HANDLER_CONTEXT.cast(FancyLightScreenHandler.class),
+            ColorUpdatePayload.CODEC.mapBuf(NetBufs::netOf)).recvServer(FancyLightScreenHandler::recv);
 
     private final ScreenHandlerContext context;
     private final FancyLightBlockEntity entity;
