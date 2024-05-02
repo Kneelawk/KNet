@@ -46,6 +46,7 @@ import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.PayloadSender;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.impl.KNetLog;
@@ -62,8 +63,8 @@ import com.kneelawk.knet.impl.platform.KNetPlatform;
 public class ContextualPlayChannel<C, P> implements PlayChannel {
     private final CustomPayload.Id<Payload> id;
     private final PlayChannelContext<C> channelContext;
-    private final PacketCodec<? super RegistryNetByteBuf, P> codec;
-    private final PacketCodec<RegistryNetByteBuf, Payload> payloadCodec = PacketCodec.of(Payload::write, this::read);
+    private final PacketCodec<? super NetRegistryByteBuf, P> codec;
+    private final PacketCodec<NetRegistryByteBuf, Payload> payloadCodec = PacketCodec.of(Payload::write, this::read);
 
     private ContextualPlayPayloadHandler<C, P> clientHandler = null;
     private ContextualPlayPayloadHandler<C, P> serverHandler = null;
@@ -76,7 +77,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param codec          the payload codec of the channel.
      */
     public ContextualPlayChannel(@NotNull Identifier id, @NotNull PlayChannelContext<C> channelContext,
-                                 @NotNull PacketCodec<? super RegistryNetByteBuf, P> codec) {
+                                 @NotNull PacketCodec<? super NetRegistryByteBuf, P> codec) {
         this.id = new CustomPayload.Id<>(id);
         this.channelContext = channelContext;
         this.codec = codec;
@@ -317,11 +318,11 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
     }
 
     @Override
-    public PacketCodec<? super RegistryNetByteBuf, ? extends CustomPayload> getCodec() {
+    public PacketCodec<? super NetRegistryByteBuf, ? extends CustomPayload> getCodec() {
         return payloadCodec;
     }
 
-    private Payload read(RegistryNetByteBuf buf) {
+    private Payload read(NetRegistryByteBuf buf) {
         Object contextPayload = channelContext.decodePayload(buf);
         P payload = codec.decode(buf);
         return new Payload(contextPayload, payload);
@@ -389,7 +390,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
             this.payload = payload;
         }
 
-        public void write(RegistryNetByteBuf buf) {
+        public void write(NetRegistryByteBuf buf) {
             channelContext.encodePayload(contextPayload, buf);
             codec.encode(buf, payload);
         }

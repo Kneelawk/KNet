@@ -31,6 +31,7 @@ import net.minecraft.network.codec.PacketCodec;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 
 /**
@@ -40,7 +41,7 @@ import com.kneelawk.knet.api.util.RegistryNetByteBuf;
  * @param <P> the payload this uses.
  */
 public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
-    private final PacketCodec<? super RegistryNetByteBuf, P> codec;
+    private final PacketCodec<? super NetRegistryByteBuf, P> codec;
     private final PlayContextDecoder<C, P> decoder;
     private final ContextEncoder<C, P> encoder;
 
@@ -51,7 +52,7 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
      * @param decoder a decoder for decoding context from the payload.
      * @param encoder an encoder for encoding context into a payload.
      */
-    public RootPlayChannelContext(@NotNull PacketCodec<? super RegistryNetByteBuf, P> codec,
+    public RootPlayChannelContext(@NotNull PacketCodec<? super NetRegistryByteBuf, P> codec,
                                   @NotNull PlayContextDecoder<C, P> decoder, @NotNull ContextEncoder<C, P> encoder) {
         this.codec = codec;
         this.decoder = decoder;
@@ -59,13 +60,13 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
     }
 
     @Override
-    public @NotNull Object decodePayload(@NotNull RegistryNetByteBuf buf) {
+    public @NotNull Object decodePayload(@NotNull NetRegistryByteBuf buf) {
         return codec.decode(buf);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void encodePayload(@NotNull Object payload, @NotNull RegistryNetByteBuf buf) {
+    public void encodePayload(@NotNull Object payload, @NotNull NetRegistryByteBuf buf) {
         codec.encode(buf, (P) payload);
     }
 

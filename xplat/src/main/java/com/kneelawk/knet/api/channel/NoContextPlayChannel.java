@@ -45,8 +45,8 @@ import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.PayloadSender;
-import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
 
@@ -57,7 +57,7 @@ import com.kneelawk.knet.impl.platform.KNetPlatform;
  */
 public class NoContextPlayChannel<P extends CustomPayload> implements PlayChannel, NoContextChannel<P> {
     private final CustomPayload.Id<P> id;
-    private final PacketCodec<? super RegistryNetByteBuf, P> codec;
+    private final PacketCodec<? super NetRegistryByteBuf, P> codec;
 
     private NoContextPlayPayloadHandler<P> clientHandler = null;
     private NoContextPlayPayloadHandler<P> serverHandler = null;
@@ -69,7 +69,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      * @param codec used for converting packets into payloads.
      */
     public NoContextPlayChannel(@NotNull CustomPayload.Id<P> id,
-                                @NotNull PacketCodec<? super RegistryNetByteBuf, P> codec) {
+                                @NotNull PacketCodec<? super NetRegistryByteBuf, P> codec) {
         this.id = id;
         this.codec = codec;
     }
@@ -384,7 +384,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
     }
 
     @Override
-    public PacketCodec<? super RegistryNetByteBuf, ? extends CustomPayload> getCodec() {
+    public PacketCodec<? super NetRegistryByteBuf, ? extends CustomPayload> getCodec() {
         return codec;
     }
 
