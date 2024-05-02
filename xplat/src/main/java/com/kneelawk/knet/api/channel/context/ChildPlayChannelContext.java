@@ -70,7 +70,7 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
         @NotNull PacketCodec<? super RegistryNetByteBuf, PAYLOAD> codec,
         @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
         @NotNull ContextEncoder<CHILD, PAYLOAD> encoder, @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
-        return new ChildPlayChannelContext<>(parentChannelContext, codec.mapBuf(NetBufs::regNetOf), decoder, encoder,
+        return new ChildPlayChannelContext<>(parentChannelContext, codec.mapBuf(NetBufs::registryNetOf), decoder, encoder,
             parentFinder);
     }
 

@@ -215,12 +215,12 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
 
     @Override
     public NetRegistryByteBuf copy() {
-        return NetBufs.netRegOf(super.copy(), getRegistryManager(), passthrough);
+        return NetBufs.netRegistryOf(super.copy(), getRegistryManager(), passthrough);
     }
 
     @Override
     public NetRegistryByteBuf readBytes(int length) {
-        return NetBufs.netRegOf(super.readBytes(length), getRegistryManager(), passthrough);
+        return NetBufs.netRegistryOf(super.readBytes(length), getRegistryManager(), passthrough);
     }
 
     @Override
@@ -439,7 +439,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
      * @return this buffer.
      */
     public <T> NetRegistryByteBuf writeReg(T value, PacketEncoder<? super RegistryNetByteBuf, T> writer) {
-        writer.encode(NetBufs.regNetOf(this), value);
+        writer.encode(NetBufs.registryNetOf(this), value);
         return this;
     }
 
@@ -451,6 +451,6 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
      * @return the read value.
      */
     public <T> T readReg(PacketDecoder<? super RegistryNetByteBuf, T> reader) {
-        return reader.decode(NetBufs.regNetOf(this));
+        return reader.decode(NetBufs.registryNetOf(this));
     }
 }

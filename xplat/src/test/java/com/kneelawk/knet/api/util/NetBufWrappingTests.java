@@ -34,7 +34,7 @@ public class NetBufWrappingTests {
     void writeBoolean() {
         NetByteBuf buf = NetBufs.netBuf();
         buf.writeBoolean(true);
-        NetRegistryByteBuf buf2 = NetBufs.netRegOf(buf, null);
+        NetRegistryByteBuf buf2 = NetBufs.netRegistryOf(buf, null);
         buf2.writeBoolean(false);
         buf2.writeBoolean(true);
         assertEquals((byte) 0b101, buf.readByte(), "writeBoolean(true...false...true) should produce 0b101");
@@ -45,7 +45,7 @@ public class NetBufWrappingTests {
         NetByteBuf buf = NetBufs.netBuf();
         buf.writeByte(0b101);
         assertEquals(true, buf.readBoolean());
-        NetRegistryByteBuf buf2 = NetBufs.netRegOf(buf, null);
+        NetRegistryByteBuf buf2 = NetBufs.netRegistryOf(buf, null);
         assertEquals(false, buf2.readBoolean());
         assertEquals(true, buf2.readBoolean());
     }
@@ -60,7 +60,7 @@ public class NetBufWrappingTests {
         assertEquals((byte) 0b01101010, buf.getByte(0));
         assertEquals((byte) 0b00, buf.getByte(1));
 
-        NetRegistryByteBuf buf2 = NetBufs.netRegOf(buf, null);
+        NetRegistryByteBuf buf2 = NetBufs.netRegistryOf(buf, null);
 
         buf2.writeFixedBits(0b11011011011011011, 17);
         assertEquals((byte) 0b11011000, buf.getByte(1));
@@ -76,7 +76,7 @@ public class NetBufWrappingTests {
         buf.writeByte(0b11100111);
         buf.writeByte(0b01100110);
         assertEquals(0b01100, buf.readFixedBits(5));
-        NetRegistryByteBuf buf2 = NetBufs.netRegOf(buf, null);
+        NetRegistryByteBuf buf2 = NetBufs.netRegistryOf(buf, null);
         assertEquals(0b11010, buf2.readFixedBits(5));
         assertEquals(0b10101011100111110, buf2.readFixedBits(17));
     }

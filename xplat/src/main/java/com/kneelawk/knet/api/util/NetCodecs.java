@@ -148,12 +148,12 @@ public class NetCodecs {
         return new PacketCodec<>() {
             @Override
             public T decode(RegistryByteBuf buf) {
-                return codec.decode(NetBufs.regNetOf(buf));
+                return codec.decode(NetBufs.registryNetOf(buf));
             }
 
             @Override
             public void encode(RegistryByteBuf buf, T value) {
-                codec.encode(NetBufs.regNetOf(buf), value);
+                codec.encode(NetBufs.registryNetOf(buf), value);
             }
         };
     }
@@ -170,12 +170,12 @@ public class NetCodecs {
         return new PacketCodec<>() {
             @Override
             public T decode(RegistryByteBuf buf) {
-                return codec.decode(NetBufs.netRegOf(buf));
+                return codec.decode(NetBufs.netRegistryOf(buf));
             }
 
             @Override
             public void encode(RegistryByteBuf buf, T value) {
-                codec.encode(NetBufs.netRegOf(buf), value);
+                codec.encode(NetBufs.netRegistryOf(buf), value);
             }
         };
     }
@@ -192,12 +192,12 @@ public class NetCodecs {
         return new PacketCodec<>() {
             @Override
             public T decode(RegistryNetByteBuf buf) {
-                return codec.decode(NetBufs.netRegOf(buf));
+                return codec.decode(NetBufs.netRegistryOf(buf));
             }
 
             @Override
             public void encode(RegistryNetByteBuf buf, T value) {
-                codec.encode(NetBufs.netRegOf(buf), value);
+                codec.encode(NetBufs.netRegistryOf(buf), value);
             }
         };
     }
@@ -214,12 +214,12 @@ public class NetCodecs {
         return new PacketCodec<>() {
             @Override
             public T decode(NetRegistryByteBuf buf) {
-                return codec.decode(NetBufs.regNetOf(buf));
+                return codec.decode(NetBufs.registryNetOf(buf));
             }
 
             @Override
             public void encode(NetRegistryByteBuf buf, T value) {
-                codec.encode(NetBufs.regNetOf(buf), value);
+                codec.encode(NetBufs.registryNetOf(buf), value);
             }
         };
     }

@@ -85,7 +85,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
     public static <C, P> ContextualPlayChannel<C, P> ofNetCodec(@NotNull Identifier id,
                                                                 @NotNull PlayChannelContext<C> channelContext, @NotNull
                                                                 PacketCodec<? super RegistryNetByteBuf, P> codec) {
-        return new ContextualPlayChannel<>(id, channelContext, codec.mapBuf(NetBufs::regNetOf));
+        return new ContextualPlayChannel<>(id, channelContext, codec.mapBuf(NetBufs::registryNetOf));
     }
 
     /**

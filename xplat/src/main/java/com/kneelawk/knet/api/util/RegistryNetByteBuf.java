@@ -77,7 +77,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @return this buffer.
      */
     public <T> RegistryNetByteBuf writeReg(T value, PacketEncoder<? super NetRegistryByteBuf, T> writer) {
-        writer.encode(NetBufs.netRegOf(this), value);
+        writer.encode(NetBufs.netRegistryOf(this), value);
         return this;
     }
 
@@ -89,6 +89,6 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @return the read value.
      */
     public <T> T readReg(PacketDecoder<? super NetRegistryByteBuf, T> reader) {
-        return reader.decode(NetBufs.netRegOf(this));
+        return reader.decode(NetBufs.netRegistryOf(this));
     }
 }

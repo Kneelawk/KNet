@@ -61,7 +61,7 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
     public static <C, P> RootPlayChannelContext<C, P> ofNetCodec(
         @NotNull PacketCodec<? super RegistryNetByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
         @NotNull ContextEncoder<C, P> encoder) {
-        return new RootPlayChannelContext<>(codec.mapBuf(NetBufs::regNetOf), decoder, encoder);
+        return new RootPlayChannelContext<>(codec.mapBuf(NetBufs::registryNetOf), decoder, encoder);
     }
 
     /**

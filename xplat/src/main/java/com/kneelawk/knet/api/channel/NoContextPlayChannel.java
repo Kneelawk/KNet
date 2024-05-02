@@ -76,7 +76,7 @@ public class NoContextPlayChannel<P extends CustomPayload> implements PlayChanne
      */
     public static <P extends CustomPayload> NoContextPlayChannel<P> ofNetCodec(@NotNull CustomPayload.Id<P> id, @NotNull
     PacketCodec<? super RegistryNetByteBuf, P> codec) {
-        return new NoContextPlayChannel<>(id, codec.mapBuf(NetBufs::regNetOf));
+        return new NoContextPlayChannel<>(id, codec.mapBuf(NetBufs::registryNetOf));
     }
 
     /**
