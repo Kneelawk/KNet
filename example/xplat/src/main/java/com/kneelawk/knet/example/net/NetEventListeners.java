@@ -39,7 +39,7 @@ import com.kneelawk.knet.example.KNetExample;
 public class NetEventListeners {
     public static final Identifier PING_PONG_TASK = KNetExample.id("ping_pong");
     public static final NoContextConfigChannel<PingPongPayload> CONFIG_CHANNEL =
-        new NoContextConfigChannel<>(PingPongPayload.ID, PingPongPayload.CODEC).recvClient(
+        NoContextConfigChannel.of(PingPongPayload.ID, PingPongPayload.CODEC).recvClient(
             NetEventListeners::receiveClient).recvServer(NetEventListeners::receiveServer);
 
     @Listen(ConnectionConfigCallback.class)

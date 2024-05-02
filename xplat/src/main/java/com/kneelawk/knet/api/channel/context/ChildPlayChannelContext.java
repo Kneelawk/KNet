@@ -27,10 +27,13 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.NetBufs;
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 
@@ -50,18 +53,55 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
 
     /**
      * Creates a new child channel context that is capable of finding a child context based on a parent context.
+     * This accepts a {@link RegistryNetByteBuf} codec or {@link NetByteBuf} codec.
      *
      * @param parentChannelContext the channel context this wraps and who supplies the parent context.
      * @param codec                the codec for the payload holding information about the child.
      * @param decoder              the decoder for finding the child in the parent based on the information supplied by the payload.
      * @param encoder              the encoder for encoding child-specific information into a payload.
      * @param parentFinder         the way to get the parent when given the child.
+     * @param <PARENT>             the parent context type.
+     * @param <CHILD>              the child context type.
+     * @param <PAYLOAD>            the payload type.
+     * @return a new child channel context.
      */
-    public ChildPlayChannelContext(@NotNull PlayChannelContext<PARENT> parentChannelContext,
-                                   @NotNull PacketCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
-                                   @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
-                                   @NotNull ContextEncoder<CHILD, PAYLOAD> encoder,
-                                   @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+    public static <PARENT, CHILD, PAYLOAD> ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> ofNetCodec(
+        @NotNull PlayChannelContext<PARENT> parentChannelContext,
+        @NotNull PacketCodec<? super RegistryNetByteBuf, PAYLOAD> codec,
+        @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
+        @NotNull ContextEncoder<CHILD, PAYLOAD> encoder, @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+        return new ChildPlayChannelContext<>(parentChannelContext, codec.mapBuf(NetBufs::regNetOf), decoder, encoder,
+            parentFinder);
+    }
+
+    /**
+     * Creates a new child channel context that is capable of finding a child context based on a parent context.
+     * This accepts a {@link NetRegistryByteBuf} codec or {@link RegistryByteBuf} codec.
+     *
+     * @param parentChannelContext the channel context this wraps and who supplies the parent context.
+     * @param codec                the codec for the payload holding information about the child.
+     * @param decoder              the decoder for finding the child in the parent based on the information supplied by the payload.
+     * @param encoder              the encoder for encoding child-specific information into a payload.
+     * @param parentFinder         the way to get the parent when given the child.
+     * @param <PARENT>             the parent context type.
+     * @param <CHILD>              the child context type.
+     * @param <PAYLOAD>            the payload type.
+     * @return a new child channel context.
+     */
+    public static <PARENT, CHILD, PAYLOAD> ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> ofRegistryCodec(
+        @NotNull PlayChannelContext<PARENT> parentChannelContext,
+        @NotNull PacketCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
+        @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
+        @NotNull ContextEncoder<CHILD, PAYLOAD> encoder, @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+        return new ChildPlayChannelContext<>(parentChannelContext, codec, decoder, encoder,
+            parentFinder);
+    }
+
+    private ChildPlayChannelContext(@NotNull PlayChannelContext<PARENT> parentChannelContext,
+                                    @NotNull PacketCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
+                                    @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
+                                    @NotNull ContextEncoder<CHILD, PAYLOAD> encoder,
+                                    @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
         this.parentChannelContext = parentChannelContext;
         this.codec = codec;
         this.decoder = decoder;

@@ -59,8 +59,15 @@ public class NoContextConfigChannel<P extends CustomPayload> implements ConfigCh
      *
      * @param id    the id of this channel. Must be the same as the id of the payloads being sent.
      * @param codec used for converting packets into payloads.
+     * @param <P>   the type of payload.
+     * @return a new context-less channel.
      */
-    public NoContextConfigChannel(CustomPayload.Id<P> id, PacketCodec<? super NetByteBuf, P> codec) {
+    public static <P extends CustomPayload> NoContextConfigChannel<P> of(@NotNull CustomPayload.Id<P> id, @NotNull
+    PacketCodec<? super NetByteBuf, P> codec) {
+        return new NoContextConfigChannel<>(id, codec);
+    }
+
+    private NoContextConfigChannel(CustomPayload.Id<P> id, PacketCodec<? super NetByteBuf, P> codec) {
         this.id = id;
         this.codec = codec;
     }

@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -46,6 +47,8 @@ import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.NetBufs;
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.PayloadSender;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
@@ -70,14 +73,40 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
     private ContextualPlayPayloadHandler<C, P> serverHandler = null;
 
     /**
-     * Creates a new contextual channel.
+     * Creates a new contextual channel that accepts a {@link RegistryNetByteBuf} codec or {@link NetByteBuf} codec.
      *
-     * @param id             the id of the channel.
+     * @param id             the name of the channel.
      * @param channelContext the context of the channel.
-     * @param codec          the payload codec of the channel.
+     * @param codec          the channel's payload codec.
+     * @param <C>            the context type.
+     * @param <P>            the payload type.
+     * @return a new contextual channel.
      */
-    public ContextualPlayChannel(@NotNull Identifier id, @NotNull PlayChannelContext<C> channelContext,
-                                 @NotNull PacketCodec<? super NetRegistryByteBuf, P> codec) {
+    public static <C, P> ContextualPlayChannel<C, P> ofNetCodec(@NotNull Identifier id,
+                                                                @NotNull PlayChannelContext<C> channelContext, @NotNull
+                                                                PacketCodec<? super RegistryNetByteBuf, P> codec) {
+        return new ContextualPlayChannel<>(id, channelContext, codec.mapBuf(NetBufs::regNetOf));
+    }
+
+    /**
+     * Creates a new contextual channel that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryByteBuf} codec.
+     *
+     * @param id             the name of the channel.
+     * @param channelContext the context of the channel.
+     * @param codec          the channel's payload codec.
+     * @param <C>            the context type.
+     * @param <P>            the payload type.
+     * @return a new contextual channel.
+     */
+    public static <C, P> ContextualPlayChannel<C, P> ofRegistryCodec(@NotNull Identifier id,
+                                                                     @NotNull PlayChannelContext<C> channelContext,
+                                                                     @NotNull
+                                                                     PacketCodec<? super NetRegistryByteBuf, P> codec) {
+        return new ContextualPlayChannel<>(id, channelContext, codec);
+    }
+
+    private ContextualPlayChannel(@NotNull Identifier id, @NotNull PlayChannelContext<C> channelContext,
+                                  @NotNull PacketCodec<? super NetRegistryByteBuf, P> codec) {
         this.id = new CustomPayload.Id<>(id);
         this.channelContext = channelContext;
         this.codec = codec;

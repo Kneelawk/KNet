@@ -27,10 +27,13 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.NetBufs;
+import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 
@@ -46,14 +49,39 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
     private final ContextEncoder<C, P> encoder;
 
     /**
-     * Creates a new root channel context.
+     * Creates a new root channel context that accepts a {@link RegistryNetByteBuf} codec or {@link NetByteBuf} codec.
      *
      * @param codec   the payload codec.
      * @param decoder a decoder for decoding context from the payload.
      * @param encoder an encoder for encoding context into a payload.
+     * @param <C>     the type of context.
+     * @param <P>     the type of payload.
+     * @return a new root channel context.
      */
-    public RootPlayChannelContext(@NotNull PacketCodec<? super NetRegistryByteBuf, P> codec,
-                                  @NotNull PlayContextDecoder<C, P> decoder, @NotNull ContextEncoder<C, P> encoder) {
+    public static <C, P> RootPlayChannelContext<C, P> ofNetCodec(
+        @NotNull PacketCodec<? super RegistryNetByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
+        @NotNull ContextEncoder<C, P> encoder) {
+        return new RootPlayChannelContext<>(codec.mapBuf(NetBufs::regNetOf), decoder, encoder);
+    }
+
+    /**
+     * Creates a new root channel context that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryByteBuf} codec.
+     *
+     * @param codec   the payload codec.
+     * @param decoder a decoder for decoding context from the payload.
+     * @param encoder an encoder for encoding context into a payload.
+     * @param <C>     the type of context.
+     * @param <P>     the type of payload.
+     * @return a new root channel context.
+     */
+    public static <C, P> RootPlayChannelContext<C, P> ofRegistryCodec(
+        @NotNull PacketCodec<? super NetRegistryByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
+        @NotNull ContextEncoder<C, P> encoder) {
+        return new RootPlayChannelContext<>(codec, decoder, encoder);
+    }
+
+    private RootPlayChannelContext(@NotNull PacketCodec<? super NetRegistryByteBuf, P> codec,
+                                   @NotNull PlayContextDecoder<C, P> decoder, @NotNull ContextEncoder<C, P> encoder) {
         this.codec = codec;
         this.decoder = decoder;
         this.encoder = encoder;

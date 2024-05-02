@@ -36,7 +36,6 @@ import net.minecraft.world.World;
 import com.kneelawk.knet.api.channel.context.PlayChannelContext;
 import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
-import com.kneelawk.knet.api.util.NetBufs;
 import com.kneelawk.knet.api.util.NetByteBuf;
 
 /**
@@ -55,7 +54,7 @@ public class KNet {
      * }</pre>
      */
     public static final PlayChannelContext<BlockEntity> BLOCK_ENTITY_CONTEXT =
-        new RootPlayChannelContext<>(BlockEntityPayload.CODEC.mapBuf(NetBufs::netOf), (payload, ctx) -> {
+        RootPlayChannelContext.ofNetCodec(BlockEntityPayload.CODEC, (payload, ctx) -> {
             World world = ctx.mustGetWorld();
             BlockEntity be = world.getBlockEntity(payload.pos());
             if (be == null) throw new PayloadHandlingErrorException(
@@ -81,7 +80,7 @@ public class KNet {
      * }</pre>
      */
     public static final PlayChannelContext<Entity> ENTITY_CONTEXT =
-        new RootPlayChannelContext<>(EntityPayload.CODEC.mapBuf(NetBufs::netOf), (payload, ctx) -> {
+        RootPlayChannelContext.ofNetCodec(EntityPayload.CODEC, (payload, ctx) -> {
             World world = ctx.mustGetWorld();
             Entity entity = world.getEntityById(payload.entityId());
             if (entity == null) throw new PayloadHandlingErrorException(
@@ -105,7 +104,7 @@ public class KNet {
      * }</pre>
      */
     public static final PlayChannelContext<ScreenHandler> SCREEN_HANDLER_CONTEXT =
-        new RootPlayChannelContext<>(ScreenHandlerPayload.CODEC.mapBuf(NetBufs::netOf), (payload, ctx) -> {
+        RootPlayChannelContext.ofNetCodec(ScreenHandlerPayload.CODEC, (payload, ctx) -> {
             PlayerEntity player = ctx.mustGetPlayer();
             ScreenHandler screenHandler = player.currentScreenHandler;
             if (screenHandler == null) {
