@@ -36,8 +36,8 @@ import net.minecraft.world.World;
 import com.kneelawk.knet.api.channel.context.PlayChannelContext;
 import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.api.util.NetBufs;
 import com.kneelawk.knet.api.util.NetByteBuf;
-import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 
 /**
  * KNet xplat public interface.
@@ -55,7 +55,7 @@ public class KNet {
      * }</pre>
      */
     public static final PlayChannelContext<BlockEntity> BLOCK_ENTITY_CONTEXT =
-        new RootPlayChannelContext<>(BlockEntityPayload.CODEC, (payload, ctx) -> {
+        new RootPlayChannelContext<>(BlockEntityPayload.CODEC.mapBuf(NetBufs::netOf), (payload, ctx) -> {
             World world = ctx.mustGetWorld();
             BlockEntity be = world.getBlockEntity(payload.pos());
             if (be == null) throw new PayloadHandlingErrorException(
@@ -66,7 +66,7 @@ public class KNet {
         }, context -> new BlockEntityPayload(context.getPos()));
 
     private record BlockEntityPayload(BlockPos pos) {
-        public static final PacketCodec<NetRegistryByteBuf, BlockEntityPayload> CODEC =
+        public static final PacketCodec<NetByteBuf, BlockEntityPayload> CODEC =
             PacketCodec.ofStatic((buf, obj) -> buf.writeBlockPos(obj.pos()),
                 buf -> new BlockEntityPayload(buf.readBlockPos()));
     }
@@ -81,7 +81,7 @@ public class KNet {
      * }</pre>
      */
     public static final PlayChannelContext<Entity> ENTITY_CONTEXT =
-        new RootPlayChannelContext<>(EntityPayload.CODEC, (payload, ctx) -> {
+        new RootPlayChannelContext<>(EntityPayload.CODEC.mapBuf(NetBufs::netOf), (payload, ctx) -> {
             World world = ctx.mustGetWorld();
             Entity entity = world.getEntityById(payload.entityId());
             if (entity == null) throw new PayloadHandlingErrorException(
@@ -91,7 +91,7 @@ public class KNet {
         }, context -> new EntityPayload(context.getId()));
 
     private record EntityPayload(int entityId) {
-        public static final PacketCodec<NetRegistryByteBuf, EntityPayload> CODEC =
+        public static final PacketCodec<NetByteBuf, EntityPayload> CODEC =
             PacketCodec.ofStatic((buf, obj) -> buf.writeInt(obj.entityId()), buf -> new EntityPayload(buf.readInt()));
     }
 
@@ -105,7 +105,7 @@ public class KNet {
      * }</pre>
      */
     public static final PlayChannelContext<ScreenHandler> SCREEN_HANDLER_CONTEXT =
-        new RootPlayChannelContext<>(ScreenHandlerPayload.CODEC, (payload, ctx) -> {
+        new RootPlayChannelContext<>(ScreenHandlerPayload.CODEC.mapBuf(NetBufs::netOf), (payload, ctx) -> {
             PlayerEntity player = ctx.mustGetPlayer();
             ScreenHandler screenHandler = player.currentScreenHandler;
             if (screenHandler == null) {
@@ -123,7 +123,7 @@ public class KNet {
         }, context -> new ScreenHandlerPayload(context.syncId));
 
     private record ScreenHandlerPayload(int syncId) {
-        public static final PacketCodec<NetRegistryByteBuf, ScreenHandlerPayload> CODEC =
+        public static final PacketCodec<NetByteBuf, ScreenHandlerPayload> CODEC =
             PacketCodec.ofStatic((buf, obj) -> buf.writeInt(obj.syncId()),
                 buf -> new ScreenHandlerPayload(buf.readInt()));
     }
