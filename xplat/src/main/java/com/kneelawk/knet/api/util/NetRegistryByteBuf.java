@@ -45,6 +45,10 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     // Hold on to the wrapped buffer, so we can access it when changing passthrough-ness while wrapping.
     private final ByteBuf wrapped;
 
+    // Hold the wrapped buffer as a NetBuf if it is indeed a NetBuf
+    // for fast checks when commuting partials.z
+    private final @Nullable NetBuf<?> buf;
+
     /**
      * If true then all {@link PacketByteBuf} override methods that this {@link NetByteBuf} optimises will instead just
      * write using the normal minecraft methods, rather than the (potentially) optimised versions.
@@ -75,14 +79,25 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     /**
      * Creates a new {@link NetRegistryByteBuf}.
      *
-     * @param buf             the buffer to wrap.
+     * @param wrapped             the buffer to wrap.
      * @param registryManager the registry manager for this buffer.
      * @param passthrough     whether to disable optimizations.
      */
-    public NetRegistryByteBuf(ByteBuf buf, DynamicRegistryManager registryManager, boolean passthrough) {
-        super(buf, registryManager);
-        this.wrapped = buf;
+    public NetRegistryByteBuf(ByteBuf wrapped, DynamicRegistryManager registryManager, boolean passthrough) {
+        super(wrapped, registryManager);
+        this.wrapped = wrapped;
         this.passthrough = passthrough;
+
+        if (wrapped instanceof NetBuf<?> buf) {
+            this.buf = buf;
+            readPartialOffset = buf.getReadPartialOffset();
+            readPartialCache = buf.getReadPartialCache();
+            writePartialIndex = buf.getWritePartialIndex();
+            writePartialOffset = buf.getWritePartialOffset();
+            writePartialCache = buf.getWritePartialCache();
+        } else {
+            this.buf = null;
+        }
     }
 
     @Override
@@ -103,6 +118,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     @Override
     public void setReadPartialOffset(int readPartialOffset) {
         this.readPartialOffset = readPartialOffset;
+        if (buf != null) buf.setReadPartialOffset(readPartialOffset);
     }
 
     @Override
@@ -113,6 +129,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     @Override
     public void setReadPartialCache(int readPartialCache) {
         this.readPartialCache = readPartialCache;
+        if (buf != null) buf.setReadPartialCache(readPartialCache);
     }
 
     @Override
@@ -123,6 +140,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     @Override
     public void setWritePartialIndex(int writePartialIndex) {
         this.writePartialIndex = writePartialIndex;
+        if (buf != null) buf.setWritePartialIndex(writePartialIndex);
     }
 
     @Override
@@ -133,6 +151,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     @Override
     public void setWritePartialOffset(int writePartialOffset) {
         this.writePartialOffset = writePartialOffset;
+        if (buf != null) buf.setWritePartialOffset(writePartialOffset);
     }
 
     @Override
@@ -143,36 +162,45 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     @Override
     public void setWritePartialCache(int writePartialCache) {
         this.writePartialCache = writePartialCache;
+        if (buf != null) buf.setWritePartialCache(writePartialCache);
     }
 
     @Override
     public void orWritePartialCache(int toWrite) {
         writePartialCache |= toWrite;
+        if (buf != null) buf.setWritePartialCache(writePartialCache);
     }
 
     @Override
     public int incrementWritePartialOffset() {
-        return writePartialOffset++;
+        int res = writePartialOffset++;
+        if (buf != null) buf.setWritePartialOffset(writePartialOffset);
+        return res;
     }
 
     @Override
     public void incrementWritePartialOffset(int amount) {
         writePartialOffset += amount;
+        if (buf != null) buf.setWritePartialOffset(writePartialOffset);
     }
 
     @Override
     public int incrementReadPartialOffset() {
-        return readPartialOffset++;
+        int res = readPartialOffset++;
+        if (buf != null) buf.setReadPartialOffset(readPartialOffset);
+        return res;
     }
 
     @Override
     public void incrementReadPartialOffset(int amount) {
         readPartialOffset += amount;
+        if (buf != null) buf.setReadPartialOffset(readPartialOffset);
     }
 
     @Override
     public void writePartialCache() {
         setByte(writePartialIndex, writePartialCache);
+        // no need to carry as this operation is automatically performed on the underlying buffer
     }
 
     @Override

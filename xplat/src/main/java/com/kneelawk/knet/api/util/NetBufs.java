@@ -106,8 +106,10 @@ public final class NetBufs {
 
     /**
      * Returns the given {@link ByteBuf} as {@link NetByteBuf}. If the given instance is already a {@link NetByteBuf}
-     * then the given buffer is returned (note that this may result in unexpected consequences if multiple read/write
-     * Boolean methods are called on the given buffer before you called this).
+     * then the given buffer is returned.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf the buffer to be converted into a {@link NetByteBuf}.
      * @return the given buffer as a {@link NetByteBuf}.
@@ -118,9 +120,10 @@ public final class NetBufs {
 
     /**
      * Returns the given {@link ByteBuf} as {@link NetByteBuf}, but with passthrough mode enabled. If the given
-     * instance is already a {@link NetByteBuf} then the given buffer is returned (note that this may result in
-     * unexpected consequences if multiple read/write Boolean methods are called on the given buffer before you called
-     * this).
+     * instance is already a {@link NetByteBuf} then the given buffer is returned.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf         the buffer to be converted into a {@link NetByteBuf}.
      * @param passthrough whether to disable optimizations on the resulting buffer.
@@ -181,6 +184,9 @@ public final class NetBufs {
 
     /**
      * Returns the given {@link RegistryByteBuf} as a {@link NetByteBuf}.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf the buffer to be converted into a {@link NetByteBuf}.
      * @return the given buffer as a {@link NetByteBuf}.
@@ -191,6 +197,9 @@ public final class NetBufs {
 
     /**
      * Returns the given {@link RegistryByteBuf} as a {@link NetByteBuf}, with passthrough optionally enabled.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf         the buffer to be converted into a {@link NetByteBuf}.
      * @param passthrough whether to disable optimizations on the resulting buffer.
@@ -202,6 +211,9 @@ public final class NetBufs {
 
     /**
      * Returns the given {@link NetRegistryByteBuf} as a {@link NetByteBuf}.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only write to a single buffer at a time.
      *
      * @param buf the buffer to be converted into a {@link NetByteBuf}.
      * @return the given buffer as a {@link NetByteBuf}.
@@ -212,6 +224,9 @@ public final class NetBufs {
 
     /**
      * Returns the given {@link NetRegistryByteBuf} as a {@link NetByteBuf}.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf         the buffer to be converted into a {@link NetByteBuf}.
      * @param passthrough whether to disable optimizations.
@@ -223,6 +238,9 @@ public final class NetBufs {
 
     /**
      * Returns the given {@link ByteBuf} as a {@link RegistryNetByteBuf}, attaching a registry manager.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf             the buffer to be converted into a {@link RegistryNetByteBuf}.
      * @param registryManager the registry manager to attach.
@@ -235,13 +253,17 @@ public final class NetBufs {
     /**
      * Returns the given {@link ByteBuf} as a {@link RegistryNetByteBuf}, attaching a registry manager, but with
      * passthrough optionally enabled.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf             the buffer to be converted into a {@link RegistryNetByteBuf}.
      * @param passthrough     whether to disable optimizations on the resulting buffer.
      * @param registryManager the registry manager to attach.
      * @return the given buffer as a {@link RegistryNetByteBuf}.
      */
-    public static RegistryNetByteBuf regNetOf(ByteBuf buf, boolean passthrough, DynamicRegistryManager registryManager) {
+    public static RegistryNetByteBuf regNetOf(ByteBuf buf, boolean passthrough,
+                                              DynamicRegistryManager registryManager) {
         if (buf instanceof RegistryNetByteBuf registryNetBuf && registryNetBuf.passthrough == passthrough &&
             registryNetBuf.getRegistryManager() == registryManager) {
             return registryNetBuf;
@@ -297,6 +319,9 @@ public final class NetBufs {
 
     /**
      * Wraps a {@link RegistryByteBuf} into a {@link NetRegistryByteBuf}.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf the original buffer.
      * @return the wrapping buffer.
@@ -307,6 +332,9 @@ public final class NetBufs {
 
     /**
      * Wraps a {@link RegistryByteBuf} into a {@link NetRegistryByteBuf}, with passthrough optionally enabled.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf         the original buffer.
      * @param passthrough whether to disable optimizations.
@@ -319,8 +347,8 @@ public final class NetBufs {
     /**
      * Wraps a {@link RegistryNetByteBuf} into a {@link NetRegistryByteBuf}.
      * <p>
-     * Note: this will not use partial bytes from the original buffer. Make sure that the wrapping happens at the same
-     * place when decoding as when encoding.
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf the original buffer.
      * @return the wrapping buffer.
@@ -332,8 +360,8 @@ public final class NetBufs {
     /**
      * Wraps a {@link RegistryNetByteBuf} into a {@link NetRegistryByteBuf}.
      * <p>
-     * Note: this will not use partial bytes from the original buffer. Make sure that the wrapping happens at the same
-     * place when decoding as when encoding.
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf         the original buffer.
      * @param passthrough the
@@ -345,6 +373,9 @@ public final class NetBufs {
 
     /**
      * Wraps a {@link ByteBuf} into a {@link NetRegistryByteBuf}, attaching the given registry manager.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf             the original buffer.
      * @param registryManager the registry manager to attach.
@@ -356,13 +387,17 @@ public final class NetBufs {
 
     /**
      * Wraps a {@link ByteBuf} into a {@link NetRegistryByteBuf}, attaching the given registry manager and with passthrough optionally enabled.
+     * <p>
+     * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
+     * partials. Try to only read/write to a single buffer at a time.
      *
      * @param buf             the original buffer.
      * @param registryManager the registry manager to attach.
      * @param passthrough     whether to disable optimizations.
      * @return the wrapping buffer.
      */
-    public static NetRegistryByteBuf netRegOf(ByteBuf buf, DynamicRegistryManager registryManager, boolean passthrough) {
+    public static NetRegistryByteBuf netRegOf(ByteBuf buf, DynamicRegistryManager registryManager,
+                                              boolean passthrough) {
         if (buf instanceof NetRegistryByteBuf regBuf && regBuf.passthrough == passthrough &&
             regBuf.getRegistryManager() == registryManager) {
             return regBuf;
