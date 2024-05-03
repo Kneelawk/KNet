@@ -27,15 +27,15 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 
 /**
  * Creates a channel context that casts the parent into the child.
  *
- * @param <TO>  the child to cast into.
+ * @param <TO>   the child to cast into.
  * @param <FROM> the parent to cast from.
  */
 public class CastPlayChannelContext<FROM, TO> implements PlayChannelContext<TO> {
@@ -46,9 +46,17 @@ public class CastPlayChannelContext<FROM, TO> implements PlayChannelContext<TO> 
      * Creates a new channel context that casts the parent into the child.
      *
      * @param parentChannelContext the parent channel context.
-     * @param toClass           the class of the child to cast into.
+     * @param toClass              the class of the child to cast into.
+     * @param <FROM>               the parent to cast from.
+     * @param <TO>                 the child to cast into.
+     * @return a new cast channel context.
      */
-    public CastPlayChannelContext(@NotNull PlayChannelContext<FROM> parentChannelContext, @NotNull Class<TO> toClass) {
+    public static <FROM, TO> CastPlayChannelContext<FROM, TO> of(@NotNull PlayChannelContext<FROM> parentChannelContext,
+                                                                 @NotNull Class<TO> toClass) {
+        return new CastPlayChannelContext<>(parentChannelContext, toClass);
+    }
+
+    private CastPlayChannelContext(@NotNull PlayChannelContext<FROM> parentChannelContext, @NotNull Class<TO> toClass) {
         this.parentChannelContext = parentChannelContext;
         this.toClass = toClass;
     }

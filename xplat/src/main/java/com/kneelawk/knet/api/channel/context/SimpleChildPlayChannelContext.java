@@ -27,8 +27,8 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 
 /**
@@ -50,10 +50,20 @@ public class SimpleChildPlayChannelContext<PARENT, CHILD> implements PlayChannel
      * @param parentChannelContext the channel context this wraps and who supplies the parent context.
      * @param childFinder          the way to get the child when given the parent.
      * @param parentFinder         the way to get the parent when given the child.
+     * @param <PARENT>             the parent context.
+     * @param <CHILD>              the child context to extract.
+     * @return a new simple child channel context.
      */
-    public SimpleChildPlayChannelContext(PlayChannelContext<PARENT> parentChannelContext,
-                                         ChildContextFinder<PARENT, CHILD> childFinder,
-                                         ParentContextFinder<PARENT, CHILD> parentFinder) {
+    public static <PARENT, CHILD> SimpleChildPlayChannelContext<PARENT, CHILD> of(
+        @NotNull PlayChannelContext<PARENT> parentChannelContext,
+        @NotNull ChildContextFinder<PARENT, CHILD> childFinder,
+        @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+        return new SimpleChildPlayChannelContext<>(parentChannelContext, childFinder, parentFinder);
+    }
+
+    private SimpleChildPlayChannelContext(PlayChannelContext<PARENT> parentChannelContext,
+                                          ChildContextFinder<PARENT, CHILD> childFinder,
+                                          ParentContextFinder<PARENT, CHILD> parentFinder) {
         this.parentChannelContext = parentChannelContext;
         this.childFinder = childFinder;
         this.parentFinder = parentFinder;

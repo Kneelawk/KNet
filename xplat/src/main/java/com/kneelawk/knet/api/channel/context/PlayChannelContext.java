@@ -88,7 +88,7 @@ public interface PlayChannelContext<C> {
      * @return a new channel context that casts to the desired class.
      */
     default <T extends C> @NotNull PlayChannelContext<T> cast(@NotNull Class<T> castClass) {
-        return new CastPlayChannelContext<>(this, castClass);
+        return CastPlayChannelContext.of(this, castClass);
     }
 
     /**
