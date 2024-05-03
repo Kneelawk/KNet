@@ -12,6 +12,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.function.IntFunction;
 
 import com.google.common.collect.Lists;
@@ -562,6 +565,81 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      */
     default <T> Optional<T> readNetOptional(PacketDecoder<? super B, T> reader) {
         return readBoolean() ? Optional.of(reader.decode(self())) : Optional.empty();
+    }
+
+    /**
+     * Writes an optional integer to this buf.
+     *
+     * @param value the optional integer to write.
+     * @return this buffer.
+     */
+    default B writeNetOptionalInt(OptionalInt value) {
+        if (value.isPresent()) {
+            writeBoolean(true);
+            writeVarInt(value.getAsInt());
+        } else {
+            writeBoolean(false);
+        }
+        return self();
+    }
+
+    /**
+     * Reads an optional integer from this buf.
+     *
+     * @return the value read.
+     */
+    default OptionalInt readNetOptionalInt() {
+        return readBoolean() ? OptionalInt.of(readVarInt()) : OptionalInt.empty();
+    }
+
+    /**
+     * Writes an optional long to this buf.
+     *
+     * @param value the optional long to write.
+     * @return this buffer.
+     */
+    default B writeNetOptionalLong(OptionalLong value) {
+        if (value.isPresent()) {
+            writeBoolean(true);
+            writeVarLong(value.getAsLong());
+        } else {
+            writeBoolean(false);
+        }
+        return self();
+    }
+
+    /**
+     * Reads an optional long from this buf.
+     *
+     * @return the value to read.
+     */
+    default OptionalLong readNetOptionalLong() {
+        return readBoolean() ? OptionalLong.of(readVarLong()) : OptionalLong.empty();
+    }
+
+    /**
+     * Writes an optional double to this buf.
+     *
+     * @param value the optional double to write.
+     * @return this buffer.
+     */
+    default B writeNetOptionalDouble(OptionalDouble value) {
+        if (value.isPresent()) {
+            writeBoolean(true);
+            self().writeDouble(value.getAsDouble());
+        } else {
+            writeBoolean(false);
+        }
+        return self();
+    }
+
+    /**
+     * Reads an optional double from this buf.
+     *
+     * @return the value read.
+     */
+    default OptionalDouble readNetOptionalDouble() {
+        return readBoolean() ? OptionalDouble.of(self().readDouble()) : OptionalDouble.empty();
     }
 
     /**

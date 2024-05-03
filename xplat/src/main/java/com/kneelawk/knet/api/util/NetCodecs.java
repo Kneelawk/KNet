@@ -25,10 +25,18 @@
 
 package com.kneelawk.knet.api.util;
 
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+import java.util.function.IntFunction;
+
+import io.netty.buffer.ByteBuf;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.encoding.VarInts;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -36,7 +44,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 /**
  * NetBuf Codec utilities.
  */
-public class NetCodecs {
+public final class NetCodecs {
     private NetCodecs() {}
 
     /**
@@ -79,6 +87,24 @@ public class NetCodecs {
     };
 
     /**
+     * Codec for reading/writing {@link OptionalDouble}s.
+     */
+    public static final PacketCodec<NetByteBuf, OptionalDouble> OPTIONAL_DOUBLE =
+        PacketCodec.ofStatic(NetBuf::writeNetOptionalDouble, NetBuf::readNetOptionalDouble);
+
+    /**
+     * Codec for reading/writing {@link OptionalInt}s.
+     */
+    public static final PacketCodec<NetByteBuf, OptionalInt> OPTIONAL_INT =
+        PacketCodec.ofStatic(NetBuf::writeNetOptionalInt, NetBuf::readNetOptionalInt);
+
+    /**
+     * Codec for reading/writing {@link OptionalLong}s.
+     */
+    public static final PacketCodec<NetByteBuf, OptionalLong> OPTIONAL_LONG =
+        PacketCodec.ofStatic(NetBuf::writeNetOptionalLong, NetBuf::readNetOptionalLong);
+
+    /**
      * Version of {@link PacketCodecs#VAR_INT} that handles negative integers properly.
      * <p>
      * Use {@link PacketCodecs#VAR_INT} for unsigned integers.
@@ -93,6 +119,65 @@ public class NetCodecs {
      */
     public static final PacketCodec<NetByteBuf, Long> SIGNED_VAR_LONG =
         PacketCodec.ofStatic(NetBuf::writeVarLong, NetBuf::readVarLong);
+
+    /**
+     * Creates a codec for a byte buffer.
+     *
+     * @param bufferCtor constructs the result buffer when given a buffer length.
+     * @param <B>        the type of byte buffer this codec will be for.
+     * @return a codec for the specified type of byte buffer.
+     */
+    public static <B extends ByteBuf> PacketCodec<ByteBuf, B> buffer(IntFunction<B> bufferCtor) {
+        return new PacketCodec<>() {
+            @Override
+            public B decode(ByteBuf buf) {
+                // read unsigned length
+                int length = VarInts.read(buf);
+                B newBuf = bufferCtor.apply(length);
+                buf.readBytes(newBuf, length);
+                return newBuf;
+            }
+
+            @Override
+            public void encode(ByteBuf buf, B value) {
+                VarInts.write(buf, value.readableBytes());
+                buf.writeBytes(value, value.readerIndex(), value.readableBytes());
+            }
+        };
+    }
+
+    /**
+     * Creates a codec for a byte buffer that takes context from the buffer being read.
+     * <p>
+     * This is intended for reading a registry buffer from another registry buffer.
+     * <p>
+     * <b>Note:</b> Do not read from the original buffer when constructing the new buffer, as that would cause reads and
+     * writes to become unbalanced.
+     *
+     * @param bufferCtor constructs the result buffer when given the original buffer for context and a buffer length.
+     * @param <V>        the type of byte buffer this codec will be for.
+     * @param <B>        the type of byte buffer this codec read/writes to.
+     * @return a codec for the specified type of byte buffer.
+     */
+    public static <V extends ByteBuf, B extends ByteBuf> PacketCodec<B, V> buffer(
+        DerivativeBufferSupplier<B, V> bufferCtor) {
+        return new PacketCodec<>() {
+            @Override
+            public V decode(B buf) {
+                // read unsigned length
+                int length = VarInts.read(buf);
+                V newBuf = bufferCtor.derive(buf, length);
+                buf.readBytes(newBuf, length);
+                return null;
+            }
+
+            @Override
+            public void encode(B buf, V value) {
+                VarInts.write(buf, value.readableBytes());
+                buf.writeBytes(value, value.readerIndex(), value.readableBytes());
+            }
+        };
+    }
 
     /**
      * Packet codec for reading/writing a specific type of enum.
