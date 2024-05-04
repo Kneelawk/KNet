@@ -25,11 +25,12 @@
 
 package com.kneelawk.knet.api.channel;
 
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.util.NetByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * A channel that can be used during the 'configuration' phase and that can be registered with a platform.
@@ -50,7 +51,8 @@ public interface ConfigChannel extends Channel {
      * @param ctx     the context used for applying the payload.
      * @throws PayloadHandlingException if an error occurred while handling the payload.
      */
-    void handleClientPayload(CustomPacketPayload payload, ConfigPayloadHandlingContext ctx) throws PayloadHandlingException;
+    void handleClientPayload(CustomPacketPayload payload, ConfigPayloadHandlingContext ctx)
+        throws PayloadHandlingException;
 
     /**
      * Called by net-util platform code when this channel receives a payload on the server-side.
@@ -59,5 +61,6 @@ public interface ConfigChannel extends Channel {
      * @param ctx     the context used for applying the payload.
      * @throws PayloadHandlingException if an error occurred while handling the payload.
      */
-    void handleServerPayload(CustomPacketPayload payload, ConfigPayloadHandlingContext ctx) throws PayloadHandlingException;
+    void handleServerPayload(CustomPacketPayload payload, ConfigPayloadHandlingContext ctx)
+        throws PayloadHandlingException;
 }

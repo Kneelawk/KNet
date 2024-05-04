@@ -41,5 +41,6 @@ public interface ParentContextFinder<PARENT, CHILD> {
      * @param child the child to get the parent of.
      * @return the parent context.
      */
-    @NotNull PARENT getParent(@NotNull CHILD child);
+    @NotNull
+    PARENT getParent(@NotNull CHILD child);
 }

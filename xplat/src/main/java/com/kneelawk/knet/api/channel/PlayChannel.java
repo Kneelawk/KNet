@@ -25,13 +25,12 @@
 
 package com.kneelawk.knet.api.channel;
 
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
-import com.kneelawk.knet.api.handling.PayloadHandlingException;
-import com.kneelawk.knet.api.util.NetByteBuf;
-import com.kneelawk.knet.api.util.NetRegistryByteBuf;
-import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+
+import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 
 /**
  * A channel that can be used during the 'play' phase and that can be registered with a platform.
@@ -52,7 +51,8 @@ public interface PlayChannel extends Channel {
      * @param ctx     the context used for applying the payload.
      * @throws PayloadHandlingException if an error occurred while handling the payload.
      */
-    void handleClientPayload(CustomPacketPayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException;
+    void handleClientPayload(CustomPacketPayload payload, PlayPayloadHandlingContext ctx)
+        throws PayloadHandlingException;
 
     /**
      * Called by net-util platform code when this channel receives a payload on the server-side.
@@ -61,5 +61,6 @@ public interface PlayChannel extends Channel {
      * @param ctx     the context used for applying the payload.
      * @throws PayloadHandlingException if an error occurred while handling the payload.
      */
-    void handleServerPayload(CustomPacketPayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException;
+    void handleServerPayload(CustomPacketPayload payload, PlayPayloadHandlingContext ctx)
+        throws PayloadHandlingException;
 }

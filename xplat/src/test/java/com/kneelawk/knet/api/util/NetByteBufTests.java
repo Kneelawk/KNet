@@ -57,7 +57,7 @@ public class NetByteBufTests {
         buf.writeFixedBits(0b11001100, 5);
         assertEquals((byte) 0b01101010, buf.getByte(0));
         assertEquals((byte) 0b00, buf.getByte(1));
-        
+
         buf.writeFixedBits(0b11011011011011011, 17);
         assertEquals((byte) 0b11011000, buf.getByte(1));
         assertEquals((byte) 0b11011011, buf.getByte(2));
@@ -75,7 +75,7 @@ public class NetByteBufTests {
         assertEquals(0b11010, buf.readFixedBits(5));
         assertEquals(0b10101011100111110, buf.readFixedBits(17));
     }
-    
+
     @Test
     void writeVarInt() {
         NetByteBuf buf = NetBufs.netBuf();
@@ -83,7 +83,7 @@ public class NetByteBufTests {
         assertEquals((byte) 0b10110100, buf.getByte(0));
         assertEquals((byte) 0b00100100, buf.getByte(1));
     }
-    
+
     @Test
     void readVarInt() {
         NetByteBuf buf = NetBufs.netBuf();

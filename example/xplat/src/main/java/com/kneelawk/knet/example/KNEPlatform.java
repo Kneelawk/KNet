@@ -27,6 +27,9 @@ package com.kneelawk.knet.example;
 
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -35,8 +38,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import com.mojang.serialization.MapCodec;
-import com.kneelawk.knet.api.util.NetByteBuf;
+
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.screen.ExtraScreenHandlerDecoder;
 
@@ -50,7 +52,9 @@ public interface KNEPlatform {
     <T extends BlockEntity> Supplier<BlockEntityType<T>> registerBlockEntity(String path,
                                                                              Supplier<BlockEntityType<T>> creator);
 
-    <T extends AbstractContainerMenu, P> Supplier<MenuType<T>> registerExtraScreenHandler(String path, ExtraScreenHandlerDecoder<T, P> factory, StreamCodec<? super RegistryNetByteBuf, P> codec);
+    <T extends AbstractContainerMenu, P> Supplier<MenuType<T>> registerExtraScreenHandler(String path,
+                                                                                          ExtraScreenHandlerDecoder<T, P> factory,
+                                                                                          StreamCodec<? super RegistryNetByteBuf, P> codec);
 
     void openScreen(ServerPlayer player, MenuProvider factory);
 }

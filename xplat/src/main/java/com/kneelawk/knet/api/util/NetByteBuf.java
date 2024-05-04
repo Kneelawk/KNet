@@ -11,6 +11,7 @@ package com.kneelawk.knet.api.util;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
+
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;

@@ -26,7 +26,9 @@
 package com.kneelawk.knet.example.screen;
 
 import java.util.function.Supplier;
+
 import net.minecraft.world.inventory.MenuType;
+
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.net.BlockPosPayload;
 

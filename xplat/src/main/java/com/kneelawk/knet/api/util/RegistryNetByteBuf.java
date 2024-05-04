@@ -9,6 +9,7 @@
 package com.kneelawk.knet.api.util;
 
 import io.netty.buffer.ByteBuf;
+
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;

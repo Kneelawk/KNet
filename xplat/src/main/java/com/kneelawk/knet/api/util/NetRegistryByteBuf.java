@@ -11,6 +11,7 @@ package com.kneelawk.knet.api.util;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
+
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
@@ -78,7 +79,7 @@ public class NetRegistryByteBuf extends RegistryFriendlyByteBuf implements NetBu
     /**
      * Creates a new {@link NetRegistryByteBuf}.
      *
-     * @param wrapped             the buffer to wrap.
+     * @param wrapped         the buffer to wrap.
      * @param registryManager the registry manager for this buffer.
      * @param passthrough     whether to disable optimizations.
      */

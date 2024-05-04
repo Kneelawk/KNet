@@ -16,6 +16,14 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.function.IntFunction;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import org.jetbrains.annotations.Nullable;
+
+import io.netty.buffer.ByteBuf;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -23,12 +31,6 @@ import net.minecraft.network.codec.StreamDecoder;
 import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import org.jetbrains.annotations.Nullable;
-
-import io.netty.buffer.ByteBuf;
 
 /**
  * Super-interface for all net buffers to make sure they have the same interface and implement the same methods.

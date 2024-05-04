@@ -25,12 +25,14 @@
 
 package com.kneelawk.knet.neoforge.impl.phase.config;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.network.ConfigurationTask;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 
 import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.network.ConfigurationTask;
+
 import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 
 public record NeoForgeConfigTaskQueue(RegisterConfigurationTasksEvent event) implements ConnectionConfigTaskQueue {

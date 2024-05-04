@@ -27,6 +27,9 @@ package com.kneelawk.knet.api.channel;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -38,7 +41,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.jetbrains.annotations.NotNull;
+
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
@@ -71,7 +74,8 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param <P>   the type of payload.
      * @return a new context-less channel.
      */
-    public static <P extends CustomPacketPayload> NoContextPlayChannel<P> ofNetCodec(@NotNull CustomPacketPayload.Type<P> id, @NotNull
+    public static <P extends CustomPacketPayload> NoContextPlayChannel<P> ofNetCodec(
+        @NotNull CustomPacketPayload.Type<P> id, @NotNull
     StreamCodec<? super RegistryNetByteBuf, P> codec) {
         return new NoContextPlayChannel<>(id, codec.mapStream(NetBufs::registryNetOf));
     }
@@ -84,9 +88,10 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param <P>   the type of payload.
      * @return a new context-less channel.
      */
-    public static <P extends CustomPacketPayload> NoContextPlayChannel<P> ofRegistryCodec(@NotNull CustomPacketPayload.Type<P> id,
-                                                                                    @NotNull
-                                                                                    StreamCodec<? super NetRegistryByteBuf, P> codec) {
+    public static <P extends CustomPacketPayload> NoContextPlayChannel<P> ofRegistryCodec(
+        @NotNull CustomPacketPayload.Type<P> id,
+        @NotNull
+        StreamCodec<? super NetRegistryByteBuf, P> codec) {
         return new NoContextPlayChannel<>(id, codec);
     }
 

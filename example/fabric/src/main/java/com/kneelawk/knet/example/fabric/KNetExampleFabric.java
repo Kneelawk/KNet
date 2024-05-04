@@ -28,6 +28,11 @@ package com.kneelawk.knet.example.fabric;
 import java.util.List;
 
 import net.fabricmc.api.ModInitializer;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -36,9 +41,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import com.mojang.serialization.MapCodec;
 import com.kneelawk.knet.example.KNetExample;
 import com.kneelawk.knet.fabric.api.KNetRegistrarFabric;
 

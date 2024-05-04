@@ -26,12 +26,15 @@
 package com.kneelawk.knet.neoforge.impl;
 
 import java.util.concurrent.Executor;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.entity.player.Player;
+
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
+
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
 public record NeoForgePlayPayloadHandlingContext(IPayloadContext ctx) implements PlayPayloadHandlingContext {

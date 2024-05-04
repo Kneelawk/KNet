@@ -25,6 +25,8 @@
 
 package com.kneelawk.knet.example.net;
 
+import net.minecraft.resources.ResourceLocation;
+
 import com.kneelawk.commonevents.api.Listen;
 import com.kneelawk.commonevents.api.Listener;
 import com.kneelawk.knet.api.channel.NoContextConfigChannel;
@@ -32,7 +34,6 @@ import com.kneelawk.knet.api.event.ConnectionConfigCallback;
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 import com.kneelawk.knet.example.KNetExample;
-import net.minecraft.resources.ResourceLocation;
 
 @Listener
 public class NetEventListeners {

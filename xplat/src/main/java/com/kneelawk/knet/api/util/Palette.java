@@ -32,6 +32,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.StreamDecoder;
@@ -148,7 +149,7 @@ public class Palette<T> {
      * @param <B>    the type of buffer to write to.
      */
     public <B extends FriendlyByteBuf & NetBuf<? super B>> void encode(@NotNull B buf,
-                                                                     @NotNull StreamEncoder<? super B, T> writer) {
+                                                                       @NotNull StreamEncoder<? super B, T> writer) {
         buf.writeVarInt(palette.size());
         for (Int2ObjectMap.Entry<T> entry : palette.int2ObjectEntrySet()) {
             buf.writeVarInt(entry.getIntKey());

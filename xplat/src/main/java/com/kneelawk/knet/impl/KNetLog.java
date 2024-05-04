@@ -25,9 +25,10 @@
 
 package com.kneelawk.knet.impl;
 
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class KNetLog {
     public static final Logger LOG = LoggerFactory.getLogger(KNetImpl.MOD_ID);
@@ -45,7 +46,8 @@ public class KNetLog {
 
     public static void logReceive(CustomPacketPayload.Type<?> channel, String from, Object payload) {
         if (debugStackTraces) {
-            LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel.id(), from, payload, new RuntimeException("Stack Trace"));
+            LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel.id(), from, payload,
+                new RuntimeException("Stack Trace"));
         } else {
             LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel.id(), from, payload);
         }

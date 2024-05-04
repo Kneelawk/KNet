@@ -27,6 +27,11 @@ package com.kneelawk.knet.example;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+
 import com.kneelawk.knet.api.KNetRegistrar;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
@@ -34,9 +39,6 @@ import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
 import com.kneelawk.knet.example.net.NetEventListeners;
 import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 import com.kneelawk.knet.example.screen.KNEScreenHandlers;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 
 public class KNetExample {
     public static final String MOD_ID = "knet_example";

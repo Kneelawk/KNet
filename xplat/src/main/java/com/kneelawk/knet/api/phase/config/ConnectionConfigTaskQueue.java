@@ -26,13 +26,15 @@
 package com.kneelawk.knet.api.phase.config;
 
 import org.jetbrains.annotations.NotNull;
-import com.kneelawk.knet.api.channel.Channel;
-import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
-import com.kneelawk.knet.impl.phase.config.ConnectionConfigTaskWrapper;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
+
+import com.kneelawk.knet.api.channel.Channel;
+import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+import com.kneelawk.knet.impl.phase.config.ConnectionConfigTaskWrapper;
 
 /**
  * Used for enqueueing connection-configure tasks.

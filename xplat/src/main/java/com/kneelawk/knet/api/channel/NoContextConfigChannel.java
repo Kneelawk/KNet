@@ -27,10 +27,13 @@ package com.kneelawk.knet.api.channel;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import org.jetbrains.annotations.NotNull;
+
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
@@ -59,8 +62,9 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param <P>   the type of payload.
      * @return a new context-less channel.
      */
-    public static <P extends CustomPacketPayload> NoContextConfigChannel<P> of(@NotNull CustomPacketPayload.Type<P> id, @NotNull
-    StreamCodec<? super NetByteBuf, P> codec) {
+    public static <P extends CustomPacketPayload> NoContextConfigChannel<P> of(@NotNull CustomPacketPayload.Type<P> id,
+                                                                               @NotNull
+                                                                               StreamCodec<? super NetByteBuf, P> codec) {
         return new NoContextConfigChannel<>(id, codec);
     }
 

@@ -38,7 +38,7 @@ dependencies {
     // Fabric Loader
     val fabric_loader_version: String by project
     modCompileOnly("net.fabricmc:fabric-loader:$fabric_loader_version")
-    
+
     // Common Events
     val common_events_version: String by project
     modApi("com.kneelawk:common-events-xplat-intermediary:$common_events_version")
@@ -103,7 +103,7 @@ tasks {
 
     test.configure {
         useJUnitPlatform()
-        testLogging { 
+        testLogging {
             events("passed", "skipped", "failed")
         }
     }

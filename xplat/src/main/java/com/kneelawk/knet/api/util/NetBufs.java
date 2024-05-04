@@ -9,11 +9,13 @@
 package com.kneelawk.knet.api.util;
 
 import java.util.function.Function;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 /**
  * Utility methods for working with KNet buffers.
@@ -38,7 +40,8 @@ public final class NetBufs {
      */
     public static final NetByteBuf EMPTY_BUFFER = new NetByteBuf(Unpooled.EMPTY_BUFFER);
 
-    private NetBufs() {}
+    private NetBufs() {
+    }
 
     /**
      * Creates a function that wraps a {@link ByteBuf} in a {@link RegistryNetByteBuf}, attaching the given registry

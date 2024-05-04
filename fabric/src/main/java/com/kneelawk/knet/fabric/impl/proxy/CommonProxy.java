@@ -33,11 +33,13 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+
 import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
@@ -77,11 +79,13 @@ public class CommonProxy {
         if (channel.isToClient()) {
             // payload types should be registered on both client and server
             PayloadTypeRegistry.playS2C().register((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
-                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(channel.getCodec()));
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(
+                    channel.getCodec()));
         }
         if (channel.isToServer()) {
             PayloadTypeRegistry.playC2S().register((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
-                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(channel.getCodec()));
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(
+                    channel.getCodec()));
             ServerPlayNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
                     channel.handleServerPayload(payload, new FabricPlayPayloadHandlingContext(ctx));
@@ -102,12 +106,14 @@ public class CommonProxy {
     public void registerConfigChannel(ConfigChannel channel) {
         if (channel.isToClient()) {
             // payload types should be registered on both client and server
-            PayloadTypeRegistry.configurationS2C().register((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
-                (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) NetCodecs.netToVanilla(channel.getCodec()));
+            PayloadTypeRegistry.configurationS2C()
+                .register((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                    (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) NetCodecs.netToVanilla(channel.getCodec()));
         }
         if (channel.isToServer()) {
-            PayloadTypeRegistry.configurationC2S().register((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
-                (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) NetCodecs.netToVanilla(channel.getCodec()));
+            PayloadTypeRegistry.configurationC2S()
+                .register((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                    (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) NetCodecs.netToVanilla(channel.getCodec()));
             ServerConfigurationNetworking.registerGlobalReceiver(channel.getId(), (payload, ctx) -> {
                 try {
                     channel.handleServerPayload(payload, new FabricConfigPayloadHandlingContext(ctx));
@@ -131,7 +137,7 @@ public class CommonProxy {
     public boolean serverHasPlayChannel(CustomPacketPayload.Type<?> channel) {
         return false;
     }
-    
+
     public Executor getClientExecutor() {
         return Runnable::run;
     }

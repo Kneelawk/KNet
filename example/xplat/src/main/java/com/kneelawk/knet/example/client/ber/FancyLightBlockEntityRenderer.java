@@ -27,9 +27,10 @@ package com.kneelawk.knet.example.client.ber;
 
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -39,6 +40,8 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+
+import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
 
 import static com.kneelawk.knet.example.KNetExample.id;
 
@@ -68,7 +71,8 @@ public class FancyLightBlockEntityRenderer implements BlockEntityRenderer<FancyL
     }
 
     private void face(VertexConsumer consumer, PoseStack.Pose entry, float x0, float y0, float z0, float x1,
-                      float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, TextureAtlasSprite sprite,
+                      float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3,
+                      TextureAtlasSprite sprite,
                       int red, int green, int blue, int light) {
         Matrix4f model = entry.pose();
         Matrix3f normal = entry.normal();

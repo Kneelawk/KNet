@@ -28,6 +28,7 @@ package com.kneelawk.knet.example.block;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -38,6 +39,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
 
@@ -65,7 +67,8 @@ public class FancyLightBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player,
+                                            BlockHitResult hit) {
         if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             KNEPlatform.INSTANCE.openScreen(serverPlayer, state.getMenuProvider(world, pos));
             return InteractionResult.CONSUME;

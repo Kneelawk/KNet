@@ -26,14 +26,16 @@
 package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.util.NetBufs;
 import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 
 /**
  * A channel context that wraps another channel context, extracting extra information from it.
@@ -68,7 +70,8 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
         @NotNull StreamCodec<? super RegistryNetByteBuf, PAYLOAD> codec,
         @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
         @NotNull ContextEncoder<CHILD, PAYLOAD> encoder, @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
-        return new ChildPlayChannelContext<>(parentChannelContext, codec.mapStream(NetBufs::registryNetOf), decoder, encoder,
+        return new ChildPlayChannelContext<>(parentChannelContext, codec.mapStream(NetBufs::registryNetOf), decoder,
+            encoder,
             parentFinder);
     }
 

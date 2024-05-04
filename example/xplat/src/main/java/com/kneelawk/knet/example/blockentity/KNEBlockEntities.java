@@ -26,7 +26,9 @@
 package com.kneelawk.knet.example.blockentity;
 
 import java.util.function.Supplier;
+
 import net.minecraft.world.level.block.entity.BlockEntityType;
+
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.block.KNEBlocks;
 

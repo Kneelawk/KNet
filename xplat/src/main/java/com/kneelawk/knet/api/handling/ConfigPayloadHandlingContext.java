@@ -25,9 +25,10 @@
 
 package com.kneelawk.knet.api.handling;
 
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Context used for applying a payload during the 'configuration' phase.

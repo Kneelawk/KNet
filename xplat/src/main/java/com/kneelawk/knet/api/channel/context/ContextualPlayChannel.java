@@ -27,6 +27,9 @@ package com.kneelawk.knet.api.channel.context;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -39,7 +42,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.jetbrains.annotations.NotNull;
+
 import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
@@ -64,7 +67,8 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
     private final CustomPacketPayload.Type<Payload> id;
     private final PlayChannelContext<C> channelContext;
     private final StreamCodec<? super NetRegistryByteBuf, P> codec;
-    private final StreamCodec<NetRegistryByteBuf, Payload> payloadCodec = StreamCodec.ofMember(Payload::write, this::read);
+    private final StreamCodec<NetRegistryByteBuf, Payload> payloadCodec =
+        StreamCodec.ofMember(Payload::write, this::read);
 
     private ContextualPlayPayloadHandler<C, P> clientHandler = null;
     private ContextualPlayPayloadHandler<C, P> serverHandler = null;

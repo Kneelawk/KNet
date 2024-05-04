@@ -31,6 +31,9 @@ import org.jetbrains.annotations.Nullable;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -46,7 +49,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import com.mojang.serialization.MapCodec;
+
 import com.kneelawk.knet.api.util.NetCodecs;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.KNEPlatform;
@@ -77,8 +80,8 @@ public class KNEPlatformImpl implements KNEPlatform {
 
     @Override
     public <T extends AbstractContainerMenu, P> Supplier<MenuType<T>> registerExtraScreenHandler(String path,
-                                                                                                  ExtraScreenHandlerDecoder<T, P> factory,
-                                                                                                  StreamCodec<? super RegistryNetByteBuf, P> codec) {
+                                                                                                 ExtraScreenHandlerDecoder<T, P> factory,
+                                                                                                 StreamCodec<? super RegistryNetByteBuf, P> codec) {
         MenuType<T> type =
             new ExtendedScreenHandlerType<>(factory::create, NetCodecs.regNetToVanilla(codec));
         KNetExampleFabric.SCREEN_HANDLERS.add(new Tuple<>(id(path), type));

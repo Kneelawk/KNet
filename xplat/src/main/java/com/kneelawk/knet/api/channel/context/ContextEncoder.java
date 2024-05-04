@@ -41,5 +41,6 @@ public interface ContextEncoder<C, P> {
      * @param context the context to encode.
      * @return a payload that represents the context.
      */
-    @NotNull P encode(@NotNull C context);
+    @NotNull
+    P encode(@NotNull C context);
 }

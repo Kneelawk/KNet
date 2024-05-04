@@ -26,16 +26,7 @@
 package com.kneelawk.knet.example.blockentity;
 
 import org.jetbrains.annotations.Nullable;
-import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.channel.context.ContextualPlayChannel;
-import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
-import com.kneelawk.knet.api.util.RegistryNetByteBuf;
-import com.kneelawk.knet.example.KNetExample;
-import com.kneelawk.knet.example.net.BlockPosPayload;
-import com.kneelawk.knet.example.net.ColorUpdatePayload;
-import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
-import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -48,6 +39,17 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
+import com.kneelawk.knet.api.KNet;
+import com.kneelawk.knet.api.channel.context.ContextualPlayChannel;
+import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.RegistryNetByteBuf;
+import com.kneelawk.knet.example.KNetExample;
+import com.kneelawk.knet.example.net.BlockPosPayload;
+import com.kneelawk.knet.example.net.ColorUpdatePayload;
+import com.kneelawk.knet.example.screen.ExtraScreenHandlerFactory;
+import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 
 import static com.kneelawk.knet.example.KNetExample.id;
 import static com.kneelawk.knet.example.KNetExample.tt;

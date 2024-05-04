@@ -26,10 +26,12 @@
 package com.kneelawk.knet.impl.phase.config;
 
 import java.util.function.Consumer;
+
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.network.ConfigurationTask;
+
 import com.kneelawk.knet.api.phase.config.ConnectionConfigTask;
 import com.kneelawk.knet.api.util.PayloadSender;
 

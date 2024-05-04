@@ -26,6 +26,12 @@
 package com.kneelawk.knet.example.neoforge;
 
 import java.util.function.Supplier;
+
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.registries.DeferredBlock;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,10 +43,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.registries.DeferredBlock;
 
-import com.mojang.serialization.MapCodec;
 import com.kneelawk.knet.api.util.NetCodecs;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.KNEPlatform;
@@ -65,8 +68,8 @@ public class KNEPlatformImpl implements KNEPlatform {
 
     @Override
     public <T extends AbstractContainerMenu, P> Supplier<MenuType<T>> registerExtraScreenHandler(String path,
-                                                                                                  ExtraScreenHandlerDecoder<T, P> factory,
-                                                                                                  StreamCodec<? super RegistryNetByteBuf, P> codec) {
+                                                                                                 ExtraScreenHandlerDecoder<T, P> factory,
+                                                                                                 StreamCodec<? super RegistryNetByteBuf, P> codec) {
         return KNetExampleNeoForge.SCREEN_HANDLERS.register(path, () -> IMenuTypeExtension.create(
             (syncId, playerInv, buf) -> factory.create(syncId, playerInv,
                 NetCodecs.regNetToVanilla(codec).decode(buf))));
@@ -77,7 +80,8 @@ public class KNEPlatformImpl implements KNEPlatform {
     public void openScreen(ServerPlayer player, MenuProvider factory) {
         if (factory instanceof ExtraScreenHandlerFactory<?> extra) {
             player.openMenu(extra,
-                buf -> ((StreamCodec<RegistryFriendlyByteBuf, Object>) NetCodecs.regNetToVanilla(extra.getCodec())).encode(
+                buf -> ((StreamCodec<RegistryFriendlyByteBuf, Object>) NetCodecs.regNetToVanilla(
+                    extra.getCodec())).encode(
                     buf, extra.getExtra(player)));
         } else {
             player.openMenu(factory);

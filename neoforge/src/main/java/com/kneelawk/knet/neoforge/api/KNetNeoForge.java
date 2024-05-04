@@ -25,13 +25,15 @@
 
 package com.kneelawk.knet.neoforge.api;
 
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
 import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
@@ -60,7 +62,8 @@ public class KNetNeoForge {
     public static void registerPlay(PayloadRegistrar registrar, PlayChannel channel) {
         if (channel.isToServer() && channel.isToClient()) {
             registrar.playBidirectional((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
-                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(
+                    channel.getCodec()),
                 (payload, ctx) -> {
                     if (ctx.flow().isServerbound()) {
                         handleServerPlay(channel, payload, ctx);
@@ -70,11 +73,13 @@ public class KNetNeoForge {
                 });
         } else if (channel.isToServer()) {
             registrar.playToServer((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
-                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(
+                    channel.getCodec()),
                 (payload, ctx) -> handleServerPlay(channel, payload, ctx));
         } else if (channel.isToClient()) {
             registrar.playToClient((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
-                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(
+                    channel.getCodec()),
                 (payload, ctx) -> handleClientPlay(channel, payload, ctx));
         }
     }

@@ -25,9 +25,10 @@
 
 package com.kneelawk.knet.api.phase.config;
 
+import net.minecraft.resources.ResourceLocation;
+
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 import com.kneelawk.knet.api.util.PayloadSender;
-import net.minecraft.resources.ResourceLocation;
 
 /**
  * Simplified version of {@link net.minecraft.server.network.ConfigurationTask}.

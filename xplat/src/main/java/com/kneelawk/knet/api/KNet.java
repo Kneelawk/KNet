@@ -25,10 +25,6 @@
 
 package com.kneelawk.knet.api;
 
-import com.kneelawk.knet.api.channel.context.PlayChannelContext;
-import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
-import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
-import com.kneelawk.knet.api.util.NetByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
@@ -37,11 +33,17 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import com.kneelawk.knet.api.channel.context.PlayChannelContext;
+import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
+import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.api.util.NetByteBuf;
+
 /**
  * KNet xplat public interface.
  */
 public class KNet {
-    private KNet() {}
+    private KNet() {
+    }
 
     /**
      * Channel context used for associating a channel with a block entity

@@ -26,14 +26,15 @@
 package com.kneelawk.knet.fabric.impl;
 
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
+
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
 public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx) implements PlayPayloadHandlingContext {

@@ -25,7 +25,6 @@
 
 package com.kneelawk.knet.example.client.screen;
 
-import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -34,6 +33,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+
+import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 
 import static com.kneelawk.knet.example.KNetExample.id;
 import static com.kneelawk.knet.example.KNetExample.tt;

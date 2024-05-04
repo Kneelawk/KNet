@@ -27,6 +27,7 @@ package com.kneelawk.knet.impl.platform;
 
 import java.util.Collection;
 import java.util.ServiceLoader;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

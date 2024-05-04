@@ -25,7 +25,6 @@
 
 package com.kneelawk.knet.example.screen;
 
-import com.kneelawk.knet.api.util.NetByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 

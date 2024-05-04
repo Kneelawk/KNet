@@ -25,8 +25,9 @@
 
 package com.kneelawk.knet.example.net;
 
-import com.kneelawk.knet.api.util.NetByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+
+import com.kneelawk.knet.api.util.NetByteBuf;
 
 public record ColorUpdatePayload(byte value, byte index) {
     public static final StreamCodec<NetByteBuf, ColorUpdatePayload> CODEC = StreamCodec.of((buf, obj) -> {

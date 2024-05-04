@@ -26,8 +26,11 @@
 package com.kneelawk.knet.api.channel;
 
 import java.util.Collection;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+
 import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+
 import com.kneelawk.knet.api.util.PayloadSender;
 
 /**

@@ -25,10 +25,11 @@
 
 package com.kneelawk.knet.example.net;
 
-import com.kneelawk.knet.api.util.NetByteBuf;
-import com.kneelawk.knet.example.KNetExample;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+
+import com.kneelawk.knet.api.util.NetByteBuf;
+import com.kneelawk.knet.example.KNetExample;
 
 public record PingPongPayload(String message) implements CustomPacketPayload {
     public static final Type<PingPongPayload> ID = new Type<>(KNetExample.id("ping_pong"));

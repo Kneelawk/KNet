@@ -26,11 +26,13 @@
 package com.kneelawk.knet.api.util;
 
 import org.jetbrains.annotations.NotNull;
-import com.kneelawk.knet.api.channel.Channel;
-import com.kneelawk.knet.impl.platform.KNetPlatform;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.kneelawk.knet.api.channel.Channel;
+import com.kneelawk.knet.impl.platform.KNetPlatform;
 
 /**
  * Represents a connection capable of sending a payload to a receiver.

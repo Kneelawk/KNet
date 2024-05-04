@@ -25,9 +25,10 @@
 
 package com.kneelawk.knet.example.net;
 
-import com.kneelawk.knet.api.util.NetByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
+
+import com.kneelawk.knet.api.util.NetByteBuf;
 
 public record BlockPosPayload(BlockPos pos) {
     public static final StreamCodec<NetByteBuf, BlockPosPayload> CODEC =

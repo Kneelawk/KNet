@@ -26,10 +26,12 @@
 package com.kneelawk.knet.example.block;
 
 import java.util.function.Supplier;
+
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
+
 import com.kneelawk.knet.example.KNEPlatform;
 
 public class KNEBlocks {

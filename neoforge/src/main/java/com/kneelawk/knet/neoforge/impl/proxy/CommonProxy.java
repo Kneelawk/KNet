@@ -26,9 +26,12 @@
 package com.kneelawk.knet.neoforge.impl.proxy;
 
 import java.lang.reflect.InvocationTargetException;
+
+import net.neoforged.fml.loading.FMLLoader;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.fml.loading.FMLLoader;
+
 import com.kneelawk.knet.impl.KNetLog;
 
 public class CommonProxy {
