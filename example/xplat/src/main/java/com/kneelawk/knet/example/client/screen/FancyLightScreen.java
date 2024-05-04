@@ -96,7 +96,7 @@ public class FancyLightScreen extends AbstractContainerScreen<FancyLightScreenHa
     protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-        context.blitSprite(INVENTORY_LOCATION, x, y, imageWidth, imageHeight);
+        context.blitSprite(BACKGROUND_TEXTURE, x, y, imageWidth, imageHeight);
     }
 
     private class IncrementButton extends AbstractButton {
