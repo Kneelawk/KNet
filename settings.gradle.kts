@@ -25,6 +25,7 @@ pluginManagement {
 
 include(":xplat")
 include(":fabric")
+include(":fabric:remapCheck")
 include(":neoforge")
 
 include(":example-xplat")
