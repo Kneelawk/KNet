@@ -33,9 +33,5 @@ gradlePlugin {
             id = "com.kneelawk.versioning"
             implementationClass = "com.kneelawk.versioning.VersioningPlugin"
         }
-        create("remapCheckPlugin") {
-            id = "com.kneelawk.remapcheck"
-            implementationClass = "com.kneelawk.remapcheck.RemapCheckPlugin"
-        }
     }
 }

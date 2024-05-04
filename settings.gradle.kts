@@ -20,6 +20,8 @@ pluginManagement {
     plugins {
         val architectury_loom_version: String by settings
         id("dev.architectury.loom") version architectury_loom_version
+        val remapcheck_version: String by settings
+        id("com.kneelawk.remapcheck") version remapcheck_version
     }
 }
 
