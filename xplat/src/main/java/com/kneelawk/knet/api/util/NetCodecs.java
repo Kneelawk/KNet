@@ -32,14 +32,14 @@ import java.util.function.IntFunction;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.encoding.VarInts;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.VarInt;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.level.ChunkPos;
 
 /**
  * NetBuf Codec utilities.
@@ -48,77 +48,77 @@ public final class NetCodecs {
     private NetCodecs() {}
 
     /**
-     * KNet optimized version of {@link BlockPos#PACKET_CODEC}.
+     * KNet optimized version of {@link BlockPos#STREAM_CODEC}.
      */
-    public static final PacketCodec<NetByteBuf, BlockPos> BLOCK_POS =
-        PacketCodec.ofStatic(NetBuf::writeBlockPos, NetBuf::readBlockPos);
+    public static final StreamCodec<NetByteBuf, BlockPos> BLOCK_POS =
+        StreamCodec.of(NetBuf::writeBlockPos, NetBuf::readBlockPos);
 
     /**
-     * KNet optimized version of {@link PacketCodecs#BOOL}.
+     * KNet optimized version of {@link ByteBufCodecs#BOOL}.
      */
-    public static final PacketCodec<NetByteBuf, Boolean> BOOL =
-        PacketCodec.ofStatic(NetBuf::writeBoolean, NetBuf::readBoolean);
+    public static final StreamCodec<NetByteBuf, Boolean> BOOL =
+        StreamCodec.of(NetBuf::writeBoolean, NetBuf::readBoolean);
 
     /**
      * KNet optimized {@link ChunkPos} codec.
      */
-    public static final PacketCodec<NetByteBuf, ChunkPos> CHUNK_POS =
-        PacketCodec.ofStatic(NetBuf::writeChunkPos, NetBuf::readChunkPos);
+    public static final StreamCodec<NetByteBuf, ChunkPos> CHUNK_POS =
+        StreamCodec.of(NetBuf::writeChunkPos, NetBuf::readChunkPos);
 
     /**
-     * KNet optimized {@link ChunkSectionPos} codec.
+     * KNet optimized {@link SectionPos} codec.
      */
-    public static final PacketCodec<NetByteBuf, ChunkSectionPos> CHUNK_SECTION_POS =
-        PacketCodec.ofStatic(NetBuf::writeChunkSectionPos, NetByteBuf::readChunkSectionPos);
+    public static final StreamCodec<NetByteBuf, SectionPos> CHUNK_SECTION_POS =
+        StreamCodec.of(NetBuf::writeSectionPos, NetByteBuf::readSectionPos);
 
     /**
      * Codec to write an array of integers.
      */
-    public static final PacketCodec<PacketByteBuf, int[]> INT_ARRAY = new PacketCodec<>() {
+    public static final StreamCodec<FriendlyByteBuf, int[]> INT_ARRAY = new StreamCodec<>() {
         @Override
-        public int[] decode(PacketByteBuf buf) {
-            return buf.readIntArray();
+        public int[] decode(FriendlyByteBuf buf) {
+            return buf.readVarIntArray();
         }
 
         @Override
-        public void encode(PacketByteBuf buf, int[] value) {
-            buf.writeIntArray(value);
+        public void encode(FriendlyByteBuf buf, int[] value) {
+            buf.writeVarIntArray(value);
         }
     };
 
     /**
      * Codec for reading/writing {@link OptionalDouble}s.
      */
-    public static final PacketCodec<NetByteBuf, OptionalDouble> OPTIONAL_DOUBLE =
-        PacketCodec.ofStatic(NetBuf::writeNetOptionalDouble, NetBuf::readNetOptionalDouble);
+    public static final StreamCodec<NetByteBuf, OptionalDouble> OPTIONAL_DOUBLE =
+        StreamCodec.of(NetBuf::writeNetOptionalDouble, NetBuf::readNetOptionalDouble);
 
     /**
      * Codec for reading/writing {@link OptionalInt}s.
      */
-    public static final PacketCodec<NetByteBuf, OptionalInt> OPTIONAL_INT =
-        PacketCodec.ofStatic(NetBuf::writeNetOptionalInt, NetBuf::readNetOptionalInt);
+    public static final StreamCodec<NetByteBuf, OptionalInt> OPTIONAL_INT =
+        StreamCodec.of(NetBuf::writeNetOptionalInt, NetBuf::readNetOptionalInt);
 
     /**
      * Codec for reading/writing {@link OptionalLong}s.
      */
-    public static final PacketCodec<NetByteBuf, OptionalLong> OPTIONAL_LONG =
-        PacketCodec.ofStatic(NetBuf::writeNetOptionalLong, NetBuf::readNetOptionalLong);
+    public static final StreamCodec<NetByteBuf, OptionalLong> OPTIONAL_LONG =
+        StreamCodec.of(NetBuf::writeNetOptionalLong, NetBuf::readNetOptionalLong);
 
     /**
-     * Version of {@link PacketCodecs#VAR_INT} that handles negative integers properly.
+     * Version of {@link ByteBufCodecs#VAR_INT} that handles negative integers properly.
      * <p>
-     * Use {@link PacketCodecs#VAR_INT} for unsigned integers.
+     * Use {@link ByteBufCodecs#VAR_INT} for unsigned integers.
      */
-    public static final PacketCodec<NetByteBuf, Integer> SIGNED_VAR_INT =
-        PacketCodec.ofStatic(NetBuf::writeVarInt, NetBuf::readVarInt);
+    public static final StreamCodec<NetByteBuf, Integer> SIGNED_VAR_INT =
+        StreamCodec.of(NetBuf::writeVarInt, NetBuf::readVarInt);
 
     /**
-     * Version of {@link PacketCodecs#VAR_LONG} that handles negative longs properly.
+     * Version of {@link ByteBufCodecs#VAR_LONG} that handles negative longs properly.
      * <p>
-     * Use {@link PacketCodecs#VAR_LONG} for unsigned longs.
+     * Use {@link ByteBufCodecs#VAR_LONG} for unsigned longs.
      */
-    public static final PacketCodec<NetByteBuf, Long> SIGNED_VAR_LONG =
-        PacketCodec.ofStatic(NetBuf::writeVarLong, NetBuf::readVarLong);
+    public static final StreamCodec<NetByteBuf, Long> SIGNED_VAR_LONG =
+        StreamCodec.of(NetBuf::writeVarLong, NetBuf::readVarLong);
 
     /**
      * Creates a codec for a byte buffer.
@@ -127,12 +127,12 @@ public final class NetCodecs {
      * @param <B>        the type of byte buffer this codec will be for.
      * @return a codec for the specified type of byte buffer.
      */
-    public static <B extends ByteBuf> PacketCodec<ByteBuf, B> buffer(IntFunction<B> bufferCtor) {
-        return new PacketCodec<>() {
+    public static <B extends ByteBuf> StreamCodec<ByteBuf, B> buffer(IntFunction<B> bufferCtor) {
+        return new StreamCodec<>() {
             @Override
             public B decode(ByteBuf buf) {
                 // read unsigned length
-                int length = VarInts.read(buf);
+                int length = VarInt.read(buf);
                 B newBuf = bufferCtor.apply(length);
                 buf.readBytes(newBuf, length);
                 return newBuf;
@@ -140,7 +140,7 @@ public final class NetCodecs {
 
             @Override
             public void encode(ByteBuf buf, B value) {
-                VarInts.write(buf, value.readableBytes());
+                VarInt.write(buf, value.readableBytes());
                 buf.writeBytes(value, value.readerIndex(), value.readableBytes());
             }
         };
@@ -159,13 +159,13 @@ public final class NetCodecs {
      * @param <B>        the type of byte buffer this codec read/writes to.
      * @return a codec for the specified type of byte buffer.
      */
-    public static <V extends ByteBuf, B extends ByteBuf> PacketCodec<B, V> buffer(
+    public static <V extends ByteBuf, B extends ByteBuf> StreamCodec<B, V> buffer(
         DerivativeBufferSupplier<B, V> bufferCtor) {
-        return new PacketCodec<>() {
+        return new StreamCodec<>() {
             @Override
             public V decode(B buf) {
                 // read unsigned length
-                int length = VarInts.read(buf);
+                int length = VarInt.read(buf);
                 V newBuf = bufferCtor.derive(buf, length);
                 buf.readBytes(newBuf, length);
                 return null;
@@ -173,7 +173,7 @@ public final class NetCodecs {
 
             @Override
             public void encode(B buf, V value) {
-                VarInts.write(buf, value.readableBytes());
+                VarInt.write(buf, value.readableBytes());
                 buf.writeBytes(value, value.readerIndex(), value.readableBytes());
             }
         };
@@ -184,82 +184,82 @@ public final class NetCodecs {
      *
      * @param enumClass the class of the enum.
      * @param <E>       the type of enum.
-     * @return a {@link PacketCodec} for reading/writing the specified
+     * @return a {@link StreamCodec} for reading/writing the specified
      */
-    public static <E extends Enum<E>> PacketCodec<NetByteBuf, E> enumConstant(Class<E> enumClass) {
-        return PacketCodec.ofStatic(NetByteBuf::writeEnumConstant, buf -> buf.readEnumConstant(enumClass));
+    public static <E extends Enum<E>> StreamCodec<NetByteBuf, E> enumConstant(Class<E> enumClass) {
+        return StreamCodec.of(NetByteBuf::writeEnum, buf -> buf.readEnum(enumClass));
     }
 
     /**
      * Packet codec for reading/writing a fixed number of bits.
      *
      * @param length the number of bits to write.
-     * @return a {@link PacketCodec} for reading/writing the specified number of bits.
+     * @return a {@link StreamCodec} for reading/writing the specified number of bits.
      */
-    public static PacketCodec<NetByteBuf, Integer> fixedBits(int length) {
-        return PacketCodec.ofStatic((buf, bits) -> buf.writeFixedBits(bits, length), buf -> buf.readFixedBits(length));
+    public static StreamCodec<NetByteBuf, Integer> fixedBits(int length) {
+        return StreamCodec.of((buf, bits) -> buf.writeFixedBits(bits, length), buf -> buf.readFixedBits(length));
     }
 
     /**
-     * Converts a {@link NetByteBuf} codec into a {@link PacketByteBuf} codec.
+     * Converts a {@link NetByteBuf} codec into a {@link FriendlyByteBuf} codec.
      *
      * @param codec the codec to convert.
      * @param <T>   the type of object the codec encodes/decodes.
      * @return the new codec.
      */
-    public static <T> PacketCodec<PacketByteBuf, T> netToVanilla(PacketCodec<? super NetByteBuf, T> codec) {
-        return new PacketCodec<>() {
+    public static <T> StreamCodec<FriendlyByteBuf, T> netToVanilla(StreamCodec<? super NetByteBuf, T> codec) {
+        return new StreamCodec<>() {
             @Override
-            public T decode(PacketByteBuf buf) {
+            public T decode(FriendlyByteBuf buf) {
                 return codec.decode(NetBufs.netOf(buf));
             }
 
             @Override
-            public void encode(PacketByteBuf buf, T value) {
+            public void encode(FriendlyByteBuf buf, T value) {
                 codec.encode(NetBufs.netOf(buf), value);
             }
         };
     }
 
     /**
-     * Converts a {@link RegistryNetByteBuf} codec into a {@link RegistryByteBuf} codec.
+     * Converts a {@link RegistryNetByteBuf} codec into a {@link RegistryFriendlyByteBuf} codec.
      *
      * @param codec the codec to convert.
      * @param <T>   the type of object the codec encodes/decodes.
      * @return the new codec.
      */
-    public static <T> PacketCodec<RegistryByteBuf, T> regNetToVanilla(
-        PacketCodec<? super RegistryNetByteBuf, T> codec) {
-        return new PacketCodec<>() {
+    public static <T> StreamCodec<RegistryFriendlyByteBuf, T> regNetToVanilla(
+        StreamCodec<? super RegistryNetByteBuf, T> codec) {
+        return new StreamCodec<>() {
             @Override
-            public T decode(RegistryByteBuf buf) {
+            public T decode(RegistryFriendlyByteBuf buf) {
                 return codec.decode(NetBufs.registryNetOf(buf));
             }
 
             @Override
-            public void encode(RegistryByteBuf buf, T value) {
+            public void encode(RegistryFriendlyByteBuf buf, T value) {
                 codec.encode(NetBufs.registryNetOf(buf), value);
             }
         };
     }
 
     /**
-     * Converts a {@link NetRegistryByteBuf} codec into a {@link RegistryByteBuf} codec.
+     * Converts a {@link NetRegistryByteBuf} codec into a {@link RegistryFriendlyByteBuf} codec.
      *
      * @param codec the codec to convert.
      * @param <T>   the type of object the codec encodes/decodes.
      * @return the new codec.
      */
-    public static <T> PacketCodec<RegistryByteBuf, T> netRegToVanilla(
-        PacketCodec<? super NetRegistryByteBuf, T> codec) {
-        return new PacketCodec<>() {
+    public static <T> StreamCodec<RegistryFriendlyByteBuf, T> netRegToVanilla(
+        StreamCodec<? super NetRegistryByteBuf, T> codec) {
+        return new StreamCodec<>() {
             @Override
-            public T decode(RegistryByteBuf buf) {
+            public T decode(RegistryFriendlyByteBuf buf) {
                 return codec.decode(NetBufs.netRegistryOf(buf));
             }
 
             @Override
-            public void encode(RegistryByteBuf buf, T value) {
+            public void encode(RegistryFriendlyByteBuf buf, T value) {
                 codec.encode(NetBufs.netRegistryOf(buf), value);
             }
         };
@@ -272,9 +272,9 @@ public final class NetCodecs {
      * @param <T>   the type of object the codec encodes/decodes.
      * @return the new codec.
      */
-    public static <T> PacketCodec<RegistryNetByteBuf, T> netToReg(
-        PacketCodec<? super NetRegistryByteBuf, T> codec) {
-        return new PacketCodec<>() {
+    public static <T> StreamCodec<RegistryNetByteBuf, T> netToReg(
+        StreamCodec<? super NetRegistryByteBuf, T> codec) {
+        return new StreamCodec<>() {
             @Override
             public T decode(RegistryNetByteBuf buf) {
                 return codec.decode(NetBufs.netRegistryOf(buf));
@@ -294,9 +294,9 @@ public final class NetCodecs {
      * @param <T>   the type of object the codec encodes/decodes.
      * @return the new codec.
      */
-    public static <T> PacketCodec<NetRegistryByteBuf, T> regToNet(
-        PacketCodec<? super RegistryNetByteBuf, T> codec) {
-        return new PacketCodec<>() {
+    public static <T> StreamCodec<NetRegistryByteBuf, T> regToNet(
+        StreamCodec<? super RegistryNetByteBuf, T> codec) {
+        return new StreamCodec<>() {
             @Override
             public T decode(NetRegistryByteBuf buf) {
                 return codec.decode(NetBufs.registryNetOf(buf));

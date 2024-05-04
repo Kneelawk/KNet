@@ -27,18 +27,18 @@ package com.kneelawk.knet.example.blockentity;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.context.ContextualPlayChannel;
@@ -55,7 +55,7 @@ import static com.kneelawk.knet.example.KNetExample.id;
 import static com.kneelawk.knet.example.KNetExample.tt;
 
 public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHandlerFactory<BlockPosPayload> {
-    private static final Text CONTAINER_NAME = tt("container", "fancy_light");
+    private static final Component CONTAINER_NAME = tt("container", "fancy_light");
 
     public static final ContextualPlayChannel<FancyLightBlockEntity, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
         ContextualPlayChannel.ofNetCodec(id("fancy_light_color_update"),
@@ -85,19 +85,19 @@ public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHan
     public void updateRed(int newRed) {
         red = newRed & 0xFF;
         COLOR_UPDATE_CHANNEL.sendToTracking(this, this, new ColorUpdatePayload((byte) red, (byte) 0));
-        markDirty();
+        setChanged();
     }
 
     public void updateGreen(int newGreen) {
         green = newGreen & 0xFF;
         COLOR_UPDATE_CHANNEL.sendToTracking(this, this, new ColorUpdatePayload((byte) green, (byte) 1));
-        markDirty();
+        setChanged();
     }
 
     public void updateBlue(int newBlue) {
         blue = newBlue & 0xFF;
         COLOR_UPDATE_CHANNEL.sendToTracking(this, this, new ColorUpdatePayload((byte) blue, (byte) 2));
-        markDirty();
+        setChanged();
     }
 
     private void recv(ColorUpdatePayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingErrorException {
@@ -111,42 +111,42 @@ public class FancyLightBlockEntity extends BlockEntity implements ExtraScreenHan
     }
 
     @Override
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
         red = nbt.getByte("red") & 0xFF;
         green = nbt.getByte("green") & 0xFF;
         blue = nbt.getByte("blue") & 0xFF;
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
         nbt.putByte("red", (byte) red);
         nbt.putByte("green", (byte) green);
         nbt.putByte("blue", (byte) blue);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return createNbt(registryLookup);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        return saveWithoutMetadata(registryLookup);
     }
 
     @Override
-    public BlockPosPayload getExtra(ServerPlayerEntity player) {
-        return new BlockPosPayload(getPos());
+    public BlockPosPayload getExtra(ServerPlayer player) {
+        return new BlockPosPayload(getBlockPos());
     }
 
     @Override
-    public PacketCodec<? super RegistryNetByteBuf, BlockPosPayload> getCodec() {
+    public StreamCodec<? super RegistryNetByteBuf, BlockPosPayload> getCodec() {
         return BlockPosPayload.CODEC;
     }
 
     @Override
-    public Text getDisplayName() {
+    public Component getDisplayName() {
         return CONTAINER_NAME;
     }
 
     @Nullable
     @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new FancyLightScreenHandler(syncId, ScreenHandlerContext.create(getWorld(), getPos()), this);
+    public AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
+        return new FancyLightScreenHandler(syncId, ContainerLevelAccess.create(getLevel(), getBlockPos()), this);
     }
 }

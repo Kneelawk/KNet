@@ -29,50 +29,51 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
 
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
 
-public class FancyLightBlock extends BlockWithEntity {
-    public static final MapCodec<FancyLightBlock> CODEC = createCodec(FancyLightBlock::new);
+public class FancyLightBlock extends BaseEntityBlock {
+    public static final MapCodec<FancyLightBlock> CODEC = simpleCodec(FancyLightBlock::new);
 
-    public FancyLightBlock(Settings settings) {
+    public FancyLightBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
 
     @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new FancyLightBlockEntity(pos, state);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!world.isClient() && player instanceof ServerPlayerEntity serverPlayer) {
-            KNEPlatform.INSTANCE.openScreen(serverPlayer, state.createScreenHandlerFactory(world, pos));
-            return ActionResult.CONSUME;
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player,
+                                            BlockHitResult hit) {
+        if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            KNEPlatform.INSTANCE.openScreen(serverPlayer, state.getMenuProvider(world, pos));
+            return InteractionResult.CONSUME;
         } else {
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
     }
 }

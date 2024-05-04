@@ -29,30 +29,30 @@ import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerConfigurationTask;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.network.ConfigurationTask;
 
 import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 
 public record NeoForgeConfigTaskQueue(RegisterConfigurationTasksEvent event) implements ConnectionConfigTaskQueue {
     @Override
-    public boolean clientHasChannel(CustomPayload.@NotNull Id<?> channel) {
+    public boolean clientHasChannel(CustomPacketPayload.@NotNull Type<?> channel) {
         return event.getListener().hasChannel(channel);
     }
 
     @Override
-    public void disconnect(@NotNull Text message) {
+    public void disconnect(@NotNull Component message) {
         event.getListener().disconnect(message);
     }
 
     @Override
-    public void enqueueRaw(@NotNull ServerPlayerConfigurationTask task) {
+    public void enqueueRaw(@NotNull ConfigurationTask task) {
         event.register(task);
     }
 
     @Override
-    public void completeTask(ServerPlayerConfigurationTask.@NotNull Key taskId) {
-        event.getListener().onTaskFinished(taskId);
+    public void completeTask(ConfigurationTask.@NotNull Type taskId) {
+        event.getListener().finishCurrentTask(taskId);
     }
 }

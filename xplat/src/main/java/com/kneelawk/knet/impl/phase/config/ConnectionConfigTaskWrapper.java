@@ -27,21 +27,21 @@ package com.kneelawk.knet.impl.phase.config;
 
 import java.util.function.Consumer;
 
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
-import net.minecraft.server.network.ServerPlayerConfigurationTask;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.network.ConfigurationTask;
 
 import com.kneelawk.knet.api.phase.config.ConnectionConfigTask;
 import com.kneelawk.knet.api.util.PayloadSender;
 
-public record ConnectionConfigTaskWrapper(Key key, ConnectionConfigTask task) implements ServerPlayerConfigurationTask {
+public record ConnectionConfigTaskWrapper(Type key, ConnectionConfigTask task) implements ConfigurationTask {
     @Override
-    public void sendPacket(Consumer<Packet<?>> sender) {
+    public void start(Consumer<Packet<?>> sender) {
         task.sendInitialPayload(new PayloadSender() {
             @Override
-            public void sendPayload(CustomPayload payload) {
-                sender.accept(new CustomPayloadS2CPacket(payload));
+            public void sendPayload(CustomPacketPayload payload) {
+                sender.accept(new ClientboundCustomPayloadPacket(payload));
             }
 
             @Override
@@ -52,7 +52,7 @@ public record ConnectionConfigTaskWrapper(Key key, ConnectionConfigTask task) im
     }
 
     @Override
-    public Key getKey() {
+    public Type type() {
         return key;
     }
 }

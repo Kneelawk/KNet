@@ -24,7 +24,6 @@ pluginManagement {
 }
 
 include(":xplat")
-include(":xplat:mojmap")
 include(":fabric")
 include(":neoforge")
 

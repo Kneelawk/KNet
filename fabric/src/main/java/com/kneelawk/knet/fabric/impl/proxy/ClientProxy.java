@@ -30,10 +30,10 @@ import java.util.concurrent.Executor;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
@@ -60,7 +60,7 @@ public class ClientProxy extends CommonProxy {
                     // do nothing
                 } catch (PayloadHandlingDisconnectException e) {
                     ctx.responseSender()
-                        .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                        .disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
                 } catch (Exception e) {
                     // just log as an error by default
                     KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
@@ -80,7 +80,7 @@ public class ClientProxy extends CommonProxy {
                     // do nothing
                 } catch (PayloadHandlingDisconnectException e) {
                     ctx.responseSender()
-                        .disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                        .disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
                 } catch (Exception e) {
                     // just log as an error by default
                     KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
@@ -90,20 +90,20 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void disconnectFromServer(Text message) {
-        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+    public void disconnectFromServer(Component message) {
+        ClientPacketListener networkHandler = Minecraft.getInstance().getConnection();
         if (networkHandler != null) {
             networkHandler.getConnection().disconnect(message);
         }
     }
 
     @Override
-    public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
+    public boolean serverHasPlayChannel(CustomPacketPayload.Type<?> channel) {
         return ClientPlayNetworking.canSend(channel);
     }
 
     @Override
     public Executor getClientExecutor() {
-        return MinecraftClient.getInstance();
+        return Minecraft.getInstance();
     }
 }

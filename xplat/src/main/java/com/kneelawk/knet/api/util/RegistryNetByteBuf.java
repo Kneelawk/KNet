@@ -10,21 +10,21 @@ package com.kneelawk.knet.api.util;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketDecoder;
-import net.minecraft.network.codec.PacketEncoder;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamDecoder;
+import net.minecraft.network.codec.StreamEncoder;
 
 /**
- * A {@link NetByteBuf} bound to a particular {@link DynamicRegistryManager} instance. This buffer is like a
- * {@link NetRegistryByteBuf} except it extends {@link NetByteBuf} instead of {@link RegistryByteBuf}.
+ * A {@link NetByteBuf} bound to a particular {@link RegistryAccess} instance. This buffer is like a
+ * {@link NetRegistryByteBuf} except it extends {@link NetByteBuf} instead of {@link RegistryFriendlyByteBuf}.
  * <p>
  * Class hierarchy:
  * <pre>
- *               {@link PacketByteBuf}
+ *               {@link FriendlyByteBuf}
  *                 /         \
- *   {@link RegistryByteBuf}      {@link NetByteBuf}
+ *   {@link RegistryFriendlyByteBuf}      {@link NetByteBuf}
  *              |               |
  * {@link NetRegistryByteBuf}&lt;-&gt;{@link RegistryNetByteBuf}
  * </pre>
@@ -34,7 +34,7 @@ import net.minecraft.registry.DynamicRegistryManager;
  */
 public class RegistryNetByteBuf extends NetByteBuf {
 
-    private final DynamicRegistryManager registryManager;
+    private final RegistryAccess registryManager;
 
     /**
      * Creates a new {@link RegistryNetByteBuf}.
@@ -42,7 +42,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @param wrapped         the buffer that this buffer wraps.
      * @param registryManager the registry manager to attach.
      */
-    public RegistryNetByteBuf(ByteBuf wrapped, DynamicRegistryManager registryManager) {
+    public RegistryNetByteBuf(ByteBuf wrapped, RegistryAccess registryManager) {
         super(wrapped);
         this.registryManager = registryManager;
     }
@@ -54,7 +54,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @param passthrough     whether to disable optimizations.
      * @param registryManager the registry manager to attach.
      */
-    public RegistryNetByteBuf(ByteBuf wrapped, boolean passthrough, DynamicRegistryManager registryManager) {
+    public RegistryNetByteBuf(ByteBuf wrapped, boolean passthrough, RegistryAccess registryManager) {
         super(wrapped, passthrough);
         this.registryManager = registryManager;
     }
@@ -64,7 +64,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      *
      * @return this buffer's attached registry manager.
      */
-    public DynamicRegistryManager getRegistryManager() {
+    public RegistryAccess getRegistryManager() {
         return registryManager;
     }
 
@@ -76,7 +76,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @param <T>    the type to write.
      * @return this buffer.
      */
-    public <T> RegistryNetByteBuf writeReg(T value, PacketEncoder<? super NetRegistryByteBuf, T> writer) {
+    public <T> RegistryNetByteBuf writeReg(T value, StreamEncoder<? super NetRegistryByteBuf, T> writer) {
         writer.encode(NetBufs.netRegistryOf(this), value);
         return this;
     }
@@ -88,7 +88,7 @@ public class RegistryNetByteBuf extends NetByteBuf {
      * @param <T>    the type to read.
      * @return the read value.
      */
-    public <T> T readReg(PacketDecoder<? super NetRegistryByteBuf, T> reader) {
+    public <T> T readReg(StreamDecoder<? super NetRegistryByteBuf, T> reader) {
         return reader.decode(NetBufs.netRegistryOf(this));
     }
 }

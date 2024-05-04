@@ -25,27 +25,27 @@
 
 package com.kneelawk.knet.example.net;
 
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.example.KNetExample;
 
-public record PingPongPayload(String message) implements CustomPayload {
-    public static final Id<PingPongPayload> ID = new Id<>(KNetExample.id("ping_pong"));
-    public static final PacketCodec<NetByteBuf, PingPongPayload> CODEC =
-        CustomPayload.codecOf(PingPongPayload::write, PingPongPayload::new);
+public record PingPongPayload(String message) implements CustomPacketPayload {
+    public static final Type<PingPongPayload> ID = new Type<>(KNetExample.id("ping_pong"));
+    public static final StreamCodec<NetByteBuf, PingPongPayload> CODEC =
+        CustomPacketPayload.codec(PingPongPayload::write, PingPongPayload::new);
 
     public PingPongPayload(NetByteBuf buf) {
-        this(buf.readString());
+        this(buf.readUtf());
     }
 
     public void write(NetByteBuf buf) {
-        buf.writeString(message);
+        buf.writeUtf(message);
     }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 }

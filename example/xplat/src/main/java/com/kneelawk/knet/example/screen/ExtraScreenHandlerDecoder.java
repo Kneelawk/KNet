@@ -25,11 +25,9 @@
 
 package com.kneelawk.knet.example.screen;
 
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
-import com.kneelawk.knet.api.util.NetByteBuf;
-
-public interface ExtraScreenHandlerDecoder<T extends ScreenHandler, P> {
-    T create(int syncId, PlayerInventory playerInv, P payload);
+public interface ExtraScreenHandlerDecoder<T extends AbstractContainerMenu, P> {
+    T create(int syncId, Inventory playerInv, P payload);
 }

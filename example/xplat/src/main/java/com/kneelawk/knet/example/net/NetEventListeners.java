@@ -25,7 +25,7 @@
 
 package com.kneelawk.knet.example.net;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import com.kneelawk.commonevents.api.Listen;
 import com.kneelawk.commonevents.api.Listener;
@@ -37,7 +37,7 @@ import com.kneelawk.knet.example.KNetExample;
 
 @Listener
 public class NetEventListeners {
-    public static final Identifier PING_PONG_TASK = KNetExample.id("ping_pong");
+    public static final ResourceLocation PING_PONG_TASK = KNetExample.id("ping_pong");
     public static final NoContextConfigChannel<PingPongPayload> CONFIG_CHANNEL =
         NoContextConfigChannel.of(PingPongPayload.ID, PingPongPayload.CODEC).recvClient(
             NetEventListeners::receiveClient).recvServer(NetEventListeners::receiveServer);

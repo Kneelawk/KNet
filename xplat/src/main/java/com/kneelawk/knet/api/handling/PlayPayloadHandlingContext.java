@@ -28,8 +28,8 @@ package com.kneelawk.knet.api.handling;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 /**
  * Context used for applying a payload during the 'play' phase.
@@ -44,17 +44,17 @@ public interface PlayPayloadHandlingContext extends PayloadHandlingContext {
      * @return the receiver player.
      */
     @Nullable
-    PlayerEntity getPlayer();
+    Player getPlayer();
 
     /**
      * Gets the world in which this payload was received.
      *
      * @return the world where this payload was received.
      */
-    default @Nullable World getWorld() {
-        PlayerEntity player = getPlayer();
+    default @Nullable Level getWorld() {
+        Player player = getPlayer();
         if (player == null) return null;
-        return player.getWorld();
+        return player.level();
     }
 
     /**
@@ -63,8 +63,8 @@ public interface PlayPayloadHandlingContext extends PayloadHandlingContext {
      * @return the receiver player.
      * @throws PayloadHandlingException if this payload was received without a player to receive it.
      */
-    default @NotNull PlayerEntity mustGetPlayer() throws PayloadHandlingException {
-        PlayerEntity player = getPlayer();
+    default @NotNull Player mustGetPlayer() throws PayloadHandlingException {
+        Player player = getPlayer();
         if (player == null) throw new PayloadHandlingErrorException("No player associated with this payload.");
         return player;
     }
@@ -75,8 +75,8 @@ public interface PlayPayloadHandlingContext extends PayloadHandlingContext {
      * @return the world where this payload was received.
      * @throws PayloadHandlingException if this payload was received without a world where it was received.
      */
-    default @NotNull World mustGetWorld() throws PayloadHandlingException {
-        World world = getWorld();
+    default @NotNull Level mustGetWorld() throws PayloadHandlingException {
+        Level world = getWorld();
         if (world == null) throw new PayloadHandlingErrorException("No world associated with this payload.");
         return world;
     }

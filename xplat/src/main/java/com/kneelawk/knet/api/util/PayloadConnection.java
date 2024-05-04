@@ -27,9 +27,9 @@ package com.kneelawk.knet.api.util;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 
 import com.kneelawk.knet.api.channel.Channel;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
@@ -44,20 +44,20 @@ public interface PayloadConnection extends PayloadSender {
      * @param player the player to send payloads to.
      * @return a payload sender for the given player.
      */
-    static PayloadConnection ofPlayer(ServerPlayerEntity player) {
+    static PayloadConnection ofPlayer(ServerPlayer player) {
         return new PayloadConnection() {
             @Override
-            public void disconnect(@NotNull Text message) {
-                player.networkHandler.disconnect(message);
+            public void disconnect(@NotNull Component message) {
+                player.connection.disconnect(message);
             }
 
             @Override
-            public void sendPayload(CustomPayload payload) {
+            public void sendPayload(CustomPacketPayload payload) {
                 KNetPlatform.INSTANCE.sendPlay(player, payload);
             }
 
             @Override
-            public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+            public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
                 return KNetPlatform.INSTANCE.clientHasPlayChannel(player, channel);
             }
 
@@ -76,17 +76,17 @@ public interface PayloadConnection extends PayloadSender {
     static PayloadConnection ofPlayToServer() {
         return new PayloadConnection() {
             @Override
-            public void disconnect(@NotNull Text message) {
+            public void disconnect(@NotNull Component message) {
                 KNetPlatform.INSTANCE.disconnectFromServer(message);
             }
 
             @Override
-            public void sendPayload(CustomPayload payload) {
+            public void sendPayload(CustomPacketPayload payload) {
                 KNetPlatform.INSTANCE.sendPlayToServer(payload);
             }
 
             @Override
-            public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+            public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
                 return KNetPlatform.INSTANCE.serverHasPlayChannel(channel);
             }
 
@@ -102,7 +102,7 @@ public interface PayloadConnection extends PayloadSender {
      *
      * @param message the message for the client to display when disconnected.
      */
-    void disconnect(@NotNull Text message);
+    void disconnect(@NotNull Component message);
 
     /**
      * Gets whether the receiving end of this connection has declared the ability to receive on the given channel.
@@ -110,7 +110,7 @@ public interface PayloadConnection extends PayloadSender {
      * @param channel the channel to check if the receiver has.
      * @return {@code true} if the receiver has declared the ability to receive on the given channel.
      */
-    boolean receiverHasChannel(CustomPayload.Id<?> channel);
+    boolean receiverHasChannel(CustomPacketPayload.Type<?> channel);
 
     /**
      * Gets whether the receiving end of this connection has declared the ability to receive on the given channel.

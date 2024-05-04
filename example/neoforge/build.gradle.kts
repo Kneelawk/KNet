@@ -35,6 +35,7 @@ repositories {
     maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
     maven("https://maven.firstdark.dev/snapshots") { name = "FirstDark" }
     maven("https://kneelawk.com/maven") { name = "Kneelawk" }
+    maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
 
     mavenLocal()
 }
@@ -42,10 +43,10 @@ repositories {
 dependencies {
     val minecraft_version: String by project
     minecraft("com.mojang:minecraft:$minecraft_version")
-    val yarn_mappings: String by project
+    val parchment_version: String by project
     mappings(loom.layered {
-        mappings("net.fabricmc:yarn:$yarn_mappings:v2")
-        mappings(rootProject.file("mappings/neoforge-fix.tiny"))
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-$minecraft_version:$parchment_version@zip")
     })
 
     val neoforge_version: String by project

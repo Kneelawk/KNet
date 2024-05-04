@@ -25,7 +25,7 @@
 
 package com.kneelawk.knet.api.channel;
 
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * A channel that can be registered with a platform.
@@ -36,7 +36,7 @@ public interface Channel {
      *
      * @return this channel's id.
      */
-    CustomPayload.Id<?> getId();
+    CustomPacketPayload.Type<?> getId();
 
     /**
      * Gets whether this channel receives payloads on the server.

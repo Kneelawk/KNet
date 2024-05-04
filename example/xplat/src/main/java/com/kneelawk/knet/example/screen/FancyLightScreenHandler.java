@@ -25,13 +25,13 @@
 
 package com.kneelawk.knet.example.screen;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.context.ContextualPlayChannel;
@@ -45,39 +45,39 @@ import com.kneelawk.knet.example.net.ColorUpdatePayload;
 
 import static com.kneelawk.knet.example.KNetExample.id;
 
-public class FancyLightScreenHandler extends ScreenHandler {
+public class FancyLightScreenHandler extends AbstractContainerMenu {
     public static final ContextualPlayChannel<FancyLightScreenHandler, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
         ContextualPlayChannel.ofNetCodec(id("fancy_light_screen_color_update"),
                 KNet.SCREEN_HANDLER_CONTEXT.cast(FancyLightScreenHandler.class), ColorUpdatePayload.CODEC)
             .recvServer(FancyLightScreenHandler::recv);
 
-    private final ScreenHandlerContext context;
+    private final ContainerLevelAccess context;
     private final FancyLightBlockEntity entity;
 
-    public static FancyLightScreenHandler fromNetwork(int syncId, PlayerInventory playerInv, BlockPosPayload payload) {
+    public static FancyLightScreenHandler fromNetwork(int syncId, Inventory playerInv, BlockPosPayload payload) {
         BlockPos pos = payload.pos();
-        World world = playerInv.player.getWorld();
+        Level world = playerInv.player.level();
 
         if (!(world.getBlockEntity(pos) instanceof FancyLightBlockEntity entity)) throw new IllegalArgumentException(
             "Tried to open screen at " + pos + " but there was no FancyLightBlockEntity there");
 
-        return new FancyLightScreenHandler(syncId, ScreenHandlerContext.create(world, pos), entity);
+        return new FancyLightScreenHandler(syncId, ContainerLevelAccess.create(world, pos), entity);
     }
 
-    public FancyLightScreenHandler(int syncId, ScreenHandlerContext context, FancyLightBlockEntity entity) {
+    public FancyLightScreenHandler(int syncId, ContainerLevelAccess context, FancyLightBlockEntity entity) {
         super(KNEScreenHandlers.FANCY_LIGHT.get(), syncId);
         this.context = context;
         this.entity = entity;
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
+    public ItemStack quickMoveStack(Player player, int slot) {
         return null;
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return canUse(context, player, KNEBlocks.FANCY_LIGHT.get());
+    public boolean stillValid(Player player) {
+        return stillValid(context, player, KNEBlocks.FANCY_LIGHT.get());
     }
 
     private void recv(ColorUpdatePayload payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingErrorException {

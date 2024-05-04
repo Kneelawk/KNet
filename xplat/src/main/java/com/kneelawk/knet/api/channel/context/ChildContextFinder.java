@@ -44,5 +44,6 @@ public interface ChildContextFinder<PARENT, CHILD> {
      * @throws PayloadHandlingException if an error occurs while getting the child context, like if the parent is in an
      *                                  invalid state.
      */
-    @NotNull CHILD getChild(@NotNull PARENT parent) throws PayloadHandlingException;
+    @NotNull
+    CHILD getChild(@NotNull PARENT parent) throws PayloadHandlingException;
 }

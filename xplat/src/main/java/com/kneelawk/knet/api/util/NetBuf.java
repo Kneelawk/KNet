@@ -24,20 +24,20 @@ import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.codec.PacketDecoder;
-import net.minecraft.network.codec.PacketEncoder;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamDecoder;
+import net.minecraft.network.codec.StreamEncoder;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ChunkPos;
 
 /**
  * Super-interface for all net buffers to make sure they have the same interface and implement the same methods.
  *
  * @param <B> the implementing buffer.
  */
-public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
+public interface NetBuf<B extends FriendlyByteBuf & NetBuf<? super B>> {
     /**
      * The minimum value that can fit within a single byte when using signed var-int encoding.
      */
@@ -268,7 +268,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      *
      * @return this buffer.
      */
-    PacketByteBuf clear();
+    FriendlyByteBuf clear();
 
     /**
      * Marks the current {@code readerIndex} in this buffer.  You can
@@ -278,7 +278,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      *
      * @return this buffer.
      */
-    PacketByteBuf markReaderIndex();
+    FriendlyByteBuf markReaderIndex();
 
     /**
      * Repositions the current {@code readerIndex} to the marked
@@ -288,7 +288,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @throws IndexOutOfBoundsException if the current {@code writerIndex} is less than the marked
      *                                   {@code readerIndex}
      */
-    PacketByteBuf resetReaderIndex();
+    FriendlyByteBuf resetReaderIndex();
 
     /**
      * Creates a saved reader index that can be restored to continue reading from the position of this buffer when this
@@ -314,7 +314,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param flag the boolean to write.
      * @return this buffer.
      */
-    PacketByteBuf writeBoolean(boolean flag);
+    FriendlyByteBuf writeBoolean(boolean flag);
 
     /**
      * Reads a single boolean from some position in this buffer. The boolean flag might be read from a new byte
@@ -355,9 +355,9 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      *
      * @param value the enum constant to write.
      * @return this buf, for chaining.
-     * @see #readEnumConstant(Class)
+     * @see #readEnum(Class)
      */
-    PacketByteBuf writeEnumConstant(Enum<?> value);
+    FriendlyByteBuf writeEnum(Enum<?> value);
 
     /**
      * Reads an enum constant from this buf. An enum constant is represented
@@ -366,9 +366,9 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param enumClass the enum class, for constant lookup.
      * @param <E>       the type of enum to read.
      * @return the read enum constant.
-     * @see #writeEnumConstant(Enum)
+     * @see #writeEnum(Enum)
      */
-    <E extends Enum<E>> E readEnumConstant(Class<E> enumClass);
+    <E extends Enum<E>> E readEnum(Class<E> enumClass);
 
     /**
      * Writes out a {@link BlockPos} using 3 {@link #writeVarInt(int)}s rather than {@link BlockPos#asLong()}.
@@ -376,10 +376,10 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param pos the block position to write.
      * @return this buffer.
      */
-    PacketByteBuf writeBlockPos(BlockPos pos);
+    FriendlyByteBuf writeBlockPos(BlockPos pos);
 
     /**
-     * Reads a {@link BlockPos} using 3 {@link #readVarInt()}s rather than {@link BlockPos#fromLong(long)}.
+     * Reads a {@link BlockPos} using 3 {@link #readVarInt()}s rather than {@link BlockPos#of(long)}.
      *
      * @return the read block position.
      */
@@ -391,7 +391,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param pos the chunk position to write.
      * @return this buffer.
      */
-    PacketByteBuf writeChunkPos(ChunkPos pos);
+    FriendlyByteBuf writeChunkPos(ChunkPos pos);
 
     /**
      * Reads a {@link ChunkPos} using 2 {@link #readVarInt()}s rather than a {@link ChunkPos#ChunkPos(long)}.
@@ -401,19 +401,19 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
     ChunkPos readChunkPos();
 
     /**
-     * Writes out a {@link ChunkSectionPos} using 3 {@link #writeVarInt(int)}s rather than a {@link ChunkSectionPos#asLong()}.
+     * Writes out a {@link SectionPos} using 3 {@link #writeVarInt(int)}s rather than a {@link SectionPos#asLong()}.
      *
      * @param pos the cunk section position to write.
      * @return this buffer.
      */
-    PacketByteBuf writeChunkSectionPos(ChunkSectionPos pos);
+    FriendlyByteBuf writeSectionPos(SectionPos pos);
 
     /**
-     * Reads a {@link ChunkSectionPos} using 3 {@link #readVarInt()}s rather than a {@link ChunkSectionPos#from(long)}.
+     * Reads a {@link SectionPos} using 3 {@link #readVarInt()}s rather than a {@link SectionPos#of(long)}.
      *
      * @return the read chunk section pos.
      */
-    ChunkSectionPos readChunkSectionPos();
+    SectionPos readSectionPos();
 
     /**
      * Writes out an integer using a variable number of bytes.
@@ -430,7 +430,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param ival the integer value to write.
      * @return this buffer.
      */
-    PacketByteBuf writeVarInt(int ival);
+    FriendlyByteBuf writeVarInt(int ival);
 
     /**
      * Reads out an integer using a variable number of bytes, assuming it was written by {@link #writeVarInt(int)}
@@ -481,7 +481,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param lval the long integer value to write.
      * @return this buffer.
      */
-    PacketByteBuf writeVarLong(long lval);
+    FriendlyByteBuf writeVarLong(long lval);
 
     /**
      * Reads a single var long from this buf.
@@ -513,24 +513,24 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
     long readVarUnsignedLong();
 
     /**
-     * Like {@link PacketByteBuf#readIdentifier()}, but returns null instead of throwing an error if the read string was
+     * Like {@link FriendlyByteBuf#readResourceLocation()}, but returns null instead of throwing an error if the read string was
      * invalid.
      * <p>
-     * <b>Note:</b> this <em>will</em> attempt to read a string from the buffer regardless of whether that string is a valid {@link Identifier}.
+     * <b>Note:</b> this <em>will</em> attempt to read a string from the buffer regardless of whether that string is a valid {@link ResourceLocation}.
      *
      * @return the valid identifier read, or {@code null} if the read string did not represent a valid identifier.
      */
     @Nullable
-    Identifier readIdentifierOrNull();
+    ResourceLocation readIdentifierOrNull();
 
     /**
      * Reads a string of up to {@link Short#MAX_VALUE} length.
      * <p>
-     * NOTE: This is just {@link PacketByteBuf#readString()} but available on the server as well.
+     * NOTE: This is just {@link FriendlyByteBuf#readUtf()} but available on the server as well.
      *
      * @return the read string.
      */
-    String readString();
+    String readUtf();
 
     /**
      * Writes an optional value to this buf. An optional value is represented by
@@ -541,9 +541,9 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param writer the packet writer capable of writing the value.
      * @param <T>    the type this method optionally writes.
      * @return this buffer.
-     * @see #readNetOptional(PacketDecoder)
+     * @see #readNetOptional(StreamDecoder)
      */
-    default <T> B writeNetOptional(Optional<T> value, PacketEncoder<? super B, T> writer) {
+    default <T> B writeNetOptional(Optional<T> value, StreamEncoder<? super B, T> writer) {
         if (value.isPresent()) {
             writeBoolean(true);
             writer.encode(self(), value.get());
@@ -561,9 +561,9 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param reader the packet reader capable of reading the value.
      * @param <T>    the type this method optionally reads.
      * @return the read optional value
-     * @see #writeNetOptional(Optional, PacketEncoder)
+     * @see #writeNetOptional(Optional, StreamEncoder)
      */
-    default <T> Optional<T> readNetOptional(PacketDecoder<? super B, T> reader) {
+    default <T> Optional<T> readNetOptional(StreamDecoder<? super B, T> reader) {
         return readBoolean() ? Optional.of(reader.decode(self())) : Optional.empty();
     }
 
@@ -651,9 +651,9 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param writer the writer for the given type.
      * @param <T>    the type to write.
      * @return this buffer.
-     * @see #readNetNullable(PacketDecoder)
+     * @see #readNetNullable(StreamDecoder)
      */
-    default <T> B writeNetNullable(@Nullable T value, PacketEncoder<? super B, T> writer) {
+    default <T> B writeNetNullable(@Nullable T value, StreamEncoder<? super B, T> writer) {
         if (value != null) {
             writeBoolean(true);
             writer.encode(self(), value);
@@ -671,9 +671,9 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param reader the reader for the given type.
      * @param <T>    the type to write.
      * @return the read nullable value
-     * @see #writeNetNullable(Object, PacketEncoder)
+     * @see #writeNetNullable(Object, StreamEncoder)
      */
-    default <T> @Nullable T readNetNullable(PacketDecoder<? super B, T> reader) {
+    default <T> @Nullable T readNetNullable(StreamDecoder<? super B, T> reader) {
         return readBoolean() ? reader.decode(self()) : null;
     }
 
@@ -686,7 +686,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param <T>    the type of the array to write.
      * @return this buffer.
      */
-    default <T> B writeNetArray(T[] array, PacketEncoder<? super B, T> writer) {
+    default <T> B writeNetArray(T[] array, StreamEncoder<? super B, T> writer) {
         writeVarUnsignedInt(array.length);
         for (T obj : array) {
             writer.encode(self(), obj);
@@ -703,7 +703,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param <T>       the type of the array to read.
      * @return the read array.
      */
-    default <T> T[] readNetArray(IntFunction<T[]> arrayCtor, PacketDecoder<? super B, T> reader) {
+    default <T> T[] readNetArray(IntFunction<T[]> arrayCtor, StreamDecoder<? super B, T> reader) {
         int length = readVarUnsignedInt();
         T[] array = arrayCtor.apply(length);
         for (int i = 0; i < length; i++) {
@@ -721,7 +721,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param <T>        the type within the collection to write.
      * @return this buffer.
      */
-    default <T> B writeNetCollection(Collection<T> collection, PacketEncoder<? super B, T> writer) {
+    default <T> B writeNetCollection(Collection<T> collection, StreamEncoder<? super B, T> writer) {
         writeVarUnsignedInt(collection.size());
 
         for (T obj : collection) {
@@ -742,7 +742,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @return the read collection.
      */
     default <T, C extends Collection<T>> C readNetCollection(IntFunction<C> collectionCtor,
-                                                             PacketDecoder<? super B, T> reader) {
+                                                             StreamDecoder<? super B, T> reader) {
         int length = readVarUnsignedInt();
         C collection = collectionCtor.apply(length);
 
@@ -754,13 +754,13 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
     }
 
     /**
-     * Reads a list via {@link #readNetCollection(IntFunction, PacketDecoder)}.
+     * Reads a list via {@link #readNetCollection(IntFunction, StreamDecoder)}.
      *
      * @param reader the reader to read list elements.
      * @param <T>    the type of value in the list.
      * @return the read list.
      */
-    default <T> List<T> readNetList(PacketDecoder<? super B, T> reader) {
+    default <T> List<T> readNetList(StreamDecoder<? super B, T> reader) {
         return readNetCollection(Lists::newArrayListWithCapacity, reader);
     }
 
@@ -775,8 +775,8 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param <V>         the value type.
      * @return this buffer.
      */
-    default <K, V> B writeNetMap(Map<K, V> map, PacketEncoder<? super B, K> keyWriter,
-                                 PacketEncoder<? super B, V> valueWriter) {
+    default <K, V> B writeNetMap(Map<K, V> map, StreamEncoder<? super B, K> keyWriter,
+                                 StreamEncoder<? super B, V> valueWriter) {
         writeVarUnsignedInt(map.size());
         map.forEach((key, value) -> {
             keyWriter.encode(self(), key);
@@ -797,8 +797,8 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param <M>         the map type.
      * @return the read map.
      */
-    default <K, V, M extends Map<K, V>> M readNetMap(IntFunction<M> mapCtor, PacketDecoder<? super B, K> keyReader,
-                                                     PacketDecoder<? super B, V> valueReader) {
+    default <K, V, M extends Map<K, V>> M readNetMap(IntFunction<M> mapCtor, StreamDecoder<? super B, K> keyReader,
+                                                     StreamDecoder<? super B, V> valueReader) {
         int length = readVarUnsignedInt();
         M map = mapCtor.apply(length);
 
@@ -812,7 +812,7 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
     }
 
     /**
-     * Reads a map from this buf via {@link #readNetMap(IntFunction, PacketDecoder, PacketDecoder)}.
+     * Reads a map from this buf via {@link #readNetMap(IntFunction, StreamDecoder, StreamDecoder)}.
      *
      * @param keyReader   the reader for keys.
      * @param valueReader the reader for values.
@@ -820,8 +820,8 @@ public interface NetBuf<B extends PacketByteBuf & NetBuf<? super B>> {
      * @param <V>         the value type.
      * @return the read map.
      */
-    default <K, V> Map<K, V> readNetMap(PacketDecoder<? super B, K> keyReader,
-                                        PacketDecoder<? super B, V> valueReader) {
+    default <K, V> Map<K, V> readNetMap(StreamDecoder<? super B, K> keyReader,
+                                        StreamDecoder<? super B, V> valueReader) {
         return readNetMap(Maps::newHashMapWithExpectedSize, keyReader, valueReader);
     }
 

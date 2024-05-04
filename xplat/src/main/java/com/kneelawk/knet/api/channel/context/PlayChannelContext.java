@@ -27,8 +27,8 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
@@ -103,7 +103,7 @@ public interface PlayChannelContext<C> {
      * @return a new channel context that gets the child from the parent channel context.
      */
     default <T, P> @NotNull PlayChannelContext<T> netChild(
-        @NotNull PacketCodec<? super RegistryNetByteBuf, P> codec,
+        @NotNull StreamCodec<? super RegistryNetByteBuf, P> codec,
         @NotNull ChildPlayContextDecoder<C, T, P> decoder,
         @NotNull ContextEncoder<T, P> encoder,
         @NotNull ParentContextFinder<C, T> parentFinder) {
@@ -111,7 +111,7 @@ public interface PlayChannelContext<C> {
     }
 
     /**
-     * Creates a child channel context that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryByteBuf} codec.
+     * Creates a child channel context that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryFriendlyByteBuf} codec.
      *
      * @param codec        the codec of the child-specific payload.
      * @param decoder      the decoder for the child context from the parent context.
@@ -122,7 +122,7 @@ public interface PlayChannelContext<C> {
      * @return a new channel context that gets the child from the parent channel context.
      */
     default <T, P> @NotNull PlayChannelContext<T> registryChild(
-        @NotNull PacketCodec<? super NetRegistryByteBuf, P> codec,
+        @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec,
         @NotNull ChildPlayContextDecoder<C, T, P> decoder,
         @NotNull ContextEncoder<T, P> encoder,
         @NotNull ParentContextFinder<C, T> parentFinder) {

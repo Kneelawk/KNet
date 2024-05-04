@@ -27,7 +27,7 @@ package com.kneelawk.knet.example.blockentity;
 
 import java.util.function.Supplier;
 
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.block.KNEBlocks;
@@ -35,7 +35,7 @@ import com.kneelawk.knet.example.block.KNEBlocks;
 public class KNEBlockEntities {
     public static final Supplier<BlockEntityType<FancyLightBlockEntity>> FANCY_LIGHT =
         KNEPlatform.INSTANCE.registerBlockEntity("fancy_light",
-            () -> BlockEntityType.Builder.create(FancyLightBlockEntity::new, KNEBlocks.FANCY_LIGHT.get()).build(null));
+            () -> BlockEntityType.Builder.of(FancyLightBlockEntity::new, KNEBlocks.FANCY_LIGHT.get()).build(null));
 
     public static void init() {}
 }

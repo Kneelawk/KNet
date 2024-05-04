@@ -8,10 +8,10 @@
 
 package com.kneelawk.knet.api.util;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.ChunkPos;
 
 /**
  * Utility class to help with implementing {@link NetBuf}.
@@ -232,7 +232,7 @@ public final class NetBufImplHelper {
      *
      * @param buf   the buffer to write to.
      * @param value the enum to write.
-     * @see NetBuf#writeEnumConstant(Enum)
+     * @see NetBuf#writeEnum(Enum)
      */
     public static void writeEnumConstant(NetBuf<?> buf, Enum<?> value) {
         Enum<?>[] possible = value.getDeclaringClass().getEnumConstants();
@@ -241,7 +241,7 @@ public final class NetBufImplHelper {
             throw new IllegalArgumentException("Tried to write an enum value without any values! How did you do this?");
         }
         if (possible.length == 1) return;
-        buf.writeFixedBits(value.ordinal(), MathHelper.ceilLog2(possible.length));
+        buf.writeFixedBits(value.ordinal(), Mth.ceillog2(possible.length));
     }
 
     /**
@@ -251,7 +251,7 @@ public final class NetBufImplHelper {
      * @param enumClass the class of the enum to read.
      * @param <E>       the type of the enum to read.
      * @return the read enum.
-     * @see NetBuf#readEnumConstant(Class)
+     * @see NetBuf#readEnum(Class)
      */
     public static <E extends Enum<E>> E readEnumConstant(NetBuf<?> buf, Class<E> enumClass) {
         // No need to lookup the declaring class as you cannot refer to sub-classes of Enum.
@@ -265,7 +265,7 @@ public final class NetBufImplHelper {
         if (enums.length == 1) {
             return enums[0];
         }
-        int length = MathHelper.ceilLog2(enums.length);
+        int length = Mth.ceillog2(enums.length);
         int index = buf.readFixedBits(length);
         return enums[index];
     }
@@ -321,9 +321,9 @@ public final class NetBufImplHelper {
      *
      * @param buf the buffer to write to.
      * @param pos the pos to write.
-     * @see NetBuf#writeChunkSectionPos(ChunkSectionPos)
+     * @see NetBuf#writeSectionPos(SectionPos)
      */
-    public static void writeChunkSectionPos(NetBuf<?> buf, ChunkSectionPos pos) {
+    public static void writeChunkSectionPos(NetBuf<?> buf, SectionPos pos) {
         buf.writeVarInt(pos.getX());
         buf.writeVarInt(pos.getY());
         buf.writeVarInt(pos.getZ());
@@ -334,10 +334,10 @@ public final class NetBufImplHelper {
      *
      * @param buf the buffer to read from.
      * @return the read chunk section pos.
-     * @see NetBuf#readChunkSectionPos()
+     * @see NetBuf#readSectionPos()
      */
-    public static ChunkSectionPos readChunkSectionPos(NetBuf<?> buf) {
-        return ChunkSectionPos.from(buf.readVarInt(), buf.readVarInt(), buf.readVarInt());
+    public static SectionPos readChunkSectionPos(NetBuf<?> buf) {
+        return SectionPos.of(buf.readVarInt(), buf.readVarInt(), buf.readVarInt());
     }
 
     /**

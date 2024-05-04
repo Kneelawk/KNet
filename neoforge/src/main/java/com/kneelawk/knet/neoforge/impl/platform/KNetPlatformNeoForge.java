@@ -3,13 +3,13 @@ package com.kneelawk.knet.neoforge.impl.platform;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.platform.KNetPlatform;
@@ -17,60 +17,60 @@ import com.kneelawk.knet.neoforge.impl.proxy.CommonProxy;
 
 public class KNetPlatformNeoForge implements KNetPlatform {
     @Override
-    public void sendPlayToAll(CustomPayload payload) {
+    public void sendPlayToAll(CustomPacketPayload payload) {
         PacketDistributor.sendToAllPlayers(payload);
     }
 
     @Override
-    public void sendPlay(PlayerEntity player, CustomPayload payload) {
-        if (player.getWorld().isClient()) {
+    public void sendPlay(Player player, CustomPacketPayload payload) {
+        if (player.level().isClientSide()) {
             PacketDistributor.sendToServer(payload);
-        } else if (player instanceof ServerPlayerEntity serverPlayer) {
+        } else if (player instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, payload);
         }
     }
 
     @Override
-    public void sendPlayToServer(CustomPayload payload) {
+    public void sendPlayToServer(CustomPacketPayload payload) {
         if (FMLEnvironment.dist.isClient()) {
             PacketDistributor.sendToServer(payload);
         } else {
-            KNetLog.LOG.warn("Attempted to send payload {} to the server from the server-side.", payload.getId());
+            KNetLog.LOG.warn("Attempted to send payload {} to the server from the server-side.", payload.type());
         }
     }
 
     @Override
-    public void sendPlayToDimension(ServerWorld dim, CustomPayload payload) {
+    public void sendPlayToDimension(ServerLevel dim, CustomPacketPayload payload) {
         PacketDistributor.sendToPlayersInDimension(dim, payload);
     }
 
     @Override
-    public void sendPlayToTrackingEntity(Entity entity, CustomPayload payload) {
+    public void sendPlayToTrackingEntity(Entity entity, CustomPacketPayload payload) {
         PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
     }
 
     @Override
-    public void sendPlayToTrackingEntityAndSelf(Entity entity, CustomPayload payload) {
+    public void sendPlayToTrackingEntityAndSelf(Entity entity, CustomPacketPayload payload) {
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
     }
 
     @Override
-    public void sendPlayToTrackingChunk(ServerWorld world, ChunkPos pos, CustomPayload payload) {
+    public void sendPlayToTrackingChunk(ServerLevel world, ChunkPos pos, CustomPacketPayload payload) {
         PacketDistributor.sendToPlayersTrackingChunk(world, pos, payload);
     }
 
     @Override
-    public void disconnectFromServer(Text message) {
+    public void disconnectFromServer(Component message) {
         CommonProxy.getInstance().disconnectFromServer(message);
     }
 
     @Override
-    public boolean clientHasPlayChannel(ServerPlayerEntity player, CustomPayload.Id<?> channel) {
-        return player.networkHandler.hasChannel(channel);
+    public boolean clientHasPlayChannel(ServerPlayer player, CustomPacketPayload.Type<?> channel) {
+        return player.connection.hasChannel(channel);
     }
 
     @Override
-    public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
+    public boolean serverHasPlayChannel(CustomPacketPayload.Type<?> channel) {
         return CommonProxy.getInstance().serverHasPlayChannel(channel);
     }
 }

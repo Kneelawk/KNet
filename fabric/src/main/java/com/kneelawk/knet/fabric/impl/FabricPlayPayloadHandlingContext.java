@@ -26,15 +26,14 @@
 package com.kneelawk.knet.fabric.impl;
 
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
 
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
@@ -49,22 +48,22 @@ public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx)
     }
 
     @Override
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return ctx.player();
     }
 
     @Override
-    public void disconnect(@NotNull Text message) {
+    public void disconnect(@NotNull Component message) {
         ctx.responseSender().disconnect(message);
     }
 
     @Override
-    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+    public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
         return ServerPlayNetworking.canSend(ctx.player(), channel);
     }
 
     @Override
-    public void sendPayload(CustomPayload payload) {
+    public void sendPayload(CustomPacketPayload payload) {
         ctx.responseSender().sendPacket(payload);
     }
 }

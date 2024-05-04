@@ -27,8 +27,8 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
 /**
  * Used for finding a child in a parent given the information in a payload.
@@ -48,6 +48,7 @@ public interface ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> {
      * @return the found child.
      * @throws PayloadHandlingException if an error occurs while finding the child.
      */
-    @NotNull CHILD decode(@NotNull PARENT parent, @NotNull PAYLOAD payload, @NotNull PlayPayloadHandlingContext ctx)
+    @NotNull
+    CHILD decode(@NotNull PARENT parent, @NotNull PAYLOAD payload, @NotNull PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException;
 }

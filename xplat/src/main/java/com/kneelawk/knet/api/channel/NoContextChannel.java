@@ -29,7 +29,7 @@ import java.util.Collection;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import com.kneelawk.knet.api.util.PayloadSender;
 
@@ -38,7 +38,7 @@ import com.kneelawk.knet.api.util.PayloadSender;
  *
  * @param <P> the type of payload this channel sends and receives.
  */
-public interface NoContextChannel<P extends CustomPayload> extends Channel {
+public interface NoContextChannel<P extends CustomPacketPayload> extends Channel {
 
     /**
      * Sends a payload through a {@link PayloadSender}.

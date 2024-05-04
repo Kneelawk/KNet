@@ -27,8 +27,8 @@ package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
@@ -44,7 +44,7 @@ import com.kneelawk.knet.api.util.RegistryNetByteBuf;
  * @param <P> the payload this uses.
  */
 public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
-    private final PacketCodec<? super NetRegistryByteBuf, P> codec;
+    private final StreamCodec<? super NetRegistryByteBuf, P> codec;
     private final PlayContextDecoder<C, P> decoder;
     private final ContextEncoder<C, P> encoder;
 
@@ -59,13 +59,13 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
      * @return a new root channel context.
      */
     public static <C, P> RootPlayChannelContext<C, P> ofNetCodec(
-        @NotNull PacketCodec<? super RegistryNetByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
+        @NotNull StreamCodec<? super RegistryNetByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
         @NotNull ContextEncoder<C, P> encoder) {
-        return new RootPlayChannelContext<>(codec.mapBuf(NetBufs::registryNetOf), decoder, encoder);
+        return new RootPlayChannelContext<>(codec.mapStream(NetBufs::registryNetOf), decoder, encoder);
     }
 
     /**
-     * Creates a new root channel context that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryByteBuf} codec.
+     * Creates a new root channel context that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryFriendlyByteBuf} codec.
      *
      * @param codec   the payload codec.
      * @param decoder a decoder for decoding context from the payload.
@@ -75,12 +75,12 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
      * @return a new root channel context.
      */
     public static <C, P> RootPlayChannelContext<C, P> ofRegistryCodec(
-        @NotNull PacketCodec<? super NetRegistryByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
+        @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
         @NotNull ContextEncoder<C, P> encoder) {
         return new RootPlayChannelContext<>(codec, decoder, encoder);
     }
 
-    private RootPlayChannelContext(@NotNull PacketCodec<? super NetRegistryByteBuf, P> codec,
+    private RootPlayChannelContext(@NotNull StreamCodec<? super NetRegistryByteBuf, P> codec,
                                    @NotNull PlayContextDecoder<C, P> decoder, @NotNull ContextEncoder<C, P> encoder) {
         this.codec = codec;
         this.decoder = decoder;

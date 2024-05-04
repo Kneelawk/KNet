@@ -29,8 +29,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import net.neoforged.fml.loading.FMLLoader;
 
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import com.kneelawk.knet.impl.KNetLog;
 
@@ -59,11 +59,11 @@ public class CommonProxy {
         return false;
     }
 
-    public void disconnectFromServer(Text message) {
+    public void disconnectFromServer(Component message) {
         KNetLog.LOG.warn("Attempted to disconnect from the server on the server side, with the message: {}", message);
     }
 
-    public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
+    public boolean serverHasPlayChannel(CustomPacketPayload.Type<?> channel) {
         return false;
     }
 }
