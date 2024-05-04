@@ -31,9 +31,9 @@ import org.jetbrains.annotations.NotNull;
 
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerConfigurationTask;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.network.ConfigurationTask;
 
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 
@@ -48,22 +48,22 @@ public record FabricConfigPayloadHandlingContext(ServerConfigurationNetworking.C
     }
 
     @Override
-    public void disconnect(@NotNull Text message) {
+    public void disconnect(@NotNull Component message) {
         ctx.responseSender().disconnect(message);
     }
 
     @Override
-    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+    public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
         return ServerConfigurationNetworking.canSend(ctx.networkHandler(), channel);
     }
 
     @Override
-    public void sendPayload(CustomPayload payload) {
+    public void sendPayload(CustomPacketPayload payload) {
         ctx.responseSender().sendPacket(payload);
     }
 
     @Override
-    public void completeTask(ServerPlayerConfigurationTask.@NotNull Key taskId) {
+    public void completeTask(ConfigurationTask.@NotNull Type taskId) {
         ctx.networkHandler().completeTask(taskId);
     }
 }

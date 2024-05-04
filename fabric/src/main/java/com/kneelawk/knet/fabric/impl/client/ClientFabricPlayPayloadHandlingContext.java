@@ -31,11 +31,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.fabric.impl.proxy.CommonProxy;
 
@@ -49,22 +47,22 @@ public record ClientFabricPlayPayloadHandlingContext(ClientPlayNetworking.Contex
     }
 
     @Override
-    public @Nullable PlayerEntity getPlayer() {
+    public @Nullable Player getPlayer() {
         return ctx().player();
     }
 
     @Override
-    public void disconnect(@NotNull Text message) {
+    public void disconnect(@NotNull Component message) {
         ctx.responseSender().disconnect(message);
     }
 
     @Override
-    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+    public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
         return ClientPlayNetworking.canSend(channel);
     }
 
     @Override
-    public void sendPayload(CustomPayload payload) {
+    public void sendPayload(CustomPacketPayload payload) {
         ctx.responseSender().sendPacket(payload);
     }
 }

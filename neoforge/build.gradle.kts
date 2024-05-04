@@ -30,6 +30,7 @@ repositories {
     maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
     maven("https://maven.firstdark.dev/snapshots") { name = "FirstDark" }
     maven("https://kneelawk.com/maven") { name = "Kneelawk" }
+    maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
 
     mavenLocal()
 }
@@ -37,10 +38,10 @@ repositories {
 dependencies {
     val minecraft_version: String by project
     minecraft("com.mojang:minecraft:$minecraft_version")
-    val yarn_mappings: String by project
+    val parchment_version: String by project
     mappings(loom.layered {
-        mappings("net.fabricmc:yarn:$yarn_mappings:v2")
-        mappings(rootProject.file("mappings/neoforge-fix.tiny"))
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-$minecraft_version:$parchment_version@zip")
     })
 
     val neoforge_version: String by project
@@ -101,11 +102,9 @@ tasks {
         exclude("com/kneelawk/knet/impl")
         exclude("com/kneelawk/knet/neoforge/impl")
 
-        val yarn_mappings: String by project
         val jetbrains_annotations_version: String by project
         (options as? StandardJavadocDocletOptions)?.links =
             listOf(
-                "https://maven.fabricmc.net/docs/yarn-${yarn_mappings}/",
                 "https://javadoc.io/doc/org.jetbrains/annotations/${jetbrains_annotations_version}/"
             )
 

@@ -27,56 +27,55 @@ package com.kneelawk.knet.impl.platform;
 
 import java.util.Collection;
 import java.util.ServiceLoader;
-
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public interface KNetPlatform {
     KNetPlatform INSTANCE = ServiceLoader.load(KNetPlatform.class).findFirst()
         .orElseThrow(() -> new RuntimeException("Unable to find KNet platform"));
 
-    void sendPlayToAll(CustomPayload payload);
+    void sendPlayToAll(CustomPacketPayload payload);
 
-    void sendPlay(PlayerEntity player, CustomPayload payload);
+    void sendPlay(Player player, CustomPacketPayload payload);
 
-    void sendPlayToServer(CustomPayload payload);
+    void sendPlayToServer(CustomPacketPayload payload);
 
-    void sendPlayToDimension(ServerWorld dim, CustomPayload payload);
+    void sendPlayToDimension(ServerLevel dim, CustomPacketPayload payload);
 
-    void sendPlayToTrackingEntity(Entity entity, CustomPayload payload);
+    void sendPlayToTrackingEntity(Entity entity, CustomPacketPayload payload);
 
-    void sendPlayToTrackingEntityAndSelf(Entity entity, CustomPayload payload);
+    void sendPlayToTrackingEntityAndSelf(Entity entity, CustomPacketPayload payload);
 
-    void sendPlayToTrackingChunk(ServerWorld world, ChunkPos pos, CustomPayload payload);
+    void sendPlayToTrackingChunk(ServerLevel world, ChunkPos pos, CustomPacketPayload payload);
 
-    default void sendPlayToTrackingBlockEntity(BlockEntity be, CustomPayload payload) {
-        if (be.getWorld() instanceof ServerWorld serverWorld) {
-            sendPlayToTrackingChunk(serverWorld, new ChunkPos(be.getPos()), payload);
+    default void sendPlayToTrackingBlockEntity(BlockEntity be, CustomPacketPayload payload) {
+        if (be.getLevel() instanceof ServerLevel serverWorld) {
+            sendPlayToTrackingChunk(serverWorld, new ChunkPos(be.getBlockPos()), payload);
         } else {
             sendPlayToServer(payload);
         }
     }
 
-    default void sendPlayToTrackingBlock(ServerWorld world, BlockPos pos, CustomPayload payload) {
+    default void sendPlayToTrackingBlock(ServerLevel world, BlockPos pos, CustomPacketPayload payload) {
         sendPlayToTrackingChunk(world, new ChunkPos(pos), payload);
     }
 
-    default void sendPlay(Collection<ServerPlayerEntity> players, CustomPayload payload) {
-        for (ServerPlayerEntity player : players) {
+    default void sendPlay(Collection<ServerPlayer> players, CustomPacketPayload payload) {
+        for (ServerPlayer player : players) {
             sendPlay(player, payload);
         }
     }
 
-    void disconnectFromServer(Text message);
+    void disconnectFromServer(Component message);
 
-    boolean clientHasPlayChannel(ServerPlayerEntity player, CustomPayload.Id<?> channel);
+    boolean clientHasPlayChannel(ServerPlayer player, CustomPacketPayload.Type<?> channel);
 
-    boolean serverHasPlayChannel(CustomPayload.Id<?> channel);
+    boolean serverHasPlayChannel(CustomPacketPayload.Type<?> channel);
 }

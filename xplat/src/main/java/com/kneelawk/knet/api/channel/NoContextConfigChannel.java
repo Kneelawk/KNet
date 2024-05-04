@@ -27,13 +27,10 @@ package com.kneelawk.knet.api.channel;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.jetbrains.annotations.NotNull;
-
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
-
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
@@ -43,13 +40,13 @@ import com.kneelawk.knet.api.util.PayloadSender;
 import com.kneelawk.knet.impl.KNetLog;
 
 /**
- * Describes a {@link CustomPayload} channel that can have payloads sent and received during the 'configuration' phase.
+ * Describes a {@link CustomPacketPayload} channel that can have payloads sent and received during the 'configuration' phase.
  *
  * @param <P> the type of payload this channel sends and receives.
  */
-public class NoContextConfigChannel<P extends CustomPayload> implements ConfigChannel, NoContextChannel<P> {
-    private final CustomPayload.Id<P> id;
-    private final PacketCodec<? super NetByteBuf, P> codec;
+public class NoContextConfigChannel<P extends CustomPacketPayload> implements ConfigChannel, NoContextChannel<P> {
+    private final CustomPacketPayload.Type<P> id;
+    private final StreamCodec<? super NetByteBuf, P> codec;
 
     private NoContextConfigPayloadHandler<P> clientHandler = null;
     private NoContextConfigPayloadHandler<P> serverHandler = null;
@@ -62,12 +59,12 @@ public class NoContextConfigChannel<P extends CustomPayload> implements ConfigCh
      * @param <P>   the type of payload.
      * @return a new context-less channel.
      */
-    public static <P extends CustomPayload> NoContextConfigChannel<P> of(@NotNull CustomPayload.Id<P> id, @NotNull
-    PacketCodec<? super NetByteBuf, P> codec) {
+    public static <P extends CustomPacketPayload> NoContextConfigChannel<P> of(@NotNull CustomPacketPayload.Type<P> id, @NotNull
+    StreamCodec<? super NetByteBuf, P> codec) {
         return new NoContextConfigChannel<>(id, codec);
     }
 
-    private NoContextConfigChannel(CustomPayload.Id<P> id, PacketCodec<? super NetByteBuf, P> codec) {
+    private NoContextConfigChannel(CustomPacketPayload.Type<P> id, StreamCodec<? super NetByteBuf, P> codec) {
         this.id = id;
         this.codec = codec;
     }
@@ -167,7 +164,7 @@ public class NoContextConfigChannel<P extends CustomPayload> implements ConfigCh
             } catch (PayloadHandlingSilentException e) {
                 // do nothing
             } catch (PayloadHandlingDisconnectException e) {
-                ctx.disconnect(Text.literal("Channel " + id + " error: " + e.getMessage()));
+                ctx.disconnect(Component.literal("Channel " + id + " error: " + e.getMessage()));
             } catch (Exception e) {
                 // just log as an error by default
                 KNetLog.LOG.error("Channel {} error:", id, e);
@@ -227,23 +224,23 @@ public class NoContextConfigChannel<P extends CustomPayload> implements ConfigCh
     }
 
     private void checkPayload(P payload) {
-        if (!payload.getId().equals(id)) throw new IllegalStateException(
-            "Payload id does not match channel id. Payload id: " + payload.getId() + ", channel id: " + id);
+        if (!payload.type().equals(id)) throw new IllegalStateException(
+            "Payload id does not match channel id. Payload id: " + payload.type() + ", channel id: " + id);
     }
 
     @Override
-    public CustomPayload.Id<?> getId() {
+    public CustomPacketPayload.Type<?> getId() {
         return id;
     }
 
     @Override
-    public PacketCodec<? super NetByteBuf, ? extends CustomPayload> getCodec() {
+    public StreamCodec<? super NetByteBuf, ? extends CustomPacketPayload> getCodec() {
         return codec;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void handleClientPayload(CustomPayload payload, ConfigPayloadHandlingContext ctx)
+    public void handleClientPayload(CustomPacketPayload payload, ConfigPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         if (clientHandler != null) {
             clientHandler.handle((P) payload, ctx);
@@ -252,7 +249,7 @@ public class NoContextConfigChannel<P extends CustomPayload> implements ConfigCh
 
     @Override
     @SuppressWarnings("unchecked")
-    public void handleServerPayload(CustomPayload payload, ConfigPayloadHandlingContext ctx)
+    public void handleServerPayload(CustomPacketPayload payload, ConfigPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         if (serverHandler != null) {
             serverHandler.handle((P) payload, ctx);

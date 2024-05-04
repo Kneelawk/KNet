@@ -25,15 +25,13 @@
 
 package com.kneelawk.knet.neoforge.api;
 
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
-
 import com.kneelawk.knet.api.channel.ConfigChannel;
 import com.kneelawk.knet.api.channel.PlayChannel;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
@@ -61,8 +59,8 @@ public class KNetNeoForge {
     @SuppressWarnings("unchecked")
     public static void registerPlay(PayloadRegistrar registrar, PlayChannel channel) {
         if (channel.isToServer() && channel.isToClient()) {
-            registrar.playBidirectional((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
+            registrar.playBidirectional((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
                 (payload, ctx) -> {
                     if (ctx.flow().isServerbound()) {
                         handleServerPlay(channel, payload, ctx);
@@ -71,36 +69,36 @@ public class KNetNeoForge {
                     }
                 });
         } else if (channel.isToServer()) {
-            registrar.playToServer((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
+            registrar.playToServer((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
                 (payload, ctx) -> handleServerPlay(channel, payload, ctx));
         } else if (channel.isToClient()) {
-            registrar.playToClient((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<RegistryByteBuf, CustomPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
+            registrar.playToClient((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(channel.getCodec()),
                 (payload, ctx) -> handleClientPlay(channel, payload, ctx));
         }
     }
 
-    private static void handleServerPlay(PlayChannel channel, CustomPayload payload, IPayloadContext ctx) {
+    private static void handleServerPlay(PlayChannel channel, CustomPacketPayload payload, IPayloadContext ctx) {
         try {
             channel.handleServerPayload(payload, new NeoForgePlayPayloadHandlingContext(ctx));
         } catch (PayloadHandlingSilentException e) {
             // do nothing
         } catch (PayloadHandlingDisconnectException e) {
-            ctx.disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+            ctx.disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
         } catch (Exception e) {
             // just log as an error by default
             KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
         }
     }
 
-    private static void handleClientPlay(PlayChannel channel, CustomPayload payload, IPayloadContext ctx) {
+    private static void handleClientPlay(PlayChannel channel, CustomPacketPayload payload, IPayloadContext ctx) {
         try {
             channel.handleClientPayload(payload, new NeoForgePlayPayloadHandlingContext(ctx));
         } catch (PayloadHandlingSilentException e) {
             // do nothing
         } catch (PayloadHandlingDisconnectException e) {
-            ctx.disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+            ctx.disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
         } catch (Exception e) {
             // just log as an error by default
             KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
@@ -117,8 +115,8 @@ public class KNetNeoForge {
     @SuppressWarnings("unchecked")
     public static void registerConfig(PayloadRegistrar registrar, ConfigChannel channel) {
         if (channel.isToServer() && channel.isToClient()) {
-            registrar.configurationBidirectional((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<PacketByteBuf, CustomPayload>) NetCodecs.netToVanilla(channel.getCodec()),
+            registrar.configurationBidirectional((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) NetCodecs.netToVanilla(channel.getCodec()),
                 (payload, ctx) -> {
                     if (ctx.flow().isServerbound()) {
                         handleServerConfig(channel, payload, ctx);
@@ -127,36 +125,36 @@ public class KNetNeoForge {
                     }
                 });
         } else if (channel.isToServer()) {
-            registrar.configurationToServer((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<PacketByteBuf, CustomPayload>) NetCodecs.netToVanilla(channel.getCodec()),
+            registrar.configurationToServer((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) NetCodecs.netToVanilla(channel.getCodec()),
                 (payload, ctx) -> handleServerConfig(channel, payload, ctx));
         } else if (channel.isToClient()) {
-            registrar.configurationToClient((CustomPayload.Id<CustomPayload>) channel.getId(),
-                (PacketCodec<PacketByteBuf, CustomPayload>) NetCodecs.netToVanilla(channel.getCodec()),
+            registrar.configurationToClient((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) NetCodecs.netToVanilla(channel.getCodec()),
                 (payload, ctx) -> handleClientConfig(channel, payload, ctx));
         }
     }
 
-    private static void handleServerConfig(ConfigChannel channel, CustomPayload payload, IPayloadContext ctx) {
+    private static void handleServerConfig(ConfigChannel channel, CustomPacketPayload payload, IPayloadContext ctx) {
         try {
             channel.handleServerPayload(payload, new NeoForgeConfigPayloadHandlingContext(ctx));
         } catch (PayloadHandlingSilentException e) {
             // do nothing
         } catch (PayloadHandlingDisconnectException e) {
-            ctx.disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+            ctx.disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
         } catch (Exception e) {
             // just log as an error by default
             KNetLog.LOG.error("Channel {} error:", channel.getId(), e);
         }
     }
 
-    private static void handleClientConfig(ConfigChannel channel, CustomPayload payload, IPayloadContext ctx) {
+    private static void handleClientConfig(ConfigChannel channel, CustomPacketPayload payload, IPayloadContext ctx) {
         try {
             channel.handleClientPayload(payload, new NeoForgeConfigPayloadHandlingContext(ctx));
         } catch (PayloadHandlingSilentException e) {
             // do nothing
         } catch (PayloadHandlingDisconnectException e) {
-            ctx.disconnect(Text.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+            ctx.disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
         } catch (Exception e) {
             // just log as an error by default
             KNetLog.LOG.error("Channel {} error:", channel.getId(), e);

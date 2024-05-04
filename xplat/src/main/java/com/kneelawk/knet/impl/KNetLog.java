@@ -25,11 +25,9 @@
 
 package com.kneelawk.knet.impl;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
 
 public class KNetLog {
     public static final Logger LOG = LoggerFactory.getLogger(KNetImpl.MOD_ID);
@@ -37,7 +35,7 @@ public class KNetLog {
     public static final boolean debug = Boolean.getBoolean("com.kneelawk.knet.debug");
     public static final boolean debugStackTraces = Boolean.getBoolean("com.kneelawk.knet.debug.stackTraces");
 
-    public static void logSend(CustomPayload.Id<?> channel, String to, Object payload) {
+    public static void logSend(CustomPacketPayload.Type<?> channel, String to, Object payload) {
         if (debugStackTraces) {
             LOG.info("[KNET-DEBUG] SEND {} to {}: {}", channel.id(), to, payload, new RuntimeException("Stack Trace"));
         } else {
@@ -45,7 +43,7 @@ public class KNetLog {
         }
     }
 
-    public static void logReceive(CustomPayload.Id<?> channel, String from, Object payload) {
+    public static void logReceive(CustomPacketPayload.Type<?> channel, String from, Object payload) {
         if (debugStackTraces) {
             LOG.info("[KNET-DEBUG] RECEIVE {} from {}: {}", channel.id(), from, payload, new RuntimeException("Stack Trace"));
         } else {

@@ -26,15 +26,13 @@
 package com.kneelawk.knet.api.phase.config;
 
 import org.jetbrains.annotations.NotNull;
-
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerConfigurationTask;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
 import com.kneelawk.knet.api.channel.Channel;
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 import com.kneelawk.knet.impl.phase.config.ConnectionConfigTaskWrapper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.network.ConfigurationTask;
 
 /**
  * Used for enqueueing connection-configure tasks.
@@ -46,7 +44,7 @@ public interface ConnectionConfigTaskQueue {
      * @param channel the channel to check if the receiver has.
      * @return {@code true} if the client has declared the ability to receive on the given channel.
      */
-    boolean clientHasChannel(@NotNull CustomPayload.Id<?> channel);
+    boolean clientHasChannel(@NotNull CustomPacketPayload.Type<?> channel);
 
     /**
      * Gets whether the client has declared the ability to receive on the given channel.
@@ -63,30 +61,30 @@ public interface ConnectionConfigTaskQueue {
      *
      * @param message the message to display when the client is disconnected.
      */
-    void disconnect(@NotNull Text message);
+    void disconnect(@NotNull Component message);
 
     /**
-     * Enqueues a raw {@link ServerPlayerConfigurationTask} task.
+     * Enqueues a raw {@link ConfigurationTask} task.
      * <p>
-     * Use {@link #completeTask(ServerPlayerConfigurationTask.Key)} or
-     * {@link ConfigPayloadHandlingContext#completeTask(ServerPlayerConfigurationTask.Key)} to mark the given task as
+     * Use {@link #completeTask(ConfigurationTask.Type)} or
+     * {@link ConfigPayloadHandlingContext#completeTask(ConfigurationTask.Type)} to mark the given task as
      * completed.
      *
      * @param task the task to enqueue.
      */
-    void enqueueRaw(@NotNull ServerPlayerConfigurationTask task);
+    void enqueueRaw(@NotNull ConfigurationTask task);
 
     /**
      * Enqueues the given task with the given id.
      * <p>
-     * Use {@link #completeTask(Identifier)} or {@link ConfigPayloadHandlingContext#completeTask(Identifier)} to mark
+     * Use {@link #completeTask(ResourceLocation)} or {@link ConfigPayloadHandlingContext#completeTask(ResourceLocation)} to mark
      * the given task as completed.
      *
      * @param taskId the id of the task to enqueue.
      * @param task   the task to enqueue.
      */
-    default void enqueue(@NotNull Identifier taskId, @NotNull ConnectionConfigTask task) {
-        enqueueRaw(new ConnectionConfigTaskWrapper(new ServerPlayerConfigurationTask.Key(taskId.toString()), task));
+    default void enqueue(@NotNull ResourceLocation taskId, @NotNull ConnectionConfigTask task) {
+        enqueueRaw(new ConnectionConfigTaskWrapper(new ConfigurationTask.Type(taskId.toString()), task));
     }
 
     /**
@@ -94,14 +92,14 @@ public interface ConnectionConfigTaskQueue {
      *
      * @param taskId the id of the task that has been completed.
      */
-    void completeTask(@NotNull ServerPlayerConfigurationTask.Key taskId);
+    void completeTask(@NotNull ConfigurationTask.Type taskId);
 
     /**
      * Marks the given task as completed, so that the configuration can continue with the next task.
      *
      * @param taskId the id of the task that has been completed.
      */
-    default void completeTask(@NotNull Identifier taskId) {
-        completeTask(new ServerPlayerConfigurationTask.Key(taskId.toString()));
+    default void completeTask(@NotNull ResourceLocation taskId) {
+        completeTask(new ConfigurationTask.Type(taskId.toString()));
     }
 }

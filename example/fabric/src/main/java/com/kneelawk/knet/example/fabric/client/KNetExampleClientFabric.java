@@ -27,11 +27,9 @@ package com.kneelawk.knet.example.fabric.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
 import com.kneelawk.knet.example.client.ber.FancyLightBlockEntityRenderer;
@@ -41,9 +39,9 @@ import com.kneelawk.knet.example.screen.KNEScreenHandlers;
 public class KNetExampleClientFabric implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(KNEBlocks.FANCY_LIGHT.get(), RenderLayer.getCutout());
-        BlockEntityRendererFactories.register(KNEBlockEntities.FANCY_LIGHT.get(), FancyLightBlockEntityRenderer::new);
+        BlockRenderLayerMap.INSTANCE.putBlock(KNEBlocks.FANCY_LIGHT.get(), RenderType.cutout());
+        BlockEntityRenderers.register(KNEBlockEntities.FANCY_LIGHT.get(), FancyLightBlockEntityRenderer::new);
 
-        HandledScreens.register(KNEScreenHandlers.FANCY_LIGHT.get(), FancyLightScreen::new);
+        MenuScreens.register(KNEScreenHandlers.FANCY_LIGHT.get(), FancyLightScreen::new);
     }
 }

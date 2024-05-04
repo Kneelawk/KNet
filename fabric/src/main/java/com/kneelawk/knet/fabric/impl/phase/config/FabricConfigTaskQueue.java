@@ -29,31 +29,32 @@ import org.jetbrains.annotations.NotNull;
 
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerConfigurationNetworkHandler;
-import net.minecraft.server.network.ServerPlayerConfigurationTask;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.network.ConfigurationTask;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 
 import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 
-public record FabricConfigTaskQueue(ServerConfigurationNetworkHandler handler) implements ConnectionConfigTaskQueue {
+public record FabricConfigTaskQueue(ServerConfigurationPacketListenerImpl handler)
+    implements ConnectionConfigTaskQueue {
     @Override
-    public boolean clientHasChannel(CustomPayload.@NotNull Id<?> channel) {
+    public boolean clientHasChannel(CustomPacketPayload.@NotNull Type<?> channel) {
         return ServerConfigurationNetworking.canSend(handler, channel);
     }
 
     @Override
-    public void disconnect(@NotNull Text message) {
+    public void disconnect(@NotNull Component message) {
         handler.disconnect(message);
     }
 
     @Override
-    public void enqueueRaw(@NotNull ServerPlayerConfigurationTask task) {
+    public void enqueueRaw(@NotNull ConfigurationTask task) {
         handler.addTask(task);
     }
 
     @Override
-    public void completeTask(ServerPlayerConfigurationTask.@NotNull Key taskId) {
+    public void completeTask(ConfigurationTask.@NotNull Type taskId) {
         handler.completeTask(taskId);
     }
 }

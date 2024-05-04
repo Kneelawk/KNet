@@ -26,15 +26,12 @@
 package com.kneelawk.knet.neoforge.impl;
 
 import java.util.concurrent.Executor;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import org.jetbrains.annotations.NotNull;
-
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
-
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
 public record NeoForgePlayPayloadHandlingContext(IPayloadContext ctx) implements PlayPayloadHandlingContext {
@@ -44,22 +41,22 @@ public record NeoForgePlayPayloadHandlingContext(IPayloadContext ctx) implements
     }
 
     @Override
-    public @NotNull PlayerEntity getPlayer() {
+    public @NotNull Player getPlayer() {
         return ctx.player();
     }
 
     @Override
-    public void disconnect(@NotNull Text message) {
+    public void disconnect(@NotNull Component message) {
         ctx.disconnect(message);
     }
 
     @Override
-    public boolean receiverHasChannel(CustomPayload.Id<?> channel) {
+    public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
         return ctx.listener().hasChannel(channel);
     }
 
     @Override
-    public void sendPayload(CustomPayload payload) {
+    public void sendPayload(CustomPacketPayload payload) {
         ctx.reply(payload);
     }
 }

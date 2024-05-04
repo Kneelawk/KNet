@@ -25,13 +25,12 @@
 
 package com.kneelawk.knet.example.net;
 
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.util.math.BlockPos;
-
 import com.kneelawk.knet.api.util.NetByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.StreamCodec;
 
 public record BlockPosPayload(BlockPos pos) {
-    public static final PacketCodec<NetByteBuf, BlockPosPayload> CODEC =
-        PacketCodec.ofStatic((buf, value) -> buf.writeBlockPos(value.pos),
+    public static final StreamCodec<NetByteBuf, BlockPosPayload> CODEC =
+        StreamCodec.of((buf, value) -> buf.writeBlockPos(value.pos),
             buf -> new BlockPosPayload(buf.readBlockPos()));
 }

@@ -26,15 +26,13 @@
 package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
-
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 /**
  * Describes something capable of supplying context to a channel.
@@ -103,7 +101,7 @@ public interface PlayChannelContext<C> {
      * @return a new channel context that gets the child from the parent channel context.
      */
     default <T, P> @NotNull PlayChannelContext<T> netChild(
-        @NotNull PacketCodec<? super RegistryNetByteBuf, P> codec,
+        @NotNull StreamCodec<? super RegistryNetByteBuf, P> codec,
         @NotNull ChildPlayContextDecoder<C, T, P> decoder,
         @NotNull ContextEncoder<T, P> encoder,
         @NotNull ParentContextFinder<C, T> parentFinder) {
@@ -111,7 +109,7 @@ public interface PlayChannelContext<C> {
     }
 
     /**
-     * Creates a child channel context that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryByteBuf} codec.
+     * Creates a child channel context that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryFriendlyByteBuf} codec.
      *
      * @param codec        the codec of the child-specific payload.
      * @param decoder      the decoder for the child context from the parent context.
@@ -122,7 +120,7 @@ public interface PlayChannelContext<C> {
      * @return a new channel context that gets the child from the parent channel context.
      */
     default <T, P> @NotNull PlayChannelContext<T> registryChild(
-        @NotNull PacketCodec<? super NetRegistryByteBuf, P> codec,
+        @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec,
         @NotNull ChildPlayContextDecoder<C, T, P> decoder,
         @NotNull ContextEncoder<T, P> encoder,
         @NotNull ParentContextFinder<C, T> parentFinder) {

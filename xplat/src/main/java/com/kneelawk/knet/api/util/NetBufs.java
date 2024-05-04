@@ -9,22 +9,20 @@
 package com.kneelawk.knet.api.util;
 
 import java.util.function.Function;
-
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.registry.DynamicRegistryManager;
 
 /**
  * Utility methods for working with KNet buffers.
  * <p>
  * Net buffer class hierarchy:
  * <pre>
- *               {@link PacketByteBuf}
+ *               {@link FriendlyByteBuf}
  *                 /         \
- *   {@link RegistryByteBuf}      {@link NetByteBuf}
+ *   {@link RegistryFriendlyByteBuf}      {@link NetByteBuf}
  *              |               |
  * {@link NetRegistryByteBuf}&lt;-&gt;{@link RegistryNetByteBuf}
  * </pre>
@@ -49,7 +47,7 @@ public final class NetBufs {
      * @param registryManager the registry manager to attach.
      * @return the function that wraps buffers.
      */
-    public static Function<ByteBuf, RegistryNetByteBuf> registryNetFactory(DynamicRegistryManager registryManager) {
+    public static Function<ByteBuf, RegistryNetByteBuf> registryNetFactory(RegistryAccess registryManager) {
         return buf -> registryNetOf(buf, registryManager);
     }
 
@@ -60,7 +58,7 @@ public final class NetBufs {
      * @param registryManager the registry manager to attach.
      * @return the function that wraps buffers.
      */
-    public static Function<ByteBuf, NetRegistryByteBuf> netRegistryFactory(DynamicRegistryManager registryManager) {
+    public static Function<ByteBuf, NetRegistryByteBuf> netRegistryFactory(RegistryAccess registryManager) {
         return buf -> netRegistryOf(buf, registryManager);
     }
 
@@ -143,7 +141,7 @@ public final class NetBufs {
      * @param registryManager the registry manager to attach to the buffer.
      * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
      */
-    public static RegistryNetByteBuf registryNetBuf(DynamicRegistryManager registryManager) {
+    public static RegistryNetByteBuf registryNetBuf(RegistryAccess registryManager) {
         return registryNetOf(Unpooled.buffer(), registryManager);
     }
 
@@ -154,7 +152,7 @@ public final class NetBufs {
      * @param registryManager the registry manager to attach to the buffer.
      * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
      */
-    public static RegistryNetByteBuf registryNetBuf(int initialCapacity, DynamicRegistryManager registryManager) {
+    public static RegistryNetByteBuf registryNetBuf(int initialCapacity, RegistryAccess registryManager) {
         return registryNetOf(Unpooled.buffer(initialCapacity), registryManager);
     }
 
@@ -165,7 +163,7 @@ public final class NetBufs {
      * @param registryManager the registry manager to attach to the buffer.
      * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
      */
-    public static RegistryNetByteBuf registryNetBuf(boolean passthrough, DynamicRegistryManager registryManager) {
+    public static RegistryNetByteBuf registryNetBuf(boolean passthrough, RegistryAccess registryManager) {
         return registryNetOf(Unpooled.buffer(), passthrough, registryManager);
     }
 
@@ -178,12 +176,12 @@ public final class NetBufs {
      * @return a new {@link RegistryNetByteBuf} from {@link Unpooled#buffer()}.
      */
     public static RegistryNetByteBuf registryNetBuf(int initialCapacity, boolean passthrough,
-                                                    DynamicRegistryManager registryManager) {
+                                                    RegistryAccess registryManager) {
         return registryNetOf(Unpooled.buffer(initialCapacity), passthrough, registryManager);
     }
 
     /**
-     * Returns the given {@link RegistryByteBuf} as a {@link NetByteBuf}.
+     * Returns the given {@link RegistryFriendlyByteBuf} as a {@link NetByteBuf}.
      * <p>
      * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
      * partials. Try to only read/write to a single buffer at a time.
@@ -191,12 +189,12 @@ public final class NetBufs {
      * @param buf the buffer to be converted into a {@link NetByteBuf}.
      * @return the given buffer as a {@link NetByteBuf}.
      */
-    public static RegistryNetByteBuf registryNetOf(RegistryByteBuf buf) {
+    public static RegistryNetByteBuf registryNetOf(RegistryFriendlyByteBuf buf) {
         return registryNetOf(buf, false);
     }
 
     /**
-     * Returns the given {@link RegistryByteBuf} as a {@link NetByteBuf}, with passthrough optionally enabled.
+     * Returns the given {@link RegistryFriendlyByteBuf} as a {@link NetByteBuf}, with passthrough optionally enabled.
      * <p>
      * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
      * partials. Try to only read/write to a single buffer at a time.
@@ -205,8 +203,8 @@ public final class NetBufs {
      * @param passthrough whether to disable optimizations on the resulting buffer.
      * @return the given buffer as a {@link NetByteBuf}.
      */
-    public static RegistryNetByteBuf registryNetOf(RegistryByteBuf buf, boolean passthrough) {
-        return new RegistryNetByteBuf(buf, passthrough, buf.getRegistryManager());
+    public static RegistryNetByteBuf registryNetOf(RegistryFriendlyByteBuf buf, boolean passthrough) {
+        return new RegistryNetByteBuf(buf, passthrough, buf.registryAccess());
     }
 
     /**
@@ -233,7 +231,7 @@ public final class NetBufs {
      * @return the given buffer as a {@link NetByteBuf}.
      */
     public static RegistryNetByteBuf registryNetOf(NetRegistryByteBuf buf, boolean passthrough) {
-        return new RegistryNetByteBuf(buf, passthrough, buf.getRegistryManager());
+        return new RegistryNetByteBuf(buf, passthrough, buf.registryAccess());
     }
 
     /**
@@ -246,7 +244,7 @@ public final class NetBufs {
      * @param registryManager the registry manager to attach.
      * @return the given buffer as a {@link RegistryNetByteBuf}.
      */
-    public static RegistryNetByteBuf registryNetOf(ByteBuf buf, DynamicRegistryManager registryManager) {
+    public static RegistryNetByteBuf registryNetOf(ByteBuf buf, RegistryAccess registryManager) {
         return registryNetOf(buf, false, registryManager);
     }
 
@@ -263,7 +261,7 @@ public final class NetBufs {
      * @return the given buffer as a {@link RegistryNetByteBuf}.
      */
     public static RegistryNetByteBuf registryNetOf(ByteBuf buf, boolean passthrough,
-                                                   DynamicRegistryManager registryManager) {
+                                                   RegistryAccess registryManager) {
         if (buf instanceof RegistryNetByteBuf registryNetBuf && registryNetBuf.passthrough == passthrough &&
             registryNetBuf.getRegistryManager() == registryManager) {
             return registryNetBuf;
@@ -278,7 +276,7 @@ public final class NetBufs {
      * @param registryManager the registry manager for the new buffer.
      * @return the new buffer.
      */
-    public static NetRegistryByteBuf netRegistryBuf(DynamicRegistryManager registryManager) {
+    public static NetRegistryByteBuf netRegistryBuf(RegistryAccess registryManager) {
         return netRegistryOf(Unpooled.buffer(), registryManager);
     }
 
@@ -289,7 +287,7 @@ public final class NetBufs {
      * @param passthrough     whether to disable optimizations.
      * @return the new buffer.
      */
-    public static NetRegistryByteBuf netRegistryBuf(DynamicRegistryManager registryManager, boolean passthrough) {
+    public static NetRegistryByteBuf netRegistryBuf(RegistryAccess registryManager, boolean passthrough) {
         return netRegistryOf(Unpooled.buffer(), registryManager, passthrough);
     }
 
@@ -300,7 +298,7 @@ public final class NetBufs {
      * @param registryManager the registry manager for the new buffer.
      * @return the new buffer.
      */
-    public static NetRegistryByteBuf netRegistryBuf(int initialCapacity, DynamicRegistryManager registryManager) {
+    public static NetRegistryByteBuf netRegistryBuf(int initialCapacity, RegistryAccess registryManager) {
         return netRegistryOf(Unpooled.buffer(initialCapacity), registryManager);
     }
 
@@ -312,13 +310,13 @@ public final class NetBufs {
      * @param passthrough     whether to disable optimizations.
      * @return the new buffer.
      */
-    public static NetRegistryByteBuf netRegistryBuf(int initialCapacity, DynamicRegistryManager registryManager,
+    public static NetRegistryByteBuf netRegistryBuf(int initialCapacity, RegistryAccess registryManager,
                                                     boolean passthrough) {
         return netRegistryOf(Unpooled.buffer(initialCapacity), registryManager, passthrough);
     }
 
     /**
-     * Wraps a {@link RegistryByteBuf} into a {@link NetRegistryByteBuf}.
+     * Wraps a {@link RegistryFriendlyByteBuf} into a {@link NetRegistryByteBuf}.
      * <p>
      * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
      * partials. Try to only read/write to a single buffer at a time.
@@ -326,12 +324,12 @@ public final class NetBufs {
      * @param buf the original buffer.
      * @return the wrapping buffer.
      */
-    public static NetRegistryByteBuf netRegistryOf(RegistryByteBuf buf) {
+    public static NetRegistryByteBuf netRegistryOf(RegistryFriendlyByteBuf buf) {
         return netRegistryOf(buf, false);
     }
 
     /**
-     * Wraps a {@link RegistryByteBuf} into a {@link NetRegistryByteBuf}, with passthrough optionally enabled.
+     * Wraps a {@link RegistryFriendlyByteBuf} into a {@link NetRegistryByteBuf}, with passthrough optionally enabled.
      * <p>
      * <b>Note:</b> read/write boolean/fixed-bits being called on the underlying buffer does not update this buffer's
      * partials. Try to only read/write to a single buffer at a time.
@@ -340,8 +338,8 @@ public final class NetBufs {
      * @param passthrough whether to disable optimizations.
      * @return the wrapping buffer.
      */
-    public static NetRegistryByteBuf netRegistryOf(RegistryByteBuf buf, boolean passthrough) {
-        return new NetRegistryByteBuf(buf, buf.getRegistryManager(), passthrough);
+    public static NetRegistryByteBuf netRegistryOf(RegistryFriendlyByteBuf buf, boolean passthrough) {
+        return new NetRegistryByteBuf(buf, buf.registryAccess(), passthrough);
     }
 
     /**
@@ -381,7 +379,7 @@ public final class NetBufs {
      * @param registryManager the registry manager to attach.
      * @return the wrapping buffer.
      */
-    public static NetRegistryByteBuf netRegistryOf(ByteBuf buf, DynamicRegistryManager registryManager) {
+    public static NetRegistryByteBuf netRegistryOf(ByteBuf buf, RegistryAccess registryManager) {
         return netRegistryOf(buf, registryManager, false);
     }
 
@@ -396,10 +394,10 @@ public final class NetBufs {
      * @param passthrough     whether to disable optimizations.
      * @return the wrapping buffer.
      */
-    public static NetRegistryByteBuf netRegistryOf(ByteBuf buf, DynamicRegistryManager registryManager,
+    public static NetRegistryByteBuf netRegistryOf(ByteBuf buf, RegistryAccess registryManager,
                                                    boolean passthrough) {
         if (buf instanceof NetRegistryByteBuf regBuf && regBuf.passthrough == passthrough &&
-            regBuf.getRegistryManager() == registryManager) {
+            regBuf.registryAccess() == registryManager) {
             return regBuf;
         } else {
             return new NetRegistryByteBuf(buf, registryManager, passthrough);

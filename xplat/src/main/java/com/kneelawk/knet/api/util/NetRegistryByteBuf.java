@@ -11,36 +11,35 @@ package com.kneelawk.knet.api.util;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
-
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketDecoder;
-import net.minecraft.network.codec.PacketEncoder;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.SectionPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamDecoder;
+import net.minecraft.network.codec.StreamEncoder;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ChunkPos;
 
 /**
- * Special {@link PacketByteBuf} that is like a {@link RegistryNetByteBuf} but that extends {@link RegistryByteBuf}
+ * Special {@link FriendlyByteBuf} that is like a {@link RegistryNetByteBuf} but that extends {@link RegistryFriendlyByteBuf}
  * instead of {@link NetByteBuf}.
  * <p>
  * Class hierarchy:
  * <pre>
- *               {@link PacketByteBuf}
+ *               {@link FriendlyByteBuf}
  *                 /         \
- *   {@link RegistryByteBuf}      {@link NetByteBuf}
+ *   {@link RegistryFriendlyByteBuf}      {@link NetByteBuf}
  *              |               |
  * {@link NetRegistryByteBuf}&lt;-&gt;{@link RegistryNetByteBuf}
  * </pre>
  *
  * @see NetByteBuf
- * @see RegistryByteBuf
+ * @see RegistryFriendlyByteBuf
  * @see RegistryNetByteBuf
  */
-public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetRegistryByteBuf> {
+public class NetRegistryByteBuf extends RegistryFriendlyByteBuf implements NetBuf<NetRegistryByteBuf> {
 
     // Hold on to the wrapped buffer, so we can access it when changing passthrough-ness while wrapping.
     private final ByteBuf wrapped;
@@ -50,7 +49,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     private final @Nullable NetBuf<?> buf;
 
     /**
-     * If true then all {@link PacketByteBuf} override methods that this {@link NetByteBuf} optimises will instead just
+     * If true then all {@link FriendlyByteBuf} override methods that this {@link NetByteBuf} optimises will instead just
      * write using the normal minecraft methods, rather than the (potentially) optimised versions.
      */
     public final boolean passthrough;
@@ -83,7 +82,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
      * @param registryManager the registry manager for this buffer.
      * @param passthrough     whether to disable optimizations.
      */
-    public NetRegistryByteBuf(ByteBuf wrapped, DynamicRegistryManager registryManager, boolean passthrough) {
+    public NetRegistryByteBuf(ByteBuf wrapped, RegistryAccess registryManager, boolean passthrough) {
         super(wrapped, registryManager);
         this.wrapped = wrapped;
         this.passthrough = passthrough;
@@ -215,12 +214,12 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
 
     @Override
     public NetRegistryByteBuf copy() {
-        return NetBufs.netRegistryOf(super.copy(), getRegistryManager(), passthrough);
+        return NetBufs.netRegistryOf(super.copy(), registryAccess(), passthrough);
     }
 
     @Override
     public NetRegistryByteBuf readBytes(int length) {
-        return NetBufs.netRegistryOf(super.readBytes(length), getRegistryManager(), passthrough);
+        return NetBufs.netRegistryOf(super.readBytes(length), registryAccess(), passthrough);
     }
 
     @Override
@@ -282,9 +281,9 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     }
 
     @Override
-    public NetRegistryByteBuf writeEnumConstant(Enum<?> value) {
+    public NetRegistryByteBuf writeEnum(Enum<?> value) {
         if (passthrough) {
-            super.writeEnumConstant(value);
+            super.writeEnum(value);
             return this;
         }
         NetBufImplHelper.writeEnumConstant(this, value);
@@ -292,9 +291,9 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     }
 
     @Override
-    public <E extends Enum<E>> E readEnumConstant(Class<E> enumClass) {
+    public <E extends Enum<E>> E readEnum(Class<E> enumClass) {
         if (passthrough) {
-            return super.readEnumConstant(enumClass);
+            return super.readEnum(enumClass);
         }
         return NetBufImplHelper.readEnumConstant(this, enumClass);
     }
@@ -318,7 +317,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     }
 
     @Override
-    public PacketByteBuf writeChunkPos(ChunkPos pos) {
+    public FriendlyByteBuf writeChunkPos(ChunkPos pos) {
         if (passthrough) {
             return super.writeChunkPos(pos);
         }
@@ -335,18 +334,18 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     }
 
     @Override
-    public PacketByteBuf writeChunkSectionPos(ChunkSectionPos pos) {
+    public FriendlyByteBuf writeSectionPos(SectionPos pos) {
         if (passthrough) {
-            return super.writeChunkSectionPos(pos);
+            return super.writeSectionPos(pos);
         }
         NetBufImplHelper.writeChunkSectionPos(this, pos);
         return this;
     }
 
     @Override
-    public ChunkSectionPos readChunkSectionPos() {
+    public SectionPos readSectionPos() {
         if (passthrough) {
-            return super.readChunkSectionPos();
+            return super.readSectionPos();
         }
         return NetBufImplHelper.readChunkSectionPos(this);
     }
@@ -410,24 +409,24 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
     }
 
     @Override
-    public NetRegistryByteBuf writeIdentifier(Identifier id) {
-        super.writeIdentifier(id);
+    public NetRegistryByteBuf writeResourceLocation(ResourceLocation id) {
+        super.writeResourceLocation(id);
         return this;
     }
 
     @Override
     @Nullable
-    public Identifier readIdentifierOrNull() {
+    public ResourceLocation readIdentifierOrNull() {
         try {
-            return super.readIdentifier();
-        } catch (InvalidIdentifierException iee) {
+            return super.readResourceLocation();
+        } catch (ResourceLocationException iee) {
             return null;
         }
     }
 
     @Override
-    public String readString() {
-        return readString(Short.MAX_VALUE);
+    public String readUtf() {
+        return readUtf(Short.MAX_VALUE);
     }
 
     /**
@@ -438,7 +437,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
      * @param <T>    the type to write.
      * @return this buffer.
      */
-    public <T> NetRegistryByteBuf writeReg(T value, PacketEncoder<? super RegistryNetByteBuf, T> writer) {
+    public <T> NetRegistryByteBuf writeReg(T value, StreamEncoder<? super RegistryNetByteBuf, T> writer) {
         writer.encode(NetBufs.registryNetOf(this), value);
         return this;
     }
@@ -450,7 +449,7 @@ public class NetRegistryByteBuf extends RegistryByteBuf implements NetBuf<NetReg
      * @param <T>    the type to read.
      * @return the read value.
      */
-    public <T> T readReg(PacketDecoder<? super RegistryNetByteBuf, T> reader) {
+    public <T> T readReg(StreamDecoder<? super RegistryNetByteBuf, T> reader) {
         return reader.decode(NetBufs.registryNetOf(this));
     }
 }

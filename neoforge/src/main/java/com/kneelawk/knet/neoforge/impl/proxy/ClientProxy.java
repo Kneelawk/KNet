@@ -25,10 +25,10 @@
 
 package com.kneelawk.knet.neoforge.impl.proxy;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class ClientProxy extends CommonProxy {
     @Override
@@ -37,16 +37,16 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void disconnectFromServer(Text message) {
-        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+    public void disconnectFromServer(Component message) {
+        ClientPacketListener networkHandler = Minecraft.getInstance().getConnection();
         if (networkHandler != null) {
             networkHandler.getConnection().disconnect(message);
         }
     }
 
     @Override
-    public boolean serverHasPlayChannel(CustomPayload.Id<?> channel) {
-        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+    public boolean serverHasPlayChannel(CustomPacketPayload.Type<?> channel) {
+        ClientPacketListener networkHandler = Minecraft.getInstance().getConnection();
         if (networkHandler != null) {
             return networkHandler.hasChannel(channel);
         }

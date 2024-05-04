@@ -27,11 +27,6 @@ package com.kneelawk.knet.example;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
 import com.kneelawk.knet.api.KNetRegistrar;
 import com.kneelawk.knet.example.block.KNEBlocks;
 import com.kneelawk.knet.example.blockentity.FancyLightBlockEntity;
@@ -39,6 +34,9 @@ import com.kneelawk.knet.example.blockentity.KNEBlockEntities;
 import com.kneelawk.knet.example.net.NetEventListeners;
 import com.kneelawk.knet.example.screen.FancyLightScreenHandler;
 import com.kneelawk.knet.example.screen.KNEScreenHandlers;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 
 public class KNetExample {
     public static final String MOD_ID = "knet_example";
@@ -58,11 +56,11 @@ public class KNetExample {
         registrar.register(FancyLightScreenHandler.COLOR_UPDATE_CHANNEL);
     }
 
-    public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+    public static ResourceLocation id(String path) {
+        return new ResourceLocation(MOD_ID, path);
     }
 
-    public static MutableText tt(String prefix, String suffix, Object... args) {
-        return Text.translatable(prefix + "." + MOD_ID + "." + suffix, args);
+    public static MutableComponent tt(String prefix, String suffix, Object... args) {
+        return Component.translatable(prefix + "." + MOD_ID + "." + suffix, args);
     }
 }

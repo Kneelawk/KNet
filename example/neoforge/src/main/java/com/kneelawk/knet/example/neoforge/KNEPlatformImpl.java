@@ -26,24 +26,21 @@
 package com.kneelawk.knet.example.neoforge;
 
 import java.util.function.Supplier;
-
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
 import com.mojang.serialization.MapCodec;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import com.kneelawk.knet.api.util.NetCodecs;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.example.KNEPlatform;
@@ -55,7 +52,7 @@ public class KNEPlatformImpl implements KNEPlatform {
     public <T extends Block> Supplier<T> registerBlockWithItem(String path, Supplier<T> creator,
                                                                MapCodec<? extends Block> codec) {
         DeferredBlock<T> block = KNetExampleNeoForge.BLOCKS.register(path, creator);
-        KNetExampleNeoForge.ITEMS.register(path, () -> new BlockItem(block.get(), new Item.Settings()));
+        KNetExampleNeoForge.ITEMS.register(path, () -> new BlockItem(block.get(), new Item.Properties()));
         KNetExampleNeoForge.BLOCK_TYPES.register(path, () -> codec);
         return block;
     }
@@ -67,9 +64,9 @@ public class KNEPlatformImpl implements KNEPlatform {
     }
 
     @Override
-    public <T extends ScreenHandler, P> Supplier<ScreenHandlerType<T>> registerExtraScreenHandler(String path,
+    public <T extends AbstractContainerMenu, P> Supplier<MenuType<T>> registerExtraScreenHandler(String path,
                                                                                                   ExtraScreenHandlerDecoder<T, P> factory,
-                                                                                                  PacketCodec<? super RegistryNetByteBuf, P> codec) {
+                                                                                                  StreamCodec<? super RegistryNetByteBuf, P> codec) {
         return KNetExampleNeoForge.SCREEN_HANDLERS.register(path, () -> IMenuTypeExtension.create(
             (syncId, playerInv, buf) -> factory.create(syncId, playerInv,
                 NetCodecs.regNetToVanilla(codec).decode(buf))));
@@ -77,13 +74,13 @@ public class KNEPlatformImpl implements KNEPlatform {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void openScreen(ServerPlayerEntity player, NamedScreenHandlerFactory factory) {
+    public void openScreen(ServerPlayer player, MenuProvider factory) {
         if (factory instanceof ExtraScreenHandlerFactory<?> extra) {
             player.openMenu(extra,
-                buf -> ((PacketCodec<RegistryByteBuf, Object>) NetCodecs.regNetToVanilla(extra.getCodec())).encode(
+                buf -> ((StreamCodec<RegistryFriendlyByteBuf, Object>) NetCodecs.regNetToVanilla(extra.getCodec())).encode(
                     buf, extra.getExtra(player)));
         } else {
-            player.openHandledScreen(factory);
+            player.openMenu(factory);
         }
     }
 }

@@ -11,27 +11,26 @@ package com.kneelawk.knet.api.util;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.ByteBuf;
-
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ChunkPos;
 
 /**
- * Special {@link PacketByteBuf} class that provides methods specific to "offset" reading and writing - like writing a
+ * Special {@link FriendlyByteBuf} class that provides methods specific to "offset" reading and writing - like writing a
  * single bit to the stream, and auto-compacting it with similar bits into a single byte.
  * <p>
  * In addition this overrides a number of existing methods (like {@link #writeBoolean(boolean)},
- * {@link #writeEnumConstant(Enum)}, {@link #writeVarInt(int)}, {@link #writeVarLong(long)}, and a few more.
+ * {@link #writeEnum(Enum)}, {@link #writeVarInt(int)}, {@link #writeVarLong(long)}, and a few more.
  * <p>
  * Class hierarchy:
  * <pre>
- *               {@link PacketByteBuf}
+ *               {@link FriendlyByteBuf}
  *                 /         \
- *   {@link RegistryByteBuf}      {@link NetByteBuf}
+ *   {@link RegistryFriendlyByteBuf}      {@link NetByteBuf}
  *              |               |
  * {@link NetRegistryByteBuf}&lt;-&gt;{@link RegistryNetByteBuf}
  * </pre>
@@ -39,7 +38,7 @@ import net.minecraft.util.math.ChunkSectionPos;
  * @see RegistryNetByteBuf
  * @see NetRegistryByteBuf
  */
-public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
+public class NetByteBuf extends FriendlyByteBuf implements NetBuf<NetByteBuf> {
 
     // Hold on to the wrapped buffer, just in case we're wrapping a RegistryByteBuf or something.
     // Though you should really be using a RegistryNetByteBuf in that case.
@@ -50,7 +49,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     private final @Nullable NetBuf<?> buf;
 
     /**
-     * If true then all {@link PacketByteBuf} override methods that this {@link NetByteBuf} optimises will instead just
+     * If true then all {@link FriendlyByteBuf} override methods that this {@link NetByteBuf} optimises will instead just
      * write using the normal minecraft methods, rather than the (potentially) optimised versions.
      */
     public final boolean passthrough;
@@ -290,9 +289,9 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeEnumConstant(Enum<?> value) {
+    public NetByteBuf writeEnum(Enum<?> value) {
         if (passthrough) {
-            super.writeEnumConstant(value);
+            super.writeEnum(value);
             return this;
         }
         NetBufImplHelper.writeEnumConstant(this, value);
@@ -300,9 +299,9 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public <E extends Enum<E>> E readEnumConstant(Class<E> enumClass) {
+    public <E extends Enum<E>> E readEnum(Class<E> enumClass) {
         if (passthrough) {
-            return super.readEnumConstant(enumClass);
+            return super.readEnum(enumClass);
         }
         return NetBufImplHelper.readEnumConstant(this, enumClass);
     }
@@ -326,7 +325,7 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public PacketByteBuf writeChunkPos(ChunkPos pos) {
+    public FriendlyByteBuf writeChunkPos(ChunkPos pos) {
         if (passthrough) {
             return super.writeChunkPos(pos);
         }
@@ -343,18 +342,18 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public PacketByteBuf writeChunkSectionPos(ChunkSectionPos pos) {
+    public FriendlyByteBuf writeSectionPos(SectionPos pos) {
         if (passthrough) {
-            return super.writeChunkSectionPos(pos);
+            return super.writeSectionPos(pos);
         }
         NetBufImplHelper.writeChunkSectionPos(this, pos);
         return this;
     }
 
     @Override
-    public ChunkSectionPos readChunkSectionPos() {
+    public SectionPos readSectionPos() {
         if (passthrough) {
-            return super.readChunkSectionPos();
+            return super.readSectionPos();
         }
         return NetBufImplHelper.readChunkSectionPos(this);
     }
@@ -418,23 +417,23 @@ public class NetByteBuf extends PacketByteBuf implements NetBuf<NetByteBuf> {
     }
 
     @Override
-    public NetByteBuf writeIdentifier(Identifier id) {
-        super.writeIdentifier(id);
+    public NetByteBuf writeResourceLocation(ResourceLocation id) {
+        super.writeResourceLocation(id);
         return this;
     }
 
     @Override
     @Nullable
-    public Identifier readIdentifierOrNull() {
+    public ResourceLocation readIdentifierOrNull() {
         try {
-            return super.readIdentifier();
-        } catch (InvalidIdentifierException iee) {
+            return super.readResourceLocation();
+        } catch (ResourceLocationException iee) {
             return null;
         }
     }
 
     @Override
-    public String readString() {
-        return readString(Short.MAX_VALUE);
+    public String readUtf() {
+        return readUtf(Short.MAX_VALUE);
     }
 }

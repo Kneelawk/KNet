@@ -26,14 +26,12 @@
 package com.kneelawk.knet.example.screen;
 
 import java.util.function.Supplier;
-
-import net.minecraft.screen.ScreenHandlerType;
-
+import net.minecraft.world.inventory.MenuType;
 import com.kneelawk.knet.example.KNEPlatform;
 import com.kneelawk.knet.example.net.BlockPosPayload;
 
 public class KNEScreenHandlers {
-    public static final Supplier<ScreenHandlerType<FancyLightScreenHandler>> FANCY_LIGHT =
+    public static final Supplier<MenuType<FancyLightScreenHandler>> FANCY_LIGHT =
         KNEPlatform.INSTANCE.registerExtraScreenHandler("fancy_light", FancyLightScreenHandler::fromNetwork,
             BlockPosPayload.CODEC);
 

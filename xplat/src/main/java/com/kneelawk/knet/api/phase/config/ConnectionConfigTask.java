@@ -25,17 +25,16 @@
 
 package com.kneelawk.knet.api.phase.config;
 
-import net.minecraft.util.Identifier;
-
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 import com.kneelawk.knet.api.util.PayloadSender;
+import net.minecraft.resources.ResourceLocation;
 
 /**
- * Simplified version of {@link net.minecraft.server.network.ServerPlayerConfigurationTask}.
+ * Simplified version of {@link net.minecraft.server.network.ConfigurationTask}.
  * <p>
  * This is used to initiate a chain of back-and-forth messages to configure a specific aspect of the client. When
- * configuration is complete, the implementor must call either {@link ConnectionConfigTaskQueue#completeTask(Identifier)}
- * or {@link ConfigPayloadHandlingContext#completeTask(Identifier)}, to allow configuration to proceed to the next task.
+ * configuration is complete, the implementor must call either {@link ConnectionConfigTaskQueue#completeTask(ResourceLocation)}
+ * or {@link ConfigPayloadHandlingContext#completeTask(ResourceLocation)}, to allow configuration to proceed to the next task.
  */
 @FunctionalInterface
 public interface ConnectionConfigTask {

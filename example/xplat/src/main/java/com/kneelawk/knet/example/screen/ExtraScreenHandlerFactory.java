@@ -25,15 +25,14 @@
 
 package com.kneelawk.knet.example.screen;
 
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import com.kneelawk.knet.api.util.NetByteBuf;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
 
-public interface ExtraScreenHandlerFactory<P> extends NamedScreenHandlerFactory {
-    P getExtra(ServerPlayerEntity player);
+public interface ExtraScreenHandlerFactory<P> extends MenuProvider {
+    P getExtra(ServerPlayer player);
     
-    PacketCodec<? super RegistryNetByteBuf, P> getCodec();
+    StreamCodec<? super RegistryNetByteBuf, P> getCodec();
 }

@@ -25,18 +25,17 @@
 
 package com.kneelawk.knet.api;
 
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
 import com.kneelawk.knet.api.channel.context.PlayChannelContext;
 import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.util.NetByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * KNet xplat public interface.
@@ -55,18 +54,18 @@ public class KNet {
      */
     public static final PlayChannelContext<BlockEntity> BLOCK_ENTITY_CONTEXT =
         RootPlayChannelContext.ofNetCodec(BlockEntityPayload.CODEC, (payload, ctx) -> {
-            World world = ctx.mustGetWorld();
+            Level world = ctx.mustGetWorld();
             BlockEntity be = world.getBlockEntity(payload.pos());
             if (be == null) throw new PayloadHandlingErrorException(
-                "Attempted to get block entity at: " + payload.pos() + " in " + world.getRegistryKey().getValue() +
+                "Attempted to get block entity at: " + payload.pos() + " in " + world.dimension().location() +
                     " but non exist at that position.");
 
             return be;
-        }, context -> new BlockEntityPayload(context.getPos()));
+        }, context -> new BlockEntityPayload(context.getBlockPos()));
 
     private record BlockEntityPayload(BlockPos pos) {
-        public static final PacketCodec<NetByteBuf, BlockEntityPayload> CODEC =
-            PacketCodec.ofStatic((buf, obj) -> buf.writeBlockPos(obj.pos()),
+        public static final StreamCodec<NetByteBuf, BlockEntityPayload> CODEC =
+            StreamCodec.of((buf, obj) -> buf.writeBlockPos(obj.pos()),
                 buf -> new BlockEntityPayload(buf.readBlockPos()));
     }
 
@@ -81,17 +80,17 @@ public class KNet {
      */
     public static final PlayChannelContext<Entity> ENTITY_CONTEXT =
         RootPlayChannelContext.ofNetCodec(EntityPayload.CODEC, (payload, ctx) -> {
-            World world = ctx.mustGetWorld();
-            Entity entity = world.getEntityById(payload.entityId());
+            Level world = ctx.mustGetWorld();
+            Entity entity = world.getEntity(payload.entityId());
             if (entity == null) throw new PayloadHandlingErrorException(
-                "Attempted to get entity with id: " + payload.entityId() + " in " + world.getRegistryKey().getValue() +
+                "Attempted to get entity with id: " + payload.entityId() + " in " + world.dimension().location() +
                     " but no entity exists with that id.");
             return entity;
         }, context -> new EntityPayload(context.getId()));
 
     private record EntityPayload(int entityId) {
-        public static final PacketCodec<NetByteBuf, EntityPayload> CODEC =
-            PacketCodec.ofStatic((buf, obj) -> buf.writeInt(obj.entityId()), buf -> new EntityPayload(buf.readInt()));
+        public static final StreamCodec<NetByteBuf, EntityPayload> CODEC =
+            StreamCodec.of((buf, obj) -> buf.writeInt(obj.entityId()), buf -> new EntityPayload(buf.readInt()));
     }
 
     /**
@@ -103,27 +102,27 @@ public class KNet {
      * new ContextualChannel<>(channelId, KNet.SCREEN_HANDLER_CONTEXT.cast(MyScreenHandler.class), myPayloadCodec);
      * }</pre>
      */
-    public static final PlayChannelContext<ScreenHandler> SCREEN_HANDLER_CONTEXT =
+    public static final PlayChannelContext<AbstractContainerMenu> SCREEN_HANDLER_CONTEXT =
         RootPlayChannelContext.ofNetCodec(ScreenHandlerPayload.CODEC, (payload, ctx) -> {
-            PlayerEntity player = ctx.mustGetPlayer();
-            ScreenHandler screenHandler = player.currentScreenHandler;
+            Player player = ctx.mustGetPlayer();
+            AbstractContainerMenu screenHandler = player.containerMenu;
             if (screenHandler == null) {
                 throw new PayloadHandlingErrorException(
                     "Received screen-handler payload for player " + player.getGameProfile().getName() +
                         " but this player does not have any current screen handler.");
             }
-            if (screenHandler.syncId != payload.syncId()) {
+            if (screenHandler.containerId != payload.syncId()) {
                 throw new PayloadHandlingErrorException(
                     "Received screen-handler payload for player " + player.getGameProfile().getName() +
                         ", for a screen " + payload.syncId() + ", but the player's current screen handler is " +
-                        screenHandler.syncId);
+                        screenHandler.containerId);
             }
             return screenHandler;
-        }, context -> new ScreenHandlerPayload(context.syncId));
+        }, context -> new ScreenHandlerPayload(context.containerId));
 
     private record ScreenHandlerPayload(int syncId) {
-        public static final PacketCodec<NetByteBuf, ScreenHandlerPayload> CODEC =
-            PacketCodec.ofStatic((buf, obj) -> buf.writeInt(obj.syncId()),
+        public static final StreamCodec<NetByteBuf, ScreenHandlerPayload> CODEC =
+            StreamCodec.of((buf, obj) -> buf.writeInt(obj.syncId()),
                 buf -> new ScreenHandlerPayload(buf.readInt()));
     }
 }
