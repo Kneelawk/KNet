@@ -65,7 +65,7 @@ jobs:
           path: deploy
           persist-credentials: false
       - name: Do Javadoc & Maven
-        run: ./gradlew javadoc publish --no-daemon
+        run: ./gradlew javadoc publish
         env:
           RELEASE_TAG: ${{ steps.tag_version.outputs.tag }}
           PUBLISH_REPO: deploy/src/maven/

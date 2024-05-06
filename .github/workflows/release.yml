@@ -55,7 +55,7 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
       - name: Build
-        run: ./gradlew build --no-daemon
+        run: ./gradlew build
         env:
           RELEASE_TAG: ${{ steps.tag_version.outputs.tag }}
       - name: Capture Build Directory
@@ -79,7 +79,7 @@ jobs:
           path: deploy
           persist-credentials: false
       - name: Do Javadoc & Maven
-        run: ./gradlew javadoc publish --no-daemon
+        run: ./gradlew javadoc publish
         env:
           RELEASE_TAG: ${{ steps.tag_version.outputs.tag }}
           PUBLISH_REPO: deploy/src/maven/
