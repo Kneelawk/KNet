@@ -5,6 +5,7 @@ env:
   JAVADOC_NAME: knet
   SUB_JAVADOC: xplat
   MAVEN_IDENTIFIER: 'com.kneelawk:knet-xplat-intermediary'
+  ROLE_ID: '1239439830979710988'
 
 on:
   push:
