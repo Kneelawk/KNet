@@ -142,6 +142,25 @@ public class Palette<T> {
     }
 
     /**
+     * Gets this palette as a codec that automatically converts object to/from keys.
+     *
+     * @return this palette as a stream codec.
+     */
+    public StreamCodec<FriendlyByteBuf, T> asCodec() {
+        return new StreamCodec<>() {
+            @Override
+            public T decode(FriendlyByteBuf buf) {
+                return get(buf.readVarInt());
+            }
+
+            @Override
+            public void encode(FriendlyByteBuf buf, T input) {
+                buf.writeVarInt(keyFor(input));
+            }
+        };
+    }
+
+    /**
      * Encodes a palette to a {@link NetByteBuf}.
      *
      * @param buf    the buffer to write to.
