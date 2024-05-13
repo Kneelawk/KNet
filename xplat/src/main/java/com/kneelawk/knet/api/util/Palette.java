@@ -28,6 +28,8 @@ package com.kneelawk.knet.api.util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import io.netty.handler.codec.DecoderException;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -144,13 +146,19 @@ public class Palette<T> {
     /**
      * Gets this palette as a codec that automatically converts object to/from keys.
      *
+     * @param errorName the name that will be in the resulting error if a missing key is decoded.
      * @return this palette as a stream codec.
      */
-    public StreamCodec<FriendlyByteBuf, T> asCodec() {
+    public StreamCodec<FriendlyByteBuf, T> asCodec(String errorName) {
         return new StreamCodec<>() {
             @Override
-            public T decode(FriendlyByteBuf buf) {
-                return get(buf.readVarInt());
+            public @NotNull T decode(FriendlyByteBuf buf) {
+                int key = buf.readVarInt();
+                T decoded = get(key);
+                if (decoded == null)
+                    throw new DecoderException(
+                        "Key id '" + key + "' is not associated with any object in '" + errorName + "'");
+                return decoded;
             }
 
             @Override
