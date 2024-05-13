@@ -81,6 +81,9 @@ tasks {
             rename { "${it}_${archives_base_name}" }
         }
         archiveClassifier.set("")
+        manifest {
+            attributes("Fabric-Loom-Remap" to true)
+        }
     }
 
     named("sourcesJar", Jar::class).configure {
