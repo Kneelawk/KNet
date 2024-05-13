@@ -99,7 +99,8 @@ jobs:
             let versions = fullVersion.split('+');
             let mavenVersion = fullVersion.substring(1);
             let lines = [];
-            lines.push(`**${process.env.PROJECT_NAME} ${versions[0]} has been released for Minecraft ${versions[1]}!**`, '', '__Changes:__');
+            lines.push(`# ${process.env.PROJECT_NAME} Prerelease`);
+            lines.push(`**<&${process.env.ROLE_ID}> ${process.env.PROJECT_NAME} prerelease ${versions[0]} has been published for Minecraft ${versions[1]}!**`);
             lines.push("Available on Kneelawk's maven: https://kneelawk.com/maven/", `With the identifier: \`${process.env.MAVEN_IDENTIFIER}:${mavenVersion}\``);
             lines.push(`Javadoc available at: https://kneelawk.com/docs/${process.env.JAVADOC_NAME}/${mavenVersion}/${process.env.SUB_JAVADOC}/javadoc/index.html`);
             return lines.join('\n');
