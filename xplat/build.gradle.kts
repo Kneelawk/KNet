@@ -95,10 +95,10 @@ tasks {
     javadoc.configure {
         exclude("com/kneelawk/knet/impl")
 
-        val jetbrains_annotations_version: String by project
+//        val jetbrains_annotations_version: String by project
         (options as? StandardJavadocDocletOptions)?.links =
             listOf(
-                "https://javadoc.io/doc/org.jetbrains/annotations/${jetbrains_annotations_version}/"
+//                "https://javadoc.io/doc/org.jetbrains/annotations/${jetbrains_annotations_version}/"
             )
 
         options.optionFiles(rootProject.file("javadoc-options.txt"))
