@@ -54,7 +54,7 @@ public class Palette<T> {
      * @param <B>        the type of buffer to read from and write to.
      * @return a palette codec for the given value type.
      */
-    public static <T, B extends FriendlyByteBuf & NetBuf<? super B>> StreamCodec<B, Palette<T>> codec(
+    public static <T, B extends FriendlyByteBuf> StreamCodec<B, Palette<T>> codec(
         StreamCodec<? super B, T> valueCodec) {
         return new StreamCodec<>() {
             @Override
@@ -81,7 +81,7 @@ public class Palette<T> {
      * @param <B>    the type of buffer to write to.
      * @return a filled palette.
      */
-    public static <T, B extends FriendlyByteBuf & NetBuf<? super B>> Palette<T> decode(@NotNull B buf, @NotNull
+    public static <T, B extends FriendlyByteBuf> Palette<T> decode(@NotNull B buf, @NotNull
     StreamDecoder<? super B, T> reader) {
         int paletteLen = buf.readVarInt();
         Int2ObjectMap<T> palette = new Int2ObjectLinkedOpenHashMap<>(paletteLen);
@@ -175,7 +175,7 @@ public class Palette<T> {
      * @param writer the function for encoding palette'd objects into the buffer.
      * @param <B>    the type of buffer to write to.
      */
-    public <B extends FriendlyByteBuf & NetBuf<? super B>> void encode(@NotNull B buf,
+    public <B extends FriendlyByteBuf> void encode(@NotNull B buf,
                                                                        @NotNull StreamEncoder<? super B, T> writer) {
         buf.writeVarInt(palette.size());
         for (Int2ObjectMap.Entry<T> entry : palette.int2ObjectEntrySet()) {
