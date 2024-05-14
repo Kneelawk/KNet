@@ -266,7 +266,7 @@ public final class NetBufs {
     public static RegistryNetByteBuf registryNetOf(ByteBuf buf, boolean passthrough,
                                                    RegistryAccess registryManager) {
         if (buf instanceof RegistryNetByteBuf registryNetBuf && registryNetBuf.passthrough == passthrough &&
-            registryNetBuf.getRegistryManager() == registryManager) {
+            registryNetBuf.registryAccess() == registryManager) {
             return registryNetBuf;
         } else {
             return new RegistryNetByteBuf(buf, passthrough, registryManager);
@@ -369,7 +369,7 @@ public final class NetBufs {
      * @return the wrapping buffer.
      */
     public static NetRegistryByteBuf netRegistryOf(RegistryNetByteBuf buf, boolean passthrough) {
-        return new NetRegistryByteBuf(buf, buf.getRegistryManager(), passthrough);
+        return new NetRegistryByteBuf(buf, buf.registryAccess(), passthrough);
     }
 
     /**

@@ -34,29 +34,29 @@ import net.minecraft.network.codec.StreamEncoder;
  */
 public class RegistryNetByteBuf extends NetByteBuf {
 
-    private final RegistryAccess registryManager;
+    private final RegistryAccess registryAccess;
 
     /**
      * Creates a new {@link RegistryNetByteBuf}.
      *
-     * @param wrapped         the buffer that this buffer wraps.
-     * @param registryManager the registry manager to attach.
+     * @param wrapped        the buffer that this buffer wraps.
+     * @param registryAccess the registry manager to attach.
      */
-    public RegistryNetByteBuf(ByteBuf wrapped, RegistryAccess registryManager) {
+    public RegistryNetByteBuf(ByteBuf wrapped, RegistryAccess registryAccess) {
         super(wrapped);
-        this.registryManager = registryManager;
+        this.registryAccess = registryAccess;
     }
 
     /**
      * Creates a new {@link RegistryNetByteBuf}, with passthrough optionally enabled.
      *
-     * @param wrapped         the buffer that this buffer wraps.
-     * @param passthrough     whether to disable optimizations.
-     * @param registryManager the registry manager to attach.
+     * @param wrapped        the buffer that this buffer wraps.
+     * @param passthrough    whether to disable optimizations.
+     * @param registryAccess the registry manager to attach.
      */
-    public RegistryNetByteBuf(ByteBuf wrapped, boolean passthrough, RegistryAccess registryManager) {
+    public RegistryNetByteBuf(ByteBuf wrapped, boolean passthrough, RegistryAccess registryAccess) {
         super(wrapped, passthrough);
-        this.registryManager = registryManager;
+        this.registryAccess = registryAccess;
     }
 
     /**
@@ -64,8 +64,8 @@ public class RegistryNetByteBuf extends NetByteBuf {
      *
      * @return this buffer's attached registry manager.
      */
-    public RegistryAccess getRegistryManager() {
-        return registryManager;
+    public RegistryAccess registryAccess() {
+        return registryAccess;
     }
 
     /**
