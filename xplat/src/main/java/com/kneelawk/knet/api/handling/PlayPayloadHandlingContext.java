@@ -47,11 +47,11 @@ public interface PlayPayloadHandlingContext extends PayloadHandlingContext {
     Player getPlayer();
 
     /**
-     * Gets the world in which this payload was received.
+     * Gets the level in which this payload was received.
      *
-     * @return the world where this payload was received.
+     * @return the level where this payload was received.
      */
-    default @Nullable Level getWorld() {
+    default @Nullable Level getLevel() {
         Player player = getPlayer();
         if (player == null) return null;
         return player.level();
@@ -70,14 +70,14 @@ public interface PlayPayloadHandlingContext extends PayloadHandlingContext {
     }
 
     /**
-     * Gets the world in which this payload was received or throws an exception if no world is available.
+     * Gets the level in which this payload was received or throws an exception if no level is available.
      *
-     * @return the world where this payload was received.
-     * @throws PayloadHandlingException if this payload was received without a world where it was received.
+     * @return the level where this payload was received.
+     * @throws PayloadHandlingException if this payload was received without a level where it was received.
      */
-    default @NotNull Level mustGetWorld() throws PayloadHandlingException {
-        Level world = getWorld();
-        if (world == null) throw new PayloadHandlingErrorException("No world associated with this payload.");
-        return world;
+    default @NotNull Level mustGetLevel() throws PayloadHandlingException {
+        Level level = getLevel();
+        if (level == null) throw new PayloadHandlingErrorException("No level associated with this payload.");
+        return level;
     }
 }

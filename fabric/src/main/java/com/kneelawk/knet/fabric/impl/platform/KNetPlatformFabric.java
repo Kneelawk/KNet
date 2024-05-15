@@ -75,8 +75,8 @@ public class KNetPlatformFabric implements KNetPlatform {
     }
 
     @Override
-    public void sendPlayToTrackingChunk(ServerLevel world, ChunkPos pos, CustomPacketPayload payload) {
-        PlayerLookup.tracking(world, pos).forEach(player -> ServerPlayNetworking.send(player, payload));
+    public void sendPlayToTrackingChunk(ServerLevel level, ChunkPos pos, CustomPacketPayload payload) {
+        PlayerLookup.tracking(level, pos).forEach(player -> ServerPlayNetworking.send(player, payload));
     }
 
     @Override

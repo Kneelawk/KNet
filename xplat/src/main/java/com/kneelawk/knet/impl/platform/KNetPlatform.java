@@ -54,18 +54,18 @@ public interface KNetPlatform {
 
     void sendPlayToTrackingEntityAndSelf(Entity entity, CustomPacketPayload payload);
 
-    void sendPlayToTrackingChunk(ServerLevel world, ChunkPos pos, CustomPacketPayload payload);
+    void sendPlayToTrackingChunk(ServerLevel level, ChunkPos pos, CustomPacketPayload payload);
 
     default void sendPlayToTrackingBlockEntity(BlockEntity be, CustomPacketPayload payload) {
-        if (be.getLevel() instanceof ServerLevel serverWorld) {
-            sendPlayToTrackingChunk(serverWorld, new ChunkPos(be.getBlockPos()), payload);
+        if (be.getLevel() instanceof ServerLevel serverLevel) {
+            sendPlayToTrackingChunk(serverLevel, new ChunkPos(be.getBlockPos()), payload);
         } else {
             sendPlayToServer(payload);
         }
     }
 
-    default void sendPlayToTrackingBlock(ServerLevel world, BlockPos pos, CustomPacketPayload payload) {
-        sendPlayToTrackingChunk(world, new ChunkPos(pos), payload);
+    default void sendPlayToTrackingBlock(ServerLevel level, BlockPos pos, CustomPacketPayload payload) {
+        sendPlayToTrackingChunk(level, new ChunkPos(pos), payload);
     }
 
     default void sendPlay(Collection<ServerPlayer> players, CustomPacketPayload payload) {

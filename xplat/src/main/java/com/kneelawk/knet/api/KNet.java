@@ -56,10 +56,10 @@ public class KNet {
      */
     public static final PlayChannelContext<BlockEntity> BLOCK_ENTITY_CONTEXT =
         RootPlayChannelContext.ofNetCodec(BlockEntityPayload.CODEC, (payload, ctx) -> {
-            Level world = ctx.mustGetWorld();
-            BlockEntity be = world.getBlockEntity(payload.pos());
+            Level level = ctx.mustGetLevel();
+            BlockEntity be = level.getBlockEntity(payload.pos());
             if (be == null) throw new PayloadHandlingErrorException(
-                "Attempted to get block entity at: " + payload.pos() + " in " + world.dimension().location() +
+                "Attempted to get block entity at: " + payload.pos() + " in " + level.dimension().location() +
                     " but non exist at that position.");
 
             return be;
@@ -82,10 +82,10 @@ public class KNet {
      */
     public static final PlayChannelContext<Entity> ENTITY_CONTEXT =
         RootPlayChannelContext.ofNetCodec(EntityPayload.CODEC, (payload, ctx) -> {
-            Level world = ctx.mustGetWorld();
-            Entity entity = world.getEntity(payload.entityId());
+            Level level = ctx.mustGetLevel();
+            Entity entity = level.getEntity(payload.entityId());
             if (entity == null) throw new PayloadHandlingErrorException(
-                "Attempted to get entity with id: " + payload.entityId() + " in " + world.dimension().location() +
+                "Attempted to get entity with id: " + payload.entityId() + " in " + level.dimension().location() +
                     " but no entity exists with that id.");
             return entity;
         }, context -> new EntityPayload(context.getId()));

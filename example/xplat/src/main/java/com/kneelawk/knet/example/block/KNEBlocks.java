@@ -38,7 +38,7 @@ public class KNEBlocks {
     public static final Supplier<FancyLightBlock> FANCY_LIGHT =
         KNEPlatform.INSTANCE.registerBlockWithItem("fancy_light", () -> new FancyLightBlock(
                 BlockBehaviour.Properties.of().mapColor(MapColor.SAND).instrument(NoteBlockInstrument.PLING).strength(0.3f)
-                    .sound(SoundType.GLASS).lightLevel(state -> 15).isRedstoneConductor((state, world, pos) -> false)),
+                    .sound(SoundType.GLASS).lightLevel(state -> 15).isRedstoneConductor((state, level, pos) -> false)),
             FancyLightBlock.CODEC);
 
     public static void init() {}

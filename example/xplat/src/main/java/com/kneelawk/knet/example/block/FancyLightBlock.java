@@ -67,10 +67,10 @@ public class FancyLightBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player,
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                             BlockHitResult hit) {
-        if (!world.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            KNEPlatform.INSTANCE.openScreen(serverPlayer, state.getMenuProvider(world, pos));
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            KNEPlatform.INSTANCE.openScreen(serverPlayer, state.getMenuProvider(level, pos));
             return InteractionResult.CONSUME;
         } else {
             return InteractionResult.SUCCESS;

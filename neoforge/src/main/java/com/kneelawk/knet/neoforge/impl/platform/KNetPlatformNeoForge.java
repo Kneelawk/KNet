@@ -55,8 +55,8 @@ public class KNetPlatformNeoForge implements KNetPlatform {
     }
 
     @Override
-    public void sendPlayToTrackingChunk(ServerLevel world, ChunkPos pos, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayersTrackingChunk(world, pos, payload);
+    public void sendPlayToTrackingChunk(ServerLevel level, ChunkPos pos, CustomPacketPayload payload) {
+        PacketDistributor.sendToPlayersTrackingChunk(level, pos, payload);
     }
 
     @Override

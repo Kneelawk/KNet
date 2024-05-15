@@ -56,12 +56,12 @@ public class FancyLightScreenHandler extends AbstractContainerMenu {
 
     public static FancyLightScreenHandler fromNetwork(int syncId, Inventory playerInv, BlockPosPayload payload) {
         BlockPos pos = payload.pos();
-        Level world = playerInv.player.level();
+        Level level = playerInv.player.level();
 
-        if (!(world.getBlockEntity(pos) instanceof FancyLightBlockEntity entity)) throw new IllegalArgumentException(
+        if (!(level.getBlockEntity(pos) instanceof FancyLightBlockEntity entity)) throw new IllegalArgumentException(
             "Tried to open screen at " + pos + " but there was no FancyLightBlockEntity there");
 
-        return new FancyLightScreenHandler(syncId, ContainerLevelAccess.create(world, pos), entity);
+        return new FancyLightScreenHandler(syncId, ContainerLevelAccess.create(level, pos), entity);
     }
 
     public FancyLightScreenHandler(int syncId, ContainerLevelAccess context, FancyLightBlockEntity entity) {

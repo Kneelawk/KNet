@@ -292,18 +292,18 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
     /**
      * Sends a payload to all players tracking a chunk.
      *
-     * @param world   the world that holds the chunk.
+     * @param level   the level that holds the chunk.
      * @param pos     the position of the chunk.
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull ServerLevel world, @NotNull ChunkPos pos, @NotNull C context,
+    public void sendToTracking(@NotNull ServerLevel level, @NotNull ChunkPos pos, @NotNull C context,
                                @NotNull P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking chunk " + pos, toSend);
         }
-        KNetPlatform.INSTANCE.sendPlayToTrackingChunk(world, pos, toSend);
+        KNetPlatform.INSTANCE.sendPlayToTrackingChunk(level, pos, toSend);
     }
 
     /**
@@ -324,18 +324,18 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
     /**
      * Sends a payload to all players tracking a block position.
      *
-     * @param world   the world that holds the block.
+     * @param level   the level that holds the block.
      * @param pos     the position of the block.
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull C context,
+    public void sendToTracking(@NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull C context,
                                @NotNull P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking pos " + pos, toSend);
         }
-        KNetPlatform.INSTANCE.sendPlayToTrackingBlock(world, pos, toSend);
+        KNetPlatform.INSTANCE.sendPlayToTrackingBlock(level, pos, toSend);
     }
 
     private Payload payload(C context, P payload) {

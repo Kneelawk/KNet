@@ -359,16 +359,16 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
     /**
      * Sends a payload to all players tracking a chunk.
      *
-     * @param world   the world that holds the chunk.
+     * @param level   the level that holds the chunk.
      * @param pos     the position of the chunk.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull ServerLevel world, @NotNull ChunkPos pos, @NotNull P payload) {
+    public void sendToTracking(@NotNull ServerLevel level, @NotNull ChunkPos pos, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking chunk " + pos, payload);
         }
-        KNetPlatform.INSTANCE.sendPlayToTrackingChunk(world, pos, payload);
+        KNetPlatform.INSTANCE.sendPlayToTrackingChunk(level, pos, payload);
     }
 
     /**
@@ -388,16 +388,16 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
     /**
      * Sends a payload to all players tracking a block position.
      *
-     * @param world   the world that holds the block.
+     * @param level   the level that holds the block.
      * @param pos     the position of the block.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull P payload) {
+    public void sendToTracking(@NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking pos " + pos, payload);
         }
-        KNetPlatform.INSTANCE.sendPlayToTrackingBlock(world, pos, payload);
+        KNetPlatform.INSTANCE.sendPlayToTrackingBlock(level, pos, payload);
     }
 
     private void checkPayload(P payload) {
