@@ -53,6 +53,7 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
     /**
      * Creates a new root channel context that accepts a {@link RegistryNetByteBuf} codec or {@link NetByteBuf} codec.
      *
+     * @param prefix  the name this context prefixes to the channel id.
      * @param codec   the payload codec.
      * @param decoder a decoder for decoding context from the payload.
      * @param encoder an encoder for encoding context into a payload.
@@ -69,6 +70,7 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
     /**
      * Creates a new root channel context that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryFriendlyByteBuf} codec.
      *
+     * @param prefix  the name this context prefixes to the channel id.
      * @param codec   the payload codec.
      * @param decoder a decoder for decoding context from the payload.
      * @param encoder an encoder for encoding context into a payload.
