@@ -26,6 +26,7 @@
 package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -42,6 +43,11 @@ import com.kneelawk.knet.api.util.RegistryNetByteBuf;
  * @param <C> the type of context supplied.
  */
 public interface PlayChannelContext<C> {
+    /**
+     * {@return the name of this context to be prefixed onto the channel id to differentiate it from other channels}
+     */
+    @Nullable String getChannelIdPrefix();
+
     /**
      * Decodes a payload from a buffer.
      *

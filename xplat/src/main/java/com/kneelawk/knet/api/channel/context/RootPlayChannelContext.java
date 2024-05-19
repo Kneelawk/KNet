@@ -26,6 +26,7 @@
 package com.kneelawk.knet.api.channel.context;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -44,6 +45,7 @@ import com.kneelawk.knet.api.util.RegistryNetByteBuf;
  * @param <P> the payload this uses.
  */
 public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
+    private final @Nullable String prefix;
     private final StreamCodec<? super NetRegistryByteBuf, P> codec;
     private final PlayContextDecoder<C, P> decoder;
     private final ContextEncoder<C, P> encoder;
@@ -58,10 +60,42 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
      * @param <P>     the type of payload.
      * @return a new root channel context.
      */
+    public static <C, P> RootPlayChannelContext<C, P> ofNetCodec(@Nullable String prefix, @NotNull
+    StreamCodec<? super RegistryNetByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
+                                                                 @NotNull ContextEncoder<C, P> encoder) {
+        return new RootPlayChannelContext<>(prefix, codec.mapStream(NetBufs::registryNetOf), decoder, encoder);
+    }
+
+    /**
+     * Creates a new root channel context that accepts a {@link NetRegistryByteBuf} codec or {@link RegistryFriendlyByteBuf} codec.
+     *
+     * @param codec   the payload codec.
+     * @param decoder a decoder for decoding context from the payload.
+     * @param encoder an encoder for encoding context into a payload.
+     * @param <C>     the type of context.
+     * @param <P>     the type of payload.
+     * @return a new root channel context.
+     */
+    public static <C, P> RootPlayChannelContext<C, P> ofRegistryCodec(@Nullable String prefix, @NotNull
+    StreamCodec<? super NetRegistryByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
+                                                                      @NotNull ContextEncoder<C, P> encoder) {
+        return new RootPlayChannelContext<>(prefix, codec, decoder, encoder);
+    }
+
+    /**
+     * Creates a new root channel context that accepts a {@link RegistryNetByteBuf} codec or {@link NetByteBuf} codec.
+     *
+     * @param codec   the payload codec.
+     * @param decoder a decoder for decoding context from the payload.
+     * @param encoder an encoder for encoding context into a payload.
+     * @param <C>     the type of context.
+     * @param <P>     the type of payload.
+     * @return a new root channel context.
+     */
     public static <C, P> RootPlayChannelContext<C, P> ofNetCodec(
         @NotNull StreamCodec<? super RegistryNetByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
         @NotNull ContextEncoder<C, P> encoder) {
-        return new RootPlayChannelContext<>(codec.mapStream(NetBufs::registryNetOf), decoder, encoder);
+        return new RootPlayChannelContext<>(null, codec.mapStream(NetBufs::registryNetOf), decoder, encoder);
     }
 
     /**
@@ -77,14 +111,20 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
     public static <C, P> RootPlayChannelContext<C, P> ofRegistryCodec(
         @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
         @NotNull ContextEncoder<C, P> encoder) {
-        return new RootPlayChannelContext<>(codec, decoder, encoder);
+        return new RootPlayChannelContext<>(null, codec, decoder, encoder);
     }
 
-    private RootPlayChannelContext(@NotNull StreamCodec<? super NetRegistryByteBuf, P> codec,
+    private RootPlayChannelContext(@Nullable String prefix, @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec,
                                    @NotNull PlayContextDecoder<C, P> decoder, @NotNull ContextEncoder<C, P> encoder) {
+        this.prefix = prefix;
         this.codec = codec;
         this.decoder = decoder;
         this.encoder = encoder;
+    }
+
+    @Override
+    public @Nullable String getChannelIdPrefix() {
+        return prefix;
     }
 
     @Override

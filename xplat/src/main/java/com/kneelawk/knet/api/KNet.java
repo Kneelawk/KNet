@@ -55,7 +55,7 @@ public class KNet {
      * }</pre>
      */
     public static final PlayChannelContext<BlockEntity> BLOCK_ENTITY_CONTEXT =
-        RootPlayChannelContext.ofNetCodec(BlockEntityPayload.CODEC, (payload, ctx) -> {
+        RootPlayChannelContext.ofNetCodec("knet_block_entity", BlockEntityPayload.CODEC, (payload, ctx) -> {
             Level level = ctx.mustGetLevel();
             BlockEntity be = level.getBlockEntity(payload.pos());
             if (be == null) throw new PayloadHandlingErrorException(
@@ -81,7 +81,7 @@ public class KNet {
      * }</pre>
      */
     public static final PlayChannelContext<Entity> ENTITY_CONTEXT =
-        RootPlayChannelContext.ofNetCodec(EntityPayload.CODEC, (payload, ctx) -> {
+        RootPlayChannelContext.ofNetCodec("knet_entity", EntityPayload.CODEC, (payload, ctx) -> {
             Level level = ctx.mustGetLevel();
             Entity entity = level.getEntity(payload.entityId());
             if (entity == null) throw new PayloadHandlingErrorException(
@@ -105,7 +105,7 @@ public class KNet {
      * }</pre>
      */
     public static final PlayChannelContext<AbstractContainerMenu> SCREEN_HANDLER_CONTEXT =
-        RootPlayChannelContext.ofNetCodec(ScreenHandlerPayload.CODEC, (payload, ctx) -> {
+        RootPlayChannelContext.ofNetCodec("knet_container", ScreenHandlerPayload.CODEC, (payload, ctx) -> {
             Player player = ctx.mustGetPlayer();
             AbstractContainerMenu screenHandler = player.containerMenu;
             if (screenHandler == null) {

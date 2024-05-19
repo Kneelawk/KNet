@@ -47,7 +47,7 @@ import static com.kneelawk.knet.example.KNetExample.id;
 
 public class FancyLightScreenHandler extends AbstractContainerMenu {
     public static final ContextualPlayChannel<FancyLightScreenHandler, ColorUpdatePayload> COLOR_UPDATE_CHANNEL =
-        ContextualPlayChannel.ofNetCodec(id("fancy_light_screen_color_update"),
+        ContextualPlayChannel.ofNetCodec(id("fancy_light_color_update"),
                 KNet.SCREEN_HANDLER_CONTEXT.cast(FancyLightScreenHandler.class), ColorUpdatePayload.CODEC)
             .recvServer(FancyLightScreenHandler::recv);
 

@@ -108,7 +108,12 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
 
     private ContextualPlayChannel(@NotNull ResourceLocation id, @NotNull PlayChannelContext<C> channelContext,
                                   @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec) {
-        this.id = new CustomPacketPayload.Type<>(id);
+        String prefix = channelContext.getChannelIdPrefix();
+        if (prefix != null) {
+            this.id = new CustomPacketPayload.Type<>(id.withPrefix(prefix + "/"));
+        } else {
+            this.id = new CustomPacketPayload.Type<>(id);
+        }
         this.channelContext = channelContext;
         this.codec = codec;
     }

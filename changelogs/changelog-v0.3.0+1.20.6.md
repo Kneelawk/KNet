@@ -11,3 +11,4 @@ Changes:
 * Added event for enqueueing configuration tasks.
 * Added more utility methods to `NetByteBuf` family of buffers.
 * Switched sources to Mojmap.
+* Optionally allowed contexts to specify a prefix that gets added to contextual channel ids.
