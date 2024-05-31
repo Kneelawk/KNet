@@ -1,17 +1,8 @@
-tasks.create("clean", Delete::class) {
-    delete(rootProject.layout.buildDirectory)
+plugins {
+    id("dev.architectury.loom") apply false
+    id("com.kneelawk.submodule") apply false
 }
 
-subprojects {
-    tasks {
-        // make builds reproducible
-        withType<AbstractArchiveTask>().configureEach {
-            isPreserveFileTimestamps = false
-            isReproducibleFileOrder = true
-        }
-
-        withType<GenerateModuleMetadata>().configureEach {
-            enabled = false
-        }
-    }
+tasks.create("clean", Delete::class) {
+    delete(rootProject.layout.buildDirectory)
 }

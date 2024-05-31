@@ -3,9 +3,8 @@ name: release
 
 env:
   PROJECT_NAME: KNet
-  JAVADOC_NAME: knet
-  SUB_JAVADOC: xplat
-  MAVEN_IDENTIFIER: 'com.kneelawk:knet-xplat-intermediary'
+  JAVADOC_DIR: com/kneelawk/knet/knet-xplat-intermediary
+  MAVEN_IDENTIFIER: 'com.kneelawk.knet:knet-xplat-intermediary'
   ROLE_ID: '1239439830979710988'
 
 # Variant: github, maven+javadoc, discord
@@ -71,37 +70,10 @@ jobs:
           files: build/libs/*
         env:
           GITHUB_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-      # Next is the rather cursed maven and javadoc deployment mechanism
-      - name: Checkout Deployment Repository
-        uses: actions/checkout@v3
-        with:
-          repository: Kneelawk/kneelawk.github.io
-          ref: src
-          path: deploy
-          persist-credentials: false
-      - name: Do Javadoc & Maven
-        run: ./gradlew javadoc publish
+      - name: Maven Release
+        run: ./gradlew publish -PkneelawkUsername=${{ secrets.MAVEN_USERNAME }} -PkneelawkPassword=${{ secrets.MAVEN_PASSWORD }}
         env:
           RELEASE_TAG: ${{ steps.tag_version.outputs.tag }}
-          PUBLISH_REPO: deploy/src/maven/
-      - name: Create Docs Directory
-        run: mkdir -p deploy/src/docs/${{ env.JAVADOC_NAME }}/${{ steps.project_version.outputs.result }}
-      - name: Copy To Deployment Repository Javadocs
-        run: cp -rf build/docs/* deploy/src/docs/${{ env.JAVADOC_NAME }}/${{ steps.project_version.outputs.result }}/
-      - name: Commit Deployment Repository Changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m 'Publish ${{ env.PROJECT_NAME }} ${{ steps.tag_version.outputs.tag }}'
-        working-directory: deploy
-      - name: Push Deployment Repository
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PUBLISH_TOKEN }}
-          branch: src
-          directory: deploy
-          repository: Kneelawk/kneelawk.github.io
       # This is the mess that publishes discord notifications
       - name: Read Changelog File
         uses: juliangruber/read-file-action@v1
@@ -123,8 +95,8 @@ jobs:
             let changesStart = lines.findIndex(line => line.startsWith('*'));
             lines.splice(0, changesStart);
             lines.unshift(`# ${process.env.PROJECT_NAME} Release`, `**<@&${process.env.ROLE_ID}> ${process.env.PROJECT_NAME} ${versions[0]} has been released for Minecraft ${versions[1]}!**`, '', '__Changes:__');
-            lines.push("Available on Kneelawk's maven: https://kneelawk.com/maven/", `With the identifier: \`${process.env.MAVEN_IDENTIFIER}:${mavenVersion}\``);
-            lines.push(`Javadoc available at: https://kneelawk.com/docs/${process.env.JAVADOC_NAME}/${mavenVersion}/${process.env.SUB_JAVADOC}/javadoc/index.html`);
+            lines.push("Available on Kneelawk's maven: https://maven.kneelawk.com/releases/", `With the identifier: \`${process.env.MAVEN_IDENTIFIER}:${mavenVersion}\``);
+            lines.push(`Javadoc available at: https://maven.kneelawk.com/javadoc/releases/${process.env.JAVADOC_DIR}/${mavenVersion}`);
             return lines.join('\n');
           result-encoding: string
       - name: Make Release Announcement
