@@ -31,17 +31,25 @@ pluginManagement {
     }
 }
 
-include(":xplat")
-include(":xplat-mojmap")
-include(":fabric")
-include(":fabric:remapCheck")
-include(":neoforge")
-
-include(":example-xplat")
-project(":example-xplat").projectDir = file("example/xplat")
-include(":example-fabric")
-project(":example-fabric").projectDir = file("example/fabric")
-include(":example-neoforge")
-project(":example-neoforge").projectDir = file("example/neoforge")
-
 rootProject.name = "knet"
+
+fun add(enabled: Boolean, name: String, path: String) {
+    if (!enabled) return
+    include(name)
+    project(name).projectDir = file(path)
+}
+
+val xplat = true
+val mojmap = true
+val fabric = true
+val neoforge = false
+
+add(xplat, ":xplat", "xplat")
+add(mojmap, ":xplat-mojmap", "xplat-mojmap")
+add(fabric, ":fabric", "fabric")
+add(fabric, ":fabric:remapCheck", "fabric/remapCheck")
+add(neoforge, ":neoforge", "neoforge")
+
+add(xplat, ":example-xplat", "example/xplat")
+add(fabric, ":example-fabric", "example/fabric")
+add(neoforge, ":example-neoforge", "example/neoforge")

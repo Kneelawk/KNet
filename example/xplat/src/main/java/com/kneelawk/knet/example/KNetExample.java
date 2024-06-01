@@ -59,7 +59,7 @@ public class KNetExample {
     }
 
     public static ResourceLocation id(String path) {
-        return new ResourceLocation(MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     public static MutableComponent tt(String prefix, String suffix, Object... args) {

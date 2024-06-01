@@ -75,7 +75,6 @@ public class FancyLightBlockEntityRenderer implements BlockEntityRenderer<FancyL
                       TextureAtlasSprite sprite,
                       int red, int green, int blue, int light) {
         Matrix4f model = entry.pose();
-        Matrix3f normal = entry.normal();
 
         float dx0 = x2 - x0;
         float dy0 = y2 - y0;
@@ -92,13 +91,13 @@ public class FancyLightBlockEntityRenderer implements BlockEntityRenderer<FancyL
         ny *= div;
         nz *= div;
 
-        consumer.vertex(model, x0, y0, z0).color(red, green, blue, 255).uv(sprite.getU0(), sprite.getV0())
-            .uv2(light).normal(entry, nx, ny, nz).endVertex();
-        consumer.vertex(model, x1, y1, z1).color(red, green, blue, 255).uv(sprite.getU0(), sprite.getV1())
-            .uv2(light).normal(entry, nx, ny, nz).endVertex();
-        consumer.vertex(model, x2, y2, z2).color(red, green, blue, 255).uv(sprite.getU1(), sprite.getV1())
-            .uv2(light).normal(entry, nx, ny, nz).endVertex();
-        consumer.vertex(model, x3, y3, z3).color(red, green, blue, 255).uv(sprite.getU1(), sprite.getV0())
-            .uv2(light).normal(entry, nx, ny, nz).endVertex();
+        consumer.addVertex(model, x0, y0, z0).setColor(red, green, blue, 255).setUv(sprite.getU0(), sprite.getV0())
+            .setLight(light).setNormal(entry, nx, ny, nz);
+        consumer.addVertex(model, x1, y1, z1).setColor(red, green, blue, 255).setUv(sprite.getU0(), sprite.getV1())
+            .setLight(light).setNormal(entry, nx, ny, nz);
+        consumer.addVertex(model, x2, y2, z2).setColor(red, green, blue, 255).setUv(sprite.getU1(), sprite.getV1())
+            .setLight(light).setNormal(entry, nx, ny, nz);
+        consumer.addVertex(model, x3, y3, z3).setColor(red, green, blue, 255).setUv(sprite.getU1(), sprite.getV0())
+            .setLight(light).setNormal(entry, nx, ny, nz);
     }
 }

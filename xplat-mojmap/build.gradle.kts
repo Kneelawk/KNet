@@ -39,7 +39,7 @@ submodule {
 dependencies {
     // Common Events
     val common_events_version: String by project
-    modApi("com.kneelawk:common-events-xplat-mojmap:$common_events_version")
+    modApi("com.kneelawk.common-events:common-events-xplat-mojmap:$common_events_version")
 }
 
 kpublish {
