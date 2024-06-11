@@ -42,7 +42,7 @@ fun add(enabled: Boolean, name: String, path: String) {
 val xplat = true
 val mojmap = true
 val fabric = true
-val neoforge = false
+val neoforge = true
 
 add(xplat, ":xplat", "xplat")
 add(mojmap, ":xplat-mojmap", "xplat-mojmap")
