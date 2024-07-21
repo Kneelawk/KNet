@@ -6,17 +6,8 @@ plugins {
 
 submodule {
     setLibsDirectory()
-    applyFabricLoaderDependency()
-    applyFabricApiDependency()
-    applyXplatConnection(":xplat", "fabric")
+    applyXplatConnection(":xplat")
     setupJavadoc()
-}
-
-dependencies {
-    // Common Events
-    val common_events_version: String by project
-    modApi("com.kneelawk.common-events:common-events-fabric:$common_events_version")
-    include("com.kneelawk.common-events:common-events-fabric:$common_events_version")
 }
 
 kpublish {

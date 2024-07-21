@@ -5,17 +5,10 @@ plugins {
 }
 
 submodule {
-    setLibsDirectory()
     setRefmaps("knet")
-    applyFabricLoaderDependency()
-    forceRemap()
     setupJavadoc()
-}
-
-dependencies {
-    // Common Events
     val common_events_version: String by project
-    modApi("com.kneelawk.common-events:common-events-xplat-intermediary:$common_events_version")
+    xplatExternalDependency { "com.kneelawk.common-events:common-events-$it:$common_events_version" }
 }
 
 kpublish {

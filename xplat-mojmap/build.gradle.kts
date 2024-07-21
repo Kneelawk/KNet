@@ -30,16 +30,8 @@ plugins {
 }
 
 submodule {
-    applyFabricLoaderDependency()
-    applyXplatConnection(":xplat", "mojmap")
+    applyXplatConnection(":xplat")
     setupJavadoc()
-    disableRemap()
-}
-
-dependencies {
-    // Common Events
-    val common_events_version: String by project
-    modApi("com.kneelawk.common-events:common-events-xplat-mojmap:$common_events_version")
 }
 
 kpublish {

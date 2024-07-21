@@ -4,11 +4,13 @@ plugins {
 }
 
 submodule {
-    applyNeoforgeDependency()
-    applyXplatConnection(":example-xplat", "neoforge")
+    applyXplatConnection(":example-xplat")
     generateRuns()
 }
 
-loom {
-    accessWidenerPath = project(":example-xplat").loom.accessWidenerPath
+neoForge {
+    accessTransformers {
+        from(file("knet_example.accesstransformer.cfg"))
+        publish(file("knet_example.accesstransformer.cfg"))
+    }
 }

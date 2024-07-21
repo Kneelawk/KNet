@@ -4,9 +4,6 @@ plugins {
 }
 
 submodule {
-    setRefmaps("knet-example")
-    applyFabricLoaderDependency()
-    forceRemap()
     xplatProjectDependency(":")
 }
 

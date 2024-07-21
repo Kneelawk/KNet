@@ -6,17 +6,8 @@ plugins {
 
 submodule {
     setLibsDirectory()
-    applyNeoforgeDependency()
-    applyXplatConnection(":xplat", "neoforge")
+    applyXplatConnection(":xplat")
     setupJavadoc()
-    createDevExport()
-}
-
-dependencies {
-    // Common Events
-    val common_events_version: String by project
-    modApi("com.kneelawk.common-events:common-events-neoforge:$common_events_version")
-    include("com.kneelawk.common-events:common-events-neoforge:$common_events_version")
 }
 
 kpublish {
