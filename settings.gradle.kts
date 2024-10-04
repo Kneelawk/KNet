@@ -16,7 +16,6 @@ pluginManagement {
             name = "Kneelawk"
         }
         gradlePluginPortal()
-        mavenLocal()
     }
     plugins {
         val loom_version: String by settings
@@ -36,10 +35,44 @@ pluginManagement {
 
 rootProject.name = "knet"
 
-fun add(enabled: Boolean, name: String, path: String) {
+fun module(enabled: Boolean, name: String) {
     if (!enabled) return
     include(name)
-    project(name).projectDir = file(path)
+    project(":$name").projectDir = File(rootDir, "modules/${name.replace(':', '/')}")
+}
+
+fun module(name: String, vararg submodules: Pair<Boolean, String>) {
+    include(name)
+    project(":$name").projectDir = File(rootDir, "modules/$name")
+
+    for ((enabled, submodule) in submodules) {
+        if (!enabled) continue
+        include("$name:$submodule")
+        project(":$name:$submodule").projectDir = File(rootDir, "modules/$name/${submodule.replace(':', '/')}")
+    }
+}
+
+fun example(enabled: Boolean, name: String) {
+    if (!enabled) return
+    include(name)
+    project(":$name").projectDir = File(rootDir, "examples/${name.replace(':', '/')}")
+}
+
+fun example(name: String, vararg submodules: Pair<Boolean, String>) {
+    include(name)
+    project(":$name").projectDir = File(rootDir, "examples/$name")
+
+    for ((enabled, submodule) in submodules) {
+        if (!enabled) continue
+        include("$name:$submodule")
+        project(":$name:$submodule").projectDir = File(rootDir, "examples/$name/${submodule.replace(':', '/')}")
+    }
+}
+
+fun javadoc(enabled: Boolean, name: String) {
+    if (!enabled) return
+    include("javadoc-$name")
+    project(":javadoc-$name").projectDir = File(rootDir, "javadoc/$name")
 }
 
 val xplat = true
@@ -47,12 +80,11 @@ val mojmap = true
 val fabric = true
 val neoforge = true
 
-add(xplat, ":xplat", "xplat")
-add(mojmap, ":xplat-mojmap", "xplat-mojmap")
-add(fabric, ":fabric", "fabric")
-add(fabric, ":fabric:remapCheck", "fabric/remapCheck")
-add(neoforge, ":neoforge", "neoforge")
+module(xplat, "xplat")
+module(mojmap, "xplat-mojmap")
+module(fabric, "fabric")
+module(neoforge, "neoforge")
 
-add(xplat, ":example-xplat", "example/xplat")
-add(fabric, ":example-fabric", "example/fabric")
-add(neoforge, ":example-neoforge", "example/neoforge")
+example(xplat, "simple-xplat")
+example(fabric, "simple-fabric")
+example(neoforge, "simple-neoforge")

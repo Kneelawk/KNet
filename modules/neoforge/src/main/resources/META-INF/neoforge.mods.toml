@@ -3,14 +3,14 @@ loaderVersion = "[1,)"
 license = "MIT"
 
 [[mods]]
-modId = "knet"
+modId = "${mod_id}"
 version = "${version}"
 displayName = "KNet"
 authors = "Kneelawk"
 description = "Kneelawk's networking abstraction and utilities."
-logoFile = "assets/knet/icon.png"
+logoFile = "assets/${mod_id}/icon.png"
 
-[[dependencies.knet]]
+[[dependencies.${mod_id}]]
 modId = "neoforge"
 type = "REQUIRED"
 versionRange = "[20.4.148-beta,)"

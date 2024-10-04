@@ -4,7 +4,7 @@ plugins {
 }
 
 submodule {
-    applyXplatConnection(":example-xplat")
+    applyXplatConnection(":simple-xplat")
     generateRuns()
 }
 

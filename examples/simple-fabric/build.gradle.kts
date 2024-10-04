@@ -4,12 +4,12 @@ plugins {
 }
 
 submodule {
-    applyXplatConnection(":example-xplat")
+    applyXplatConnection(":simple-xplat")
     generateRuns()
 }
 
 loom {
-    accessWidenerPath = project(":example-xplat").loom.accessWidenerPath
+    accessWidenerPath = project(":simple-xplat").loom.accessWidenerPath
 }
 
 //dependencies {
