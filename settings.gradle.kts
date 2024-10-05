@@ -85,6 +85,14 @@ module(mojmap, "xplat-mojmap")
 module(fabric, "fabric")
 module(neoforge, "neoforge")
 
+module(xplat, "api-xplat")
+module(mojmap, "api-xplat-mojmap")
+module(fabric, "api-fabric")
+module(neoforge, "api-neoforge")
+
+module(fabric, "backend-fabric")
+module(neoforge, "backend-neoforge")
+
 example(xplat, "simple-xplat")
 example(fabric, "simple-fabric")
 example(neoforge, "simple-neoforge")

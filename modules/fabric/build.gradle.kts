@@ -10,6 +10,11 @@ submodule {
     setupJavadoc()
 }
 
+dependencies {
+    api(project(":backend-fabric", configuration = "namedElements"))
+    include(project(":backend-fabric"))
+}
+
 kpublish {
     createPublication()
 }

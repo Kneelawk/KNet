@@ -10,6 +10,11 @@ submodule {
     setupJavadoc()
 }
 
+dependencies {
+    api(project(":backend-neoforge"))
+    jarJar(project(":backend-neoforge"))
+}
+
 kpublish {
     createPublication()
 }

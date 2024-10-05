@@ -16,3 +16,17 @@ type = "REQUIRED"
 versionRange = "[20.4.148-beta,)"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "knet_api"
+type = "REQUIRED"
+versionRange = "[1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "knet_backend_neoforge"
+type = "REQUIRED"
+versionRange = "[1,)"
+ordering = "NONE"
+side = "BOTH"

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "knet_example",
+  "id": "${mod_id}",
   "version": "${version}",
   "name": "KNet Example",
   "description": "KNet example mod.",
@@ -13,6 +13,7 @@
     "sources": "https://github.com/Kneelawk/KNet"
   },
   "license": "MIT",
+  "icon": "assets/${mod_id}/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [

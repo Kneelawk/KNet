@@ -3,20 +3,21 @@ loaderVersion = "[1,)"
 license = "MIT"
 
 [[mods]]
-modId = "knet_example"
+modId = "${mod_id}"
 version = "${version}"
 displayName = "KNet Example"
 authors = "Kneelawk"
 description = "KNet example mod."
+logoFile = "assets/${mod_id}/icon.png"
 
-[[dependencies.knet_example]]
+[[dependencies.${mod_id}]]
 modId = "neoforge"
 type = "REQUIRED"
 versionRange = "[20.4.148-beta,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.knet_example]]
+[[dependencies.${mod_id}]]
 modId = "knet"
 type = "REQUIRED"
 versionRange = "*"

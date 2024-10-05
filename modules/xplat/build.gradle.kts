@@ -7,6 +7,7 @@ plugins {
 submodule {
     setRefmaps("knet")
     setupJavadoc()
+    xplatProjectDependency(":api")
     val common_events_version: String by project
     xplatExternalDependency { "com.kneelawk.common-events:common-events-$it:$common_events_version" }
 }

@@ -1,0 +1,179 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2024 Kneelawk.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+package com.kneelawk.knet.api;
+
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+
+import com.kneelawk.commonevents.api.Event;
+import com.kneelawk.knet.api.channel.context.PlayChannelContext;
+import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
+import com.kneelawk.knet.api.event.ChannelRegistrationCallback;
+import com.kneelawk.knet.api.event.ConnectionConfigCallback;
+import com.kneelawk.knet.api.event.KNetLoadedCallback;
+import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.impl.KNetLog;
+import com.kneelawk.knet.impl.backend.BackendManager;
+import com.kneelawk.knet.impl.payload.BlockEntityPayload;
+import com.kneelawk.knet.impl.payload.EntityPayload;
+import com.kneelawk.knet.impl.payload.ScreenHandlerPayload;
+
+/**
+ * KNet xplat public interface.
+ */
+public interface KNet {
+    /**
+     * Called by backends to ensure that all backends are loaded and users have registered listeners on their preferred backends.
+     */
+    static void load() {
+        BackendManager.load();
+    }
+
+    /**
+     * {@return the default KNet implementation}
+     */
+    static KNet getDefault() {
+        return BackendManager.getDefault();
+    }
+
+    /**
+     * {@return the default KNet implementation or null if there are no KNet implementations loaded}
+     */
+    static KNet tryGetDefault() {
+        return BackendManager.tryGetDefault();
+    }
+
+    /**
+     * Gets the KNet implementation with the given name or throws an exception if it could not be found.
+     *
+     * @param name the name of the KNet implementation to get.
+     * @return the requested KNet implementation.
+     * @throws RuntimeException if the requested KNet implementation could not be found.
+     */
+    static KNet get(String name) {
+        return BackendManager.get(name);
+    }
+
+    /**
+     * Tries to get the KNet implementation with the given name or {@code null} if it could not be found.
+     *
+     * @param name the name of the KNet implementation to get.
+     * @return the requested KNet implementation or {@code null} if it could not be found.
+     */
+    static KNet tryGet(String name) {
+        return BackendManager.tryGet(name);
+    }
+
+    /**
+     * Event fired once all KNet backends have been loaded.
+     */
+    Event<KNetLoadedCallback> LOADED =
+        Event.createSimple(KNetLoadedCallback.class, KNetLog.warn("Error in KNetLoaded event listener"));
+
+    /**
+     * Channel context used for associating a channel with a block entity
+     * so that messages can be sent between client and server instances of that block entity.
+     * <p>
+     * In order to use this in your own channel, use:
+     * <pre>{@code
+     * new ContextualChannel<>(channelId, KNet.BLOCK_ENTITY_CONTEXT.cast(MyBlockEntity.class), myPayloadCodec);
+     * }</pre>
+     */
+    PlayChannelContext<BlockEntity> BLOCK_ENTITY_CONTEXT =
+        RootPlayChannelContext.ofNetCodec("knet_block_entity", BlockEntityPayload.CODEC, (payload, ctx) -> {
+            Level level = ctx.mustGetLevel();
+            BlockEntity be = level.getBlockEntity(payload.pos());
+            if (be == null) throw new PayloadHandlingErrorException(
+                "Attempted to get block entity at: " + payload.pos() + " in " + level.dimension().location() +
+                    " but non exist at that position.");
+
+            return be;
+        }, context -> new BlockEntityPayload(context.getBlockPos()));
+
+    /**
+     * Channel context used for associating a channel with an entity
+     * so that messages can be sent between client and server instances of that entity.
+     * <p>
+     * In order to use this in your own channel, use:
+     * <pre>{@code
+     * new ContextualChannel<>(channelId, KNet.ENTITY_CONTEXT.cast(MyEntity.class), myPayloadCodec);
+     * }</pre>
+     */
+    PlayChannelContext<Entity> ENTITY_CONTEXT =
+        RootPlayChannelContext.ofNetCodec("knet_entity", EntityPayload.CODEC, (payload, ctx) -> {
+            Level level = ctx.mustGetLevel();
+            Entity entity = level.getEntity(payload.entityId());
+            if (entity == null) throw new PayloadHandlingErrorException(
+                "Attempted to get entity with id: " + payload.entityId() + " in " + level.dimension().location() +
+                    " but no entity exists with that id.");
+            return entity;
+        }, context -> new EntityPayload(context.getId()));
+
+    /**
+     * Channel context used for associating a channel with a screen handler
+     * so that messages can be sent between client and server instances of that screen handler.
+     * <p>
+     * In order to use this in your own channel, use:
+     * <pre>{@code
+     * new ContextualChannel<>(channelId, KNet.SCREEN_HANDLER_CONTEXT.cast(MyScreenHandler.class), myPayloadCodec);
+     * }</pre>
+     */
+    PlayChannelContext<AbstractContainerMenu> SCREEN_HANDLER_CONTEXT =
+        RootPlayChannelContext.ofNetCodec("knet_container", ScreenHandlerPayload.CODEC, (payload, ctx) -> {
+            Player player = ctx.mustGetPlayer();
+            AbstractContainerMenu screenHandler = player.containerMenu;
+            if (screenHandler == null) {
+                throw new PayloadHandlingErrorException(
+                    "Received screen-handler payload for player " + player.getGameProfile().getName() +
+                        " but this player does not have any current screen handler.");
+            }
+            if (screenHandler.containerId != payload.syncId()) {
+                throw new PayloadHandlingErrorException(
+                    "Received screen-handler payload for player " + player.getGameProfile().getName() +
+                        ", for a screen " + payload.syncId() + ", but the player's current screen handler is " +
+                        screenHandler.containerId);
+            }
+            return screenHandler;
+        }, context -> new ScreenHandlerPayload(context.containerId));
+
+    /**
+     * {@return this backend's channel registration events, to which listeners can be registered}
+     */
+    Event<ChannelRegistrationCallback> channelRegistration();
+
+    /**
+     * {@return this backend's config-phase connection initiation events, to which listeners can be registered}
+     */
+    Event<ConnectionConfigCallback> connectionConfig();
+
+    /**
+     * {@return the sender used by all channels, associated with this backend}
+     */
+    KNetSender getSender();
+}

@@ -15,20 +15,16 @@
   "license": "MIT",
   "icon": "assets/${mod_id}/icon.png",
   "environment": "*",
-  "entrypoints": {
-    "main": [
-      {
-        "value": "com.kneelawk.knet.fabric.impl.KNetFabricMod"
-      }
-    ]
-  },
+  "entrypoints": { },
   "mixins": [ ],
   "depends": {
     "fabricloader": ">=0.15.0",
     "fabric-api": "*",
     "minecraft": ">=1.21- <1.22-",
     "java": ">=17",
-    "common_events": "*"
+    "common_events": "*",
+    "knet_api": "*",
+    "knet_backend_fabric": "*"
   },
   "custom": {
     "modmenu": {
