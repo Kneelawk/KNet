@@ -43,7 +43,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import com.kneelawk.knet.example.KNetExample;
-import com.kneelawk.knet.fabric.api.KNetRegistrarFabric;
 
 public class KNetExampleFabric implements ModInitializer {
     public static final List<Tuple<ResourceLocation, Block>> BLOCKS = new ObjectArrayList<>();
@@ -61,8 +60,6 @@ public class KNetExampleFabric implements ModInitializer {
         register(BLOCK_TYPES, BuiltInRegistries.BLOCK_TYPE);
         register(BLOCK_ENTITY_TYPES, BuiltInRegistries.BLOCK_ENTITY_TYPE);
         register(SCREEN_HANDLERS, BuiltInRegistries.MENU);
-
-        KNetExample.registerChannels(new KNetRegistrarFabric());
     }
 
     private static <T> void register(List<Tuple<ResourceLocation, T>> list, Registry<T> registry) {

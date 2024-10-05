@@ -27,7 +27,6 @@ package com.kneelawk.knet.example.neoforge;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import com.mojang.serialization.MapCodec;
@@ -38,11 +37,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import com.kneelawk.knet.example.KNetExample;
-import com.kneelawk.knet.neoforge.api.KNetRegistrarNeoForge;
 
 @Mod(KNetExample.MOD_ID)
 public class KNetExampleNeoForge {
-    public static final String NETWORK_VERSION = "1";
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(KNetExample.MOD_ID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(KNetExample.MOD_ID);
     public static final DeferredRegister<MapCodec<? extends Block>> BLOCK_TYPES =
@@ -60,11 +57,5 @@ public class KNetExampleNeoForge {
         BLOCK_TYPES.register(modBus);
         BLOCK_ENTITY_TYPES.register(modBus);
         SCREEN_HANDLERS.register(modBus);
-
-        modBus.addListener(this::onRegisterPayloadHandler);
-    }
-
-    private void onRegisterPayloadHandler(RegisterPayloadHandlersEvent event) {
-        KNetExample.registerChannels(new KNetRegistrarNeoForge(event.registrar(NETWORK_VERSION)));
     }
 }

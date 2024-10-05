@@ -30,20 +30,27 @@ import net.minecraft.resources.ResourceLocation;
 import com.kneelawk.commonevents.api.Listen;
 import com.kneelawk.commonevents.api.Scan;
 import com.kneelawk.knet.api.channel.NoContextConfigChannel;
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
+import com.kneelawk.knet.api.event.KNetLoadedCallback;
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 import com.kneelawk.knet.example.KNetExample;
 
 @Scan
 public class NetEventListeners {
+    public static final String NETWORK_VERSION = "1";
     public static final ResourceLocation PING_PONG_TASK = KNetExample.id("ping_pong");
     public static final NoContextConfigChannel<PingPongPayload> CONFIG_CHANNEL =
         NoContextConfigChannel.of(PingPongPayload.ID, PingPongPayload.CODEC).recvClient(
             NetEventListeners::receiveClient).recvServer(NetEventListeners::receiveServer);
 
-    @Listen(ConnectionConfigCallback.class)
-    public static void enqueueTasks(ConnectionConfigTaskQueue queue) {
+    @Listen(KNetLoadedCallback.class)
+    public static void onLoad(KNetLoadedCallback.Context ctx) {
+        ctx.getDefault().channelRegistration()
+            .register(ctx1 -> KNetExample.registerChannels(ctx1.getRegistrar(KNetExample.MOD_ID, NETWORK_VERSION)));
+        ctx.getDefault().connectionConfig().register(NetEventListeners::enqueueTasks);
+    }
+
+    private static void enqueueTasks(ConnectionConfigTaskQueue queue) {
         KNetExample.LOGGER.info("Enqueueing configuration tasks...");
         queue.enqueue(PING_PONG_TASK, sender -> {
             KNetExample.LOGGER.info("Server sending config payload...");
