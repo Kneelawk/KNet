@@ -51,6 +51,7 @@ public class KNetFabricMod implements ModInitializer {
 
         ServerConfigurationConnectionEvents.CONFIGURE.register(
             (handler, server) -> {
+                KNBFLog.LOG.info("Starting config tasks...");
                 FabricConfigTaskQueue queue = new FabricConfigTaskQueue(handler);
                 KNet.load();
                 FabricKNet.INSTANCE.connectionConfig().invoker().enqueueTasks(queue);

@@ -80,6 +80,9 @@ val mojmap = true
 val fabric = true
 val neoforge = true
 
+val badpackets_enabled: String by settings
+val badPackets = badpackets_enabled.toBoolean()
+
 module(xplat, "xplat")
 module(mojmap, "xplat-mojmap")
 module(fabric, "fabric")
@@ -92,6 +95,11 @@ module(neoforge, "api-neoforge")
 
 module(fabric, "backend-fabric")
 module(neoforge, "backend-neoforge")
+
+module(xplat && badPackets, "backend-badpackets-xplat")
+module(mojmap && badPackets, "backend-badpackets-xplat-mojmap")
+module(fabric && badPackets, "backend-badpackets-fabric")
+module(neoforge && badPackets, "backend-badpackets-neoforge")
 
 example(xplat, "simple-xplat")
 example(fabric, "simple-fabric")

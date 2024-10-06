@@ -51,6 +51,7 @@ public class KNetNeoForgeMod {
     }
 
     private void onRegisterConfigurationTasks(RegisterConfigurationTasksEvent event) {
+        KNBNFLog.LOG.info("Starting config tasks...");
         NeoForgeConfigTaskQueue queue = new NeoForgeConfigTaskQueue(event);
         KNet.load();
         NeoForgeKNet.INSTANCE.connectionConfig().invoker().enqueueTasks(queue);

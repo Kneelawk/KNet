@@ -23,5 +23,4 @@
 #
 #
 
-submodule.platform = xplat
-mod_id = knet_api
+com.kneelawk.knet.backend.badpackets.neoforge.impl.PlatformImpl

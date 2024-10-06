@@ -2,12 +2,15 @@ modLoader = "javafml"
 loaderVersion = "[1,)"
 license = "MIT"
 
+[[mixins]]
+config = "knet_backend_badpackets.xplat.mixins.json"
+
 [[mods]]
 modId = "${mod_id}"
 version = "${version}"
-displayName = "KNet"
+displayName = "KNet BadPackets Backend"
 authors = "Kneelawk"
-description = "Kneelawk's networking abstraction and utilities."
+description = "KNet Optional BadPackets Backend."
 logoFile = "assets/${mod_id}/icon.png"
 
 [[dependencies.${mod_id}]]
@@ -20,20 +23,6 @@ side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "knet_api"
 type = "REQUIRED"
-versionRange = "[1,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.${mod_id}]]
-modId = "knet_backend_neoforge"
-type = "REQUIRED"
-versionRange = "[1,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.${mod_id}]]
-modId = "knet_backend_badpackets"
-type = "REQUIRED"
-versionRange = "[1,)"
+versionRange = "[1.1,)"
 ordering = "NONE"
 side = "BOTH"

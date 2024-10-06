@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "${mod_id}",
   "version": "${version}",
-  "name": "KNet",
-  "description": "Kneelawk's networking abstraction and utilities.",
+  "name": "KNet BadPackets Backend",
+  "description": "KNet Optional BadPackets Backend.",
   "authors": [
     "Kneelawk"
   ],
@@ -15,21 +15,26 @@
   "license": "MIT",
   "icon": "assets/${mod_id}/icon.png",
   "environment": "*",
-  "entrypoints": { },
-  "mixins": [ ],
+  "entrypoints": {
+    "main": [
+      "com.kneelawk.knet.backend.badpackets.fabric.impl.FabricMod"
+    ]
+  },
+  "mixins": [
+    "knet_backend_badpackets.xplat.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.15.0",
     "fabric-api": "*",
+    "knet_api": "*",
     "minecraft": ">=1.21- <1.22-",
     "java": ">=17",
-    "common_events": "*",
-    "knet_api": "*",
-    "knet_backend_fabric": "*",
-    "knet_backend_badpackets": "*"
+    "common_events": "*"
   },
   "custom": {
     "modmenu": {
-      "badges": [ "library" ]
+      "badges": [ "library" ],
+      "parent": "knet"
     }
   }
 }
