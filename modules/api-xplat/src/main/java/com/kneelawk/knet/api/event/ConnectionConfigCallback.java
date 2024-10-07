@@ -25,8 +25,6 @@
 
 package com.kneelawk.knet.api.event;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.resources.ResourceLocation;
 
 import com.kneelawk.commonevents.api.Event;
@@ -59,5 +57,5 @@ public interface ConnectionConfigCallback {
      *
      * @param queue the queue to add tasks to.
      */
-    void enqueueTasks(@NotNull ConnectionConfigTaskQueue queue);
+    void enqueueTasks(ConnectionConfigTaskQueue queue);
 }

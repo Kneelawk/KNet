@@ -25,8 +25,6 @@
 
 package com.kneelawk.knet.api.channel.context;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 
 /**
@@ -44,6 +42,5 @@ public interface ChildContextFinder<PARENT, CHILD> {
      * @throws PayloadHandlingException if an error occurs while getting the child context, like if the parent is in an
      *                                  invalid state.
      */
-    @NotNull
-    CHILD getChild(@NotNull PARENT parent) throws PayloadHandlingException;
+    CHILD getChild(PARENT parent) throws PayloadHandlingException;
 }

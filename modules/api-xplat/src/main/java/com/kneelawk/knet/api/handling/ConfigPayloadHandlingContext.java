@@ -25,8 +25,6 @@
 
 package com.kneelawk.knet.api.handling;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
 
@@ -41,7 +39,7 @@ public interface ConfigPayloadHandlingContext extends PayloadHandlingContext {
      *
      * @param taskId the id of the task that has been completed.
      */
-    void completeTask(@NotNull ResourceLocation taskId);
+    void completeTask(ResourceLocation taskId);
 
     /**
      * Marks the given task as completed, so that the configuration can continue with the next task.

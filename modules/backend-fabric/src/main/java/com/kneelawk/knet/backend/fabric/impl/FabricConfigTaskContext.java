@@ -27,8 +27,6 @@ package com.kneelawk.knet.backend.fabric.impl;
 
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 
 import net.minecraft.network.chat.Component;
@@ -49,7 +47,7 @@ public record FabricConfigTaskContext(ServerConfigurationPacketListenerImpl hand
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         handler.disconnect(message);
     }
 

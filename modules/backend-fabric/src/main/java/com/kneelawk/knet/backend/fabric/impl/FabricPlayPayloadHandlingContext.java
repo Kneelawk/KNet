@@ -27,8 +27,6 @@ package com.kneelawk.knet.backend.fabric.impl;
 
 import java.util.concurrent.Executor;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import net.minecraft.network.chat.Component;
@@ -40,7 +38,7 @@ import com.kneelawk.knet.api.util.ServerAccess;
 
 public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx) implements PlayPayloadHandlingContext {
     @Override
-    public @NotNull Executor getExecutor() {
+    public Executor getExecutor() {
         // Fabric currently invokes the handlers on the main thread, but I'm not sure if that's part of the API contract.
         // Client and server executors will run immediately if on the main thread.
         Executor executor = ServerAccess.tryGetServer();
@@ -54,7 +52,7 @@ public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx)
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         ctx.responseSender().disconnect(message);
     }
 

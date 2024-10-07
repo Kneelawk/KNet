@@ -27,8 +27,11 @@ KNet is a cross-platform Minecraft networking abstraction and utility library.
 KNet is inspired by [LibNetworkStack], but fundamentally different in some key ways:
 
 * KNet is much more just intended to be an abstraction layer rather than a complete networking overhaul like LNS is.
-* KNet uses Minecraft's [CustomPacketPayload]s instead of passing [FriendlyByteBuf]s to users directly. This is more in-line
-  with the way Minecraft expects you to do things and will likely work better with future Minecraft code changes.
+* KNet uses Minecraft's [CustomPacketPayload]s instead of passing [FriendlyByteBuf]s to users directly. This is more
+  in-line with the way Minecraft expects you to do things and will likely work better with future Minecraft code
+  changes.
+* Support for multiple 'backends'. These backends then operate on different platforms and depending on which libraries
+  are present.
 
 [LibNetworkStack]: https://github.com/AlexIIL/LibNetworkStack
 

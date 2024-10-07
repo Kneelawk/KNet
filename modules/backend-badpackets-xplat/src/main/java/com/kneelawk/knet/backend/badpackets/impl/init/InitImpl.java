@@ -27,8 +27,6 @@ package com.kneelawk.knet.backend.badpackets.impl.init;
 
 import lol.bai.badpackets.api.config.ConfigPackets;
 
-import net.minecraft.resources.ResourceLocation;
-
 import com.kneelawk.knet.backend.badpackets.impl.KNBPLog;
 
 public class InitImpl implements Init {

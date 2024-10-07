@@ -26,8 +26,6 @@
 package com.kneelawk.knet.api.channel.context;
 
 
-import org.jetbrains.annotations.NotNull;
-
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
@@ -47,6 +45,5 @@ public interface PlayContextDecoder<C, P> {
      * @return the decoded payload context.
      * @throws PayloadHandlingException if an error occurs.
      */
-    @NotNull
-    C decode(@NotNull P payload, @NotNull PlayPayloadHandlingContext ctx) throws PayloadHandlingException;
+    C decode(P payload, PlayPayloadHandlingContext ctx) throws PayloadHandlingException;
 }

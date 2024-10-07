@@ -27,7 +27,6 @@ package com.kneelawk.knet.backend.fabric.impl.client;
 
 import java.util.concurrent.Executor;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -42,7 +41,7 @@ import com.kneelawk.knet.backend.fabric.impl.proxy.CommonProxy;
 public record ClientFabricPlayPayloadHandlingContext(ClientPlayNetworking.Context ctx) implements
     PlayPayloadHandlingContext {
     @Override
-    public @NotNull Executor getExecutor() {
+    public Executor getExecutor() {
         // Fabric currently invokes the handlers on the main thread, but I'm not sure if that's part of the API contract.
         // Client and server executors will run immediately if on the main thread.
         return CommonProxy.getInstance().getClientExecutor();
@@ -54,7 +53,7 @@ public record ClientFabricPlayPayloadHandlingContext(ClientPlayNetworking.Contex
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         ctx.responseSender().disconnect(message);
     }
 

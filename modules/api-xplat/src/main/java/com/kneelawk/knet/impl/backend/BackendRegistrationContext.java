@@ -4,8 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.kneelawk.knet.api.backend.BackendRegistrationCallback;
 import com.kneelawk.knet.api.backend.KNetBackend;
 
@@ -13,7 +11,7 @@ public class BackendRegistrationContext implements BackendRegistrationCallback.C
     private final Map<String, KNetBackend> renderers = new LinkedHashMap<>();
 
     @Override
-    public void registerBackend(@NotNull KNetBackend backend) {
+    public void registerBackend(KNetBackend backend) {
         Objects.requireNonNull(backend, "backend should never be null");
 
         if (renderers.containsKey(backend.getName())) {

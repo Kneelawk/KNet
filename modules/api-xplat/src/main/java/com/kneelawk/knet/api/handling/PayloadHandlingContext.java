@@ -27,8 +27,6 @@ package com.kneelawk.knet.api.handling;
 
 import java.util.concurrent.Executor;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.kneelawk.knet.api.util.PayloadConnection;
 
 /**
@@ -43,6 +41,5 @@ public interface PayloadHandlingContext extends PayloadConnection {
      *
      * @return the main-thread executor.
      */
-    @NotNull
     Executor getExecutor();
 }

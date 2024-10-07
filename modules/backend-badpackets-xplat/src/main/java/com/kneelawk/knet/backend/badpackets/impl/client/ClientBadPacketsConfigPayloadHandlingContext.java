@@ -27,8 +27,6 @@ package com.kneelawk.knet.backend.badpackets.impl.client;
 
 import java.util.concurrent.Executor;
 
-import org.jetbrains.annotations.NotNull;
-
 import lol.bai.badpackets.api.config.ClientConfigContext;
 
 import net.minecraft.network.chat.Component;
@@ -40,17 +38,17 @@ import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 public record ClientBadPacketsConfigPayloadHandlingContext(ClientConfigContext context)
     implements ConfigPayloadHandlingContext {
     @Override
-    public void completeTask(@NotNull ResourceLocation taskId) {
+    public void completeTask(ResourceLocation taskId) {
         throw new UnsupportedOperationException("Configuration tasks cannot be completed from the client.");
     }
 
     @Override
-    public @NotNull Executor getExecutor() {
+    public Executor getExecutor() {
         return context.client();
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         context.disconnect(message);
     }
 

@@ -25,7 +25,6 @@
 
 package com.kneelawk.knet.api.channel.context;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
@@ -55,8 +54,8 @@ public class CastPlayChannelContext<FROM, TO> implements PlayChannelContext<TO> 
      * @return a new cast channel context.
      */
     public static <FROM, TO> CastPlayChannelContext<FROM, TO> of(@Nullable String prefix,
-                                                                 @NotNull PlayChannelContext<FROM> parentChannelContext,
-                                                                 @NotNull Class<TO> toClass) {
+                                                                 PlayChannelContext<FROM> parentChannelContext,
+                                                                 Class<TO> toClass) {
         return new CastPlayChannelContext<>(prefix, parentChannelContext, toClass);
     }
 
@@ -69,13 +68,13 @@ public class CastPlayChannelContext<FROM, TO> implements PlayChannelContext<TO> 
      * @param <TO>                 the child to cast into.
      * @return a new cast channel context.
      */
-    public static <FROM, TO> CastPlayChannelContext<FROM, TO> of(@NotNull PlayChannelContext<FROM> parentChannelContext,
-                                                                 @NotNull Class<TO> toClass) {
+    public static <FROM, TO> CastPlayChannelContext<FROM, TO> of(PlayChannelContext<FROM> parentChannelContext,
+                                                                 Class<TO> toClass) {
         return new CastPlayChannelContext<>(null, parentChannelContext, toClass);
     }
 
-    private CastPlayChannelContext(@Nullable String prefix, @NotNull PlayChannelContext<FROM> parentChannelContext,
-                                   @NotNull Class<TO> toClass) {
+    private CastPlayChannelContext(@Nullable String prefix, PlayChannelContext<FROM> parentChannelContext,
+                                   Class<TO> toClass) {
         this.prefix = prefix;
         this.parentChannelContext = parentChannelContext;
         this.toClass = toClass;
@@ -96,17 +95,17 @@ public class CastPlayChannelContext<FROM, TO> implements PlayChannelContext<TO> 
     }
 
     @Override
-    public @NotNull Object decodePayload(@NotNull NetRegistryByteBuf buf) {
+    public Object decodePayload(NetRegistryByteBuf buf) {
         return parentChannelContext.decodePayload(buf);
     }
 
     @Override
-    public void encodePayload(@NotNull Object payload, @NotNull NetRegistryByteBuf buf) {
+    public void encodePayload(Object payload, NetRegistryByteBuf buf) {
         parentChannelContext.encodePayload(payload, buf);
     }
 
     @Override
-    public @NotNull TO decodeContext(@NotNull Object payload, @NotNull PlayPayloadHandlingContext ctx)
+    public TO decodeContext(Object payload, PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         FROM from = parentChannelContext.decodeContext(payload, ctx);
         try {
@@ -120,7 +119,7 @@ public class CastPlayChannelContext<FROM, TO> implements PlayChannelContext<TO> 
 
     @Override
     @SuppressWarnings("unchecked") // not technically safe, but whatever
-    public @NotNull Object encodeContext(@NotNull TO context) {
+    public Object encodeContext(TO context) {
         return parentChannelContext.encodeContext((FROM) context);
     }
 }

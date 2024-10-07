@@ -29,8 +29,6 @@ import java.util.concurrent.Executor;
 
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
@@ -39,17 +37,17 @@ import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
 public record NeoForgePlayPayloadHandlingContext(IPayloadContext ctx) implements PlayPayloadHandlingContext {
     @Override
-    public @NotNull Executor getExecutor() {
+    public Executor getExecutor() {
         return ctx::enqueueWork;
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return ctx.player();
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         ctx.disconnect(message);
     }
 

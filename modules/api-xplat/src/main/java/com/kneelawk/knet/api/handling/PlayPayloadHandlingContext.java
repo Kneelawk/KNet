@@ -25,7 +25,6 @@
 
 package com.kneelawk.knet.api.handling;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.world.entity.player.Player;
@@ -63,7 +62,7 @@ public interface PlayPayloadHandlingContext extends PayloadHandlingContext {
      * @return the receiver player.
      * @throws PayloadHandlingException if this payload was received without a player to receive it.
      */
-    default @NotNull Player mustGetPlayer() throws PayloadHandlingException {
+    default Player mustGetPlayer() throws PayloadHandlingException {
         Player player = getPlayer();
         if (player == null) throw new PayloadHandlingErrorException("No player associated with this payload.");
         return player;
@@ -75,7 +74,7 @@ public interface PlayPayloadHandlingContext extends PayloadHandlingContext {
      * @return the level where this payload was received.
      * @throws PayloadHandlingException if this payload was received without a level where it was received.
      */
-    default @NotNull Level mustGetLevel() throws PayloadHandlingException {
+    default Level mustGetLevel() throws PayloadHandlingException {
         Level level = getLevel();
         if (level == null) throw new PayloadHandlingErrorException("No level associated with this payload.");
         return level;

@@ -25,8 +25,6 @@
 
 package com.kneelawk.knet.api.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,7 +46,7 @@ public interface PayloadConnection extends PayloadSender {
     static PayloadConnection ofPlayer(KNet knet, ServerPlayer player) {
         return new PayloadConnection() {
             @Override
-            public void disconnect(@NotNull Component message) {
+            public void disconnect(Component message) {
                 player.connection.disconnect(message);
             }
 
@@ -78,7 +76,7 @@ public interface PayloadConnection extends PayloadSender {
     static PayloadConnection ofPlayToServer(KNet knet) {
         return new PayloadConnection() {
             @Override
-            public void disconnect(@NotNull Component message) {
+            public void disconnect(Component message) {
                 knet.getSender().disconnectFromServer(message);
             }
 
@@ -104,7 +102,7 @@ public interface PayloadConnection extends PayloadSender {
      *
      * @param message the message for the client to display when disconnected.
      */
-    void disconnect(@NotNull Component message);
+    void disconnect(Component message);
 
     /**
      * Gets whether the receiving end of this connection has declared the ability to receive on the given channel.

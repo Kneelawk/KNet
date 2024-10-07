@@ -25,8 +25,6 @@
 
 package com.kneelawk.knet.api.phase.config;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +48,7 @@ public interface ConnectionConfigTaskQueue {
      * @param channel the channel to check if the receiver has.
      * @return {@code true} if the client has declared the ability to receive on the given channel.
      */
-    boolean clientHasChannel(@NotNull CustomPacketPayload.Type<?> channel);
+    boolean clientHasChannel(CustomPacketPayload.Type<?> channel);
 
     /**
      * Gets whether the client has declared the ability to receive on the given channel.
@@ -58,7 +56,7 @@ public interface ConnectionConfigTaskQueue {
      * @param channel the channel to check if the receiver has.
      * @return {@code true} if the client has declared the ability to receive on the given channel.
      */
-    default boolean clientHasChannel(@NotNull Channel channel) {
+    default boolean clientHasChannel(Channel channel) {
         return clientHasChannel(channel.getId());
     }
 
@@ -67,7 +65,7 @@ public interface ConnectionConfigTaskQueue {
      *
      * @param message the message to display when the client is disconnected.
      */
-    void disconnect(@NotNull Component message);
+    void disconnect(Component message);
 
     /**
      * Enqueues a raw {@link ConfigurationTask} task.
@@ -78,7 +76,7 @@ public interface ConnectionConfigTaskQueue {
      *
      * @param task the task to enqueue.
      */
-    void enqueueRaw(@NotNull ConfigurationTask task);
+    void enqueueRaw(ConfigurationTask task);
 
     /**
      * Enqueues the given task with the given id.
@@ -89,7 +87,7 @@ public interface ConnectionConfigTaskQueue {
      * @param taskId the id of the task to enqueue.
      * @param task   the task to enqueue.
      */
-    default void enqueue(@NotNull ResourceLocation taskId, @NotNull ConnectionConfigTask task) {
+    default void enqueue(ResourceLocation taskId, ConnectionConfigTask task) {
         enqueueRaw(new ConnectionConfigTaskWrapper(new ConfigurationTask.Type(taskId.toString()), task));
     }
 
@@ -98,14 +96,14 @@ public interface ConnectionConfigTaskQueue {
      *
      * @param taskId the id of the task that has been completed.
      */
-    void completeTask(@NotNull ConfigurationTask.Type taskId);
+    void completeTask(ConfigurationTask.Type taskId);
 
     /**
      * Marks the given task as completed, so that the configuration can continue with the next task.
      *
      * @param taskId the id of the task that has been completed.
      */
-    default void completeTask(@NotNull ResourceLocation taskId) {
+    default void completeTask(ResourceLocation taskId) {
         completeTask(new ConfigurationTask.Type(taskId.toString()));
     }
 }

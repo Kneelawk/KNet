@@ -23,21 +23,15 @@
  *
  */
 
-package com.kneelawk.knet.api.channel.context;
-
 /**
- * Encodes context into a payload.
- *
- * @param <C> the context to encode.
- * @param <P> the payload that represents the context.
+ * KNet backend package, used by backends to register themselves.
  */
-@FunctionalInterface
-public interface ContextEncoder<C, P> {
-    /**
-     * Encodes context into a payload.
-     *
-     * @param context the context to encode.
-     * @return a payload that represents the context.
-     */
-    P encode(C context);
-}
+@FieldsAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+package com.kneelawk.knet.api.backend;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import net.minecraft.FieldsAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;

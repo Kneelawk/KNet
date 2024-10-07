@@ -25,7 +25,6 @@
 
 package com.kneelawk.knet.api.channel.context;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
@@ -57,8 +56,9 @@ public class SimpleChildPlayChannelContext<PARENT, CHILD> implements PlayChannel
      * @param <CHILD>              the child context to extract.
      * @return a new simple child channel context.
      */
-    public static <PARENT, CHILD> SimpleChildPlayChannelContext<PARENT, CHILD> of(@Nullable String prefix, @NotNull
-    PlayChannelContext<PARENT> parentChannelContext, @NotNull ChildContextFinder<PARENT, CHILD> childFinder, @NotNull
+    public static <PARENT, CHILD> SimpleChildPlayChannelContext<PARENT, CHILD> of(@Nullable String prefix,
+                                                                                  PlayChannelContext<PARENT> parentChannelContext,
+                                                                                  ChildContextFinder<PARENT, CHILD> childFinder,
                                                                                   ParentContextFinder<PARENT, CHILD> parentFinder) {
         return new SimpleChildPlayChannelContext<>(prefix, parentChannelContext, childFinder, parentFinder);
     }
@@ -74,9 +74,9 @@ public class SimpleChildPlayChannelContext<PARENT, CHILD> implements PlayChannel
      * @return a new simple child channel context.
      */
     public static <PARENT, CHILD> SimpleChildPlayChannelContext<PARENT, CHILD> of(
-        @NotNull PlayChannelContext<PARENT> parentChannelContext,
-        @NotNull ChildContextFinder<PARENT, CHILD> childFinder,
-        @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+        PlayChannelContext<PARENT> parentChannelContext,
+        ChildContextFinder<PARENT, CHILD> childFinder,
+        ParentContextFinder<PARENT, CHILD> parentFinder) {
         return new SimpleChildPlayChannelContext<>(null, parentChannelContext, childFinder, parentFinder);
     }
 
@@ -104,23 +104,23 @@ public class SimpleChildPlayChannelContext<PARENT, CHILD> implements PlayChannel
     }
 
     @Override
-    public @NotNull Object decodePayload(@NotNull NetRegistryByteBuf buf) {
+    public Object decodePayload(NetRegistryByteBuf buf) {
         return parentChannelContext.decodePayload(buf);
     }
 
     @Override
-    public void encodePayload(@NotNull Object payload, @NotNull NetRegistryByteBuf buf) {
+    public void encodePayload(Object payload, NetRegistryByteBuf buf) {
         parentChannelContext.encodePayload(payload, buf);
     }
 
     @Override
-    public @NotNull CHILD decodeContext(@NotNull Object payload, @NotNull PlayPayloadHandlingContext ctx)
+    public CHILD decodeContext(Object payload, PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         return childFinder.getChild(parentChannelContext.decodeContext(payload, ctx));
     }
 
     @Override
-    public @NotNull Object encodeContext(@NotNull CHILD context) {
+    public Object encodeContext(CHILD context) {
         return parentChannelContext.encodeContext(parentFinder.getParent(context));
     }
 }

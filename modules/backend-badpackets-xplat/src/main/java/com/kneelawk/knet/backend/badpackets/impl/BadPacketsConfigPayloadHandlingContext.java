@@ -27,8 +27,6 @@ package com.kneelawk.knet.backend.badpackets.impl;
 
 import java.util.concurrent.Executor;
 
-import org.jetbrains.annotations.NotNull;
-
 import lol.bai.badpackets.api.config.ServerConfigContext;
 
 import net.minecraft.network.chat.Component;
@@ -41,12 +39,12 @@ public record BadPacketsConfigPayloadHandlingContext(ServerConfigContext context
     implements ConfigPayloadHandlingContext {
 
     @Override
-    public @NotNull Executor getExecutor() {
+    public Executor getExecutor() {
         return context.server();
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         context.handler().disconnect(message);
     }
 
@@ -61,7 +59,7 @@ public record BadPacketsConfigPayloadHandlingContext(ServerConfigContext context
     }
 
     @Override
-    public void completeTask(@NotNull ResourceLocation taskId) {
+    public void completeTask(ResourceLocation taskId) {
         context.finishTask(taskId);
     }
 }

@@ -28,8 +28,6 @@ package com.kneelawk.knet.api.channel;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -62,8 +60,7 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param <P>   the type of payload.
      * @return a new context-less channel.
      */
-    public static <P extends CustomPacketPayload> NoContextConfigChannel<P> of(@NotNull CustomPacketPayload.Type<P> id,
-                                                                               @NotNull
+    public static <P extends CustomPacketPayload> NoContextConfigChannel<P> of(CustomPacketPayload.Type<P> id,
                                                                                StreamCodec<? super NetByteBuf, P> codec) {
         return new NoContextConfigChannel<>(id, codec);
     }
@@ -81,7 +78,7 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextConfigChannel<P> recvOffThreadClient(@NotNull NoContextConfigPayloadHandler<P> handler) {
+    public NoContextConfigChannel<P> recvOffThreadClient(NoContextConfigPayloadHandler<P> handler) {
         clientHandler = debugWrap(handler);
         return this;
     }
@@ -94,7 +91,7 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextConfigChannel<P> recvOffThreadServer(@NotNull NoContextConfigPayloadHandler<P> handler) {
+    public NoContextConfigChannel<P> recvOffThreadServer(NoContextConfigPayloadHandler<P> handler) {
         serverHandler = debugWrap(handler);
         return this;
     }
@@ -107,7 +104,7 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextConfigChannel<P> recvOffThreadBoth(@NotNull NoContextConfigPayloadHandler<P> handler) {
+    public NoContextConfigChannel<P> recvOffThreadBoth(NoContextConfigPayloadHandler<P> handler) {
         serverHandler = clientHandler = debugWrap(handler);
         return this;
     }
@@ -120,7 +117,7 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextConfigChannel<P> recvClient(@NotNull NoContextConfigPayloadHandler<P> handler) {
+    public NoContextConfigChannel<P> recvClient(NoContextConfigPayloadHandler<P> handler) {
         clientHandler = sync(handler);
         return this;
     }
@@ -133,7 +130,7 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextConfigChannel<P> recvServer(@NotNull NoContextConfigPayloadHandler<P> handler) {
+    public NoContextConfigChannel<P> recvServer(NoContextConfigPayloadHandler<P> handler) {
         serverHandler = sync(handler);
         return this;
     }
@@ -146,7 +143,7 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextConfigChannel<P> recvBoth(@NotNull NoContextConfigPayloadHandler<P> handler) {
+    public NoContextConfigChannel<P> recvBoth(NoContextConfigPayloadHandler<P> handler) {
         serverHandler = clientHandler = sync(handler);
         return this;
     }
@@ -201,7 +198,7 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param payload the payload to send.
      */
     @Override
-    public void send(@NotNull PayloadSender sender, @NotNull P payload) {
+    public void send(PayloadSender sender, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, sender.toString(), payload);
@@ -216,7 +213,7 @@ public class NoContextConfigChannel<P extends CustomPacketPayload> implements Co
      * @param payload the payload to send.
      */
     @Override
-    public void sendToSenders(@NotNull Collection<PayloadSender> senders, @NotNull P payload) {
+    public void sendToSenders(Collection<PayloadSender> senders, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id,

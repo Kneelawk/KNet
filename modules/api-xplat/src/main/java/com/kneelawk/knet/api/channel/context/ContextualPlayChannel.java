@@ -28,8 +28,6 @@ package com.kneelawk.knet.api.channel.context;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -84,8 +82,8 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param <P>            the payload type.
      * @return a new contextual channel.
      */
-    public static <C, P> ContextualPlayChannel<C, P> ofNetCodec(@NotNull ResourceLocation id,
-                                                                @NotNull PlayChannelContext<C> channelContext, @NotNull
+    public static <C, P> ContextualPlayChannel<C, P> ofNetCodec(ResourceLocation id,
+                                                                PlayChannelContext<C> channelContext,
                                                                 StreamCodec<? super RegistryNetByteBuf, P> codec) {
         return new ContextualPlayChannel<>(id, channelContext, codec.mapStream(NetBufs::registryNetOf));
     }
@@ -100,15 +98,14 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param <P>            the payload type.
      * @return a new contextual channel.
      */
-    public static <C, P> ContextualPlayChannel<C, P> ofRegistryCodec(@NotNull ResourceLocation id,
-                                                                     @NotNull PlayChannelContext<C> channelContext,
-                                                                     @NotNull
+    public static <C, P> ContextualPlayChannel<C, P> ofRegistryCodec(ResourceLocation id,
+                                                                     PlayChannelContext<C> channelContext,
                                                                      StreamCodec<? super NetRegistryByteBuf, P> codec) {
         return new ContextualPlayChannel<>(id, channelContext, codec);
     }
 
-    private ContextualPlayChannel(@NotNull ResourceLocation id, @NotNull PlayChannelContext<C> channelContext,
-                                  @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec) {
+    private ContextualPlayChannel(ResourceLocation id, PlayChannelContext<C> channelContext,
+                                  StreamCodec<? super NetRegistryByteBuf, P> codec) {
         String prefix = channelContext.getChannelIdPrefix();
         if (prefix != null) {
             this.id = new CustomPacketPayload.Type<>(id.withPrefix(prefix + "/"));
@@ -127,7 +124,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param handler the payload handler.
      * @return this.
      */
-    public @NotNull ContextualPlayChannel<C, P> recvClient(@NotNull ContextualPlayPayloadHandler<C, P> handler) {
+    public ContextualPlayChannel<C, P> recvClient(ContextualPlayPayloadHandler<C, P> handler) {
         clientHandler = handler;
         return this;
     }
@@ -140,7 +137,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param handler the payload handler.
      * @return this.
      */
-    public @NotNull ContextualPlayChannel<C, P> recvServer(@NotNull ContextualPlayPayloadHandler<C, P> handler) {
+    public ContextualPlayChannel<C, P> recvServer(ContextualPlayPayloadHandler<C, P> handler) {
         serverHandler = handler;
         return this;
     }
@@ -153,7 +150,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param handler the payload handler.
      * @return this.
      */
-    public @NotNull ContextualPlayChannel<C, P> recvBoth(@NotNull ContextualPlayPayloadHandler<C, P> handler) {
+    public ContextualPlayChannel<C, P> recvBoth(ContextualPlayPayloadHandler<C, P> handler) {
         serverHandler = clientHandler = handler;
         return this;
     }
@@ -164,7 +161,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToAll(@NotNull C context, @NotNull P payload) {
+    public void sendToAll(C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "all", toSend);
@@ -179,7 +176,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void send(@NotNull Player player, @NotNull C context, @NotNull P payload) {
+    public void send(Player player, C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, player.getGameProfile().getName(), toSend);
@@ -194,7 +191,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToPlayers(@NotNull Collection<ServerPlayer> players, @NotNull C context, @NotNull P payload) {
+    public void sendToPlayers(Collection<ServerPlayer> players, C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, players.stream().map(player -> player.getGameProfile().getName())
@@ -210,7 +207,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void send(@NotNull PayloadSender sender, @NotNull C context, @NotNull P payload) {
+    public void send(PayloadSender sender, C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, sender.toString(), toSend);
@@ -225,7 +222,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToSenders(@NotNull Collection<PayloadSender> senders, @NotNull C context, @NotNull P payload) {
+    public void sendToSenders(Collection<PayloadSender> senders, C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id,
@@ -242,7 +239,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToServer(@NotNull C context, @NotNull P payload) {
+    public void sendToServer(C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "server", toSend);
@@ -257,7 +254,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToDimension(@NotNull ServerLevel dim, @NotNull C context, @NotNull P payload) {
+    public void sendToDimension(ServerLevel dim, C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "dimension " + dim.dimension().location(), toSend);
@@ -272,7 +269,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull Entity entity, @NotNull C context, @NotNull P payload) {
+    public void sendToTracking(Entity entity, C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking entity " + entity, toSend);
@@ -287,7 +284,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToTrackingAndSelf(@NotNull Entity entity, @NotNull C context, @NotNull P payload) {
+    public void sendToTrackingAndSelf(Entity entity, C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking entity " + entity + " and self", toSend);
@@ -303,8 +300,8 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull ServerLevel level, @NotNull ChunkPos pos, @NotNull C context,
-                               @NotNull P payload) {
+    public void sendToTracking(ServerLevel level, ChunkPos pos, C context,
+                               P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking chunk " + pos, toSend);
@@ -319,7 +316,7 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload.
      */
-    public void sendToTracking(@NotNull BlockEntity be, @NotNull C context, @NotNull P payload) {
+    public void sendToTracking(BlockEntity be, C context, P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking block-entity " + be + " @ " + be.getBlockPos(), toSend);
@@ -335,8 +332,8 @@ public class ContextualPlayChannel<C, P> implements PlayChannel {
      * @param context the context to send.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull C context,
-                               @NotNull P payload) {
+    public void sendToTracking(ServerLevel level, BlockPos pos, C context,
+                               P payload) {
         Payload toSend = payload(context, payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking pos " + pos, toSend);

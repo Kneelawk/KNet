@@ -13,7 +13,7 @@ authors = "Kneelawk"
 description = "Kneelawk's networking abstraction and utilities API."
 logoFile = "assets/${mod_id}/icon.png"
 
-[[dependencies.${mod_id}]]
+[[dependencies.${ mod_id }]]
 modId = "neoforge"
 type = "REQUIRED"
 versionRange = "[20.4.148-beta,)"

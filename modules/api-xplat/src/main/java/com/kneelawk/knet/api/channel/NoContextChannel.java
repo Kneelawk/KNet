@@ -27,8 +27,6 @@ package com.kneelawk.knet.api.channel;
 
 import java.util.Collection;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import com.kneelawk.knet.api.util.PayloadSender;
@@ -46,7 +44,7 @@ public interface NoContextChannel<P extends CustomPacketPayload> extends Channel
      * @param sender  the payload sender that will send the payload.
      * @param payload the payload to send.
      */
-    void send(@NotNull PayloadSender sender, @NotNull P payload);
+    void send(PayloadSender sender, P payload);
 
     /**
      * Sends a payload to a collection of {@link PayloadSender}.
@@ -54,5 +52,5 @@ public interface NoContextChannel<P extends CustomPacketPayload> extends Channel
      * @param senders the collection of payload senders that will send the payload.
      * @param payload the payload to send.
      */
-    void sendToSenders(@NotNull Collection<PayloadSender> senders, @NotNull P payload);
+    void sendToSenders(Collection<PayloadSender> senders, P payload);
 }

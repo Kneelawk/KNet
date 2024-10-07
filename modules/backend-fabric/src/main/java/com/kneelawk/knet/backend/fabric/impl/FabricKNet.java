@@ -48,7 +48,8 @@ public class FabricKNet implements KNet {
     public void registerConfigTasks(ServerConfigurationPacketListenerImpl handler) {
         for (var entry : configTasks.entrySet()) {
             handler.addTask(
-                new FabricConfigTaskWrapper(new ConfigurationTask.Type(entry.getKey().toString()), entry.getValue(), handler));
+                new FabricConfigTaskWrapper(new ConfigurationTask.Type(entry.getKey().toString()), entry.getValue(),
+                    handler));
         }
     }
 

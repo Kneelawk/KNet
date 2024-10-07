@@ -73,7 +73,9 @@ public class NeoForgeKNet implements KNet {
 
     @Override
     public KNetRegistrar getRegistrar(String modId, String networkVersion) {
-        return registrars.computeIfAbsent(modId, k -> new NeoForgeDelayedKNetRegistrar(networkVersion));
+        synchronized (registrars) {
+            return registrars.computeIfAbsent(modId, k -> new NeoForgeDelayedKNetRegistrar(networkVersion));
+        }
     }
 
     @Override

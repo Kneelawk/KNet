@@ -29,8 +29,6 @@ import java.util.concurrent.Executor;
 
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -41,12 +39,12 @@ import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 public record NeoForgeConfigPayloadHandlingContext(IPayloadContext ctx)
     implements ConfigPayloadHandlingContext {
     @Override
-    public @NotNull Executor getExecutor() {
+    public Executor getExecutor() {
         return ctx::enqueueWork;
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         ctx.disconnect(message);
     }
 
@@ -61,7 +59,7 @@ public record NeoForgeConfigPayloadHandlingContext(IPayloadContext ctx)
     }
 
     @Override
-    public void completeTask(@NotNull ResourceLocation taskId) {
+    public void completeTask(ResourceLocation taskId) {
         ctx.finishCurrentTask(new ConfigurationTask.Type(taskId.toString()));
     }
 }

@@ -25,7 +25,6 @@
 
 package com.kneelawk.knet.api.util;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.handler.codec.DecoderException;
@@ -81,8 +80,7 @@ public class Palette<T> {
      * @param <B>    the type of buffer to write to.
      * @return a filled palette.
      */
-    public static <T, B extends FriendlyByteBuf> Palette<T> decode(@NotNull B buf, @NotNull
-    StreamDecoder<? super B, T> reader) {
+    public static <T, B extends FriendlyByteBuf> Palette<T> decode(B buf, StreamDecoder<? super B, T> reader) {
         int paletteLen = buf.readVarInt();
         Int2ObjectMap<T> palette = new Int2ObjectLinkedOpenHashMap<>(paletteLen);
         Object2IntMap<T> reverse = new Object2IntOpenHashMap<>(paletteLen);
@@ -132,7 +130,7 @@ public class Palette<T> {
      * @param obj the object to get the integer key for.
      * @return the integer key for the given object.
      */
-    public int keyFor(@NotNull T obj) {
+    public int keyFor(T obj) {
         if (reverse.containsKey(obj)) {
             return reverse.getInt(obj);
         } else {
@@ -152,7 +150,7 @@ public class Palette<T> {
     public StreamCodec<FriendlyByteBuf, T> asCodec(String errorName) {
         return new StreamCodec<>() {
             @Override
-            public @NotNull T decode(FriendlyByteBuf buf) {
+            public T decode(FriendlyByteBuf buf) {
                 int key = buf.readVarInt();
                 T decoded = get(key);
                 if (decoded == null)
@@ -175,7 +173,7 @@ public class Palette<T> {
      * @param writer the function for encoding palette'd objects into the buffer.
      * @param <B>    the type of buffer to write to.
      */
-    public <B extends FriendlyByteBuf> void encode(@NotNull B buf, @NotNull StreamEncoder<? super B, T> writer) {
+    public <B extends FriendlyByteBuf> void encode(B buf, StreamEncoder<? super B, T> writer) {
         buf.writeVarInt(palette.size());
         for (Int2ObjectMap.Entry<T> entry : palette.int2ObjectEntrySet()) {
             buf.writeVarInt(entry.getIntKey());

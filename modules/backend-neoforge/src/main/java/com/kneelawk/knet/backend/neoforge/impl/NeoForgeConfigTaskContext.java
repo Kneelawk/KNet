@@ -27,8 +27,6 @@ package com.kneelawk.knet.backend.neoforge.impl;
 
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -47,7 +45,7 @@ public record NeoForgeConfigTaskContext(ServerConfigurationPacketListener listen
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         listener.disconnect(message);
     }
 

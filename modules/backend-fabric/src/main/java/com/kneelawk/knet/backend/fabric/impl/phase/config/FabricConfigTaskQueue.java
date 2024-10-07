@@ -25,8 +25,6 @@
 
 package com.kneelawk.knet.backend.fabric.impl.phase.config;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 
 import net.minecraft.network.chat.Component;
@@ -39,22 +37,22 @@ import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 public record FabricConfigTaskQueue(ServerConfigurationPacketListenerImpl handler)
     implements ConnectionConfigTaskQueue {
     @Override
-    public boolean clientHasChannel(CustomPacketPayload.@NotNull Type<?> channel) {
+    public boolean clientHasChannel(CustomPacketPayload.Type<?> channel) {
         return ServerConfigurationNetworking.canSend(handler, channel);
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         handler.disconnect(message);
     }
 
     @Override
-    public void enqueueRaw(@NotNull ConfigurationTask task) {
+    public void enqueueRaw(ConfigurationTask task) {
         handler.addTask(task);
     }
 
     @Override
-    public void completeTask(ConfigurationTask.@NotNull Type taskId) {
+    public void completeTask(ConfigurationTask.Type taskId) {
         handler.completeTask(taskId);
     }
 }

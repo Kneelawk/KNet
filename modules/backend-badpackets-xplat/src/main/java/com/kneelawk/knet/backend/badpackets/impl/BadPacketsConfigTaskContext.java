@@ -25,8 +25,6 @@
 
 package com.kneelawk.knet.backend.badpackets.impl;
 
-import org.jetbrains.annotations.NotNull;
-
 import lol.bai.badpackets.api.config.ServerConfigContext;
 
 import net.minecraft.network.chat.Component;
@@ -42,7 +40,7 @@ public record BadPacketsConfigTaskContext(ServerConfigContext context) implement
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         context.handler().disconnect(message);
     }
 

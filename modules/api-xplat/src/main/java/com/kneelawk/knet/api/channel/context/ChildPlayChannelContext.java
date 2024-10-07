@@ -25,7 +25,6 @@
 
 package com.kneelawk.knet.api.channel.context;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -70,10 +69,10 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
      */
     public static <PARENT, CHILD, PAYLOAD> ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> ofNetCodec(
         @Nullable String prefix,
-        @NotNull PlayChannelContext<PARENT> parentChannelContext,
-        @NotNull StreamCodec<? super RegistryNetByteBuf, PAYLOAD> codec,
-        @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
-        @NotNull ContextEncoder<CHILD, PAYLOAD> encoder, @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+        PlayChannelContext<PARENT> parentChannelContext,
+        StreamCodec<? super RegistryNetByteBuf, PAYLOAD> codec,
+        ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
+        ContextEncoder<CHILD, PAYLOAD> encoder, ParentContextFinder<PARENT, CHILD> parentFinder) {
         return new ChildPlayChannelContext<>(prefix, parentChannelContext, codec.mapStream(NetBufs::registryNetOf),
             decoder,
             encoder,
@@ -97,10 +96,10 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
      */
     public static <PARENT, CHILD, PAYLOAD> ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> ofRegistryCodec(
         @Nullable String prefix,
-        @NotNull PlayChannelContext<PARENT> parentChannelContext,
-        @NotNull StreamCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
-        @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
-        @NotNull ContextEncoder<CHILD, PAYLOAD> encoder, @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+        PlayChannelContext<PARENT> parentChannelContext,
+        StreamCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
+        ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
+        ContextEncoder<CHILD, PAYLOAD> encoder, ParentContextFinder<PARENT, CHILD> parentFinder) {
         return new ChildPlayChannelContext<>(prefix, parentChannelContext, codec, decoder, encoder,
             parentFinder);
     }
@@ -120,10 +119,10 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
      * @return a new child channel context.
      */
     public static <PARENT, CHILD, PAYLOAD> ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> ofNetCodec(
-        @NotNull PlayChannelContext<PARENT> parentChannelContext,
-        @NotNull StreamCodec<? super RegistryNetByteBuf, PAYLOAD> codec,
-        @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
-        @NotNull ContextEncoder<CHILD, PAYLOAD> encoder, @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+        PlayChannelContext<PARENT> parentChannelContext,
+        StreamCodec<? super RegistryNetByteBuf, PAYLOAD> codec,
+        ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
+        ContextEncoder<CHILD, PAYLOAD> encoder, ParentContextFinder<PARENT, CHILD> parentFinder) {
         return new ChildPlayChannelContext<>(null, parentChannelContext, codec.mapStream(NetBufs::registryNetOf),
             decoder,
             encoder,
@@ -145,19 +144,19 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
      * @return a new child channel context.
      */
     public static <PARENT, CHILD, PAYLOAD> ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> ofRegistryCodec(
-        @NotNull PlayChannelContext<PARENT> parentChannelContext,
-        @NotNull StreamCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
-        @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
-        @NotNull ContextEncoder<CHILD, PAYLOAD> encoder, @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+        PlayChannelContext<PARENT> parentChannelContext,
+        StreamCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
+        ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
+        ContextEncoder<CHILD, PAYLOAD> encoder, ParentContextFinder<PARENT, CHILD> parentFinder) {
         return new ChildPlayChannelContext<>(null, parentChannelContext, codec, decoder, encoder,
             parentFinder);
     }
 
-    private ChildPlayChannelContext(@Nullable String prefix, @NotNull PlayChannelContext<PARENT> parentChannelContext,
-                                    @NotNull StreamCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
-                                    @NotNull ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
-                                    @NotNull ContextEncoder<CHILD, PAYLOAD> encoder,
-                                    @NotNull ParentContextFinder<PARENT, CHILD> parentFinder) {
+    private ChildPlayChannelContext(@Nullable String prefix, PlayChannelContext<PARENT> parentChannelContext,
+                                    StreamCodec<? super NetRegistryByteBuf, PAYLOAD> codec,
+                                    ChildPlayContextDecoder<PARENT, CHILD, PAYLOAD> decoder,
+                                    ContextEncoder<CHILD, PAYLOAD> encoder,
+                                    ParentContextFinder<PARENT, CHILD> parentFinder) {
         this.prefix = prefix;
         this.parentChannelContext = parentChannelContext;
         this.codec = codec;
@@ -181,7 +180,7 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
     }
 
     @Override
-    public @NotNull Object decodePayload(@NotNull NetRegistryByteBuf buf) {
+    public Object decodePayload(NetRegistryByteBuf buf) {
         Object parentPayload = parentChannelContext.decodePayload(buf);
         PAYLOAD payload = codec.decode(buf);
         return new Payload(parentPayload, payload);
@@ -189,7 +188,7 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
 
     @SuppressWarnings("unchecked")
     @Override
-    public void encodePayload(@NotNull Object payload, @NotNull NetRegistryByteBuf buf) {
+    public void encodePayload(Object payload, NetRegistryByteBuf buf) {
         Payload myPayload = (Payload) payload;
         parentChannelContext.encodePayload(myPayload.parentPayload, buf);
         codec.encode(buf, myPayload.payload);
@@ -197,7 +196,7 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NotNull CHILD decodeContext(@NotNull Object payload, @NotNull PlayPayloadHandlingContext ctx)
+    public CHILD decodeContext(Object payload, PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         Payload myPayload = (Payload) payload;
         PARENT parent = parentChannelContext.decodeContext(myPayload.parentPayload, ctx);
@@ -205,7 +204,7 @@ public class ChildPlayChannelContext<PARENT, CHILD, PAYLOAD> implements PlayChan
     }
 
     @Override
-    public @NotNull Object encodeContext(@NotNull CHILD context) {
+    public Object encodeContext(CHILD context) {
         PARENT parent = parentFinder.getParent(context);
         Object parentPayload = parentChannelContext.encodeContext(parent);
         PAYLOAD payload = encoder.encode(context);

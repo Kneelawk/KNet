@@ -28,8 +28,6 @@ package com.kneelawk.knet.api.channel;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -42,6 +40,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import com.kneelawk.knet.api.KNetSender;
 import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
 import com.kneelawk.knet.api.handling.PayloadHandlingException;
 import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
@@ -52,7 +51,6 @@ import com.kneelawk.knet.api.util.NetRegistryByteBuf;
 import com.kneelawk.knet.api.util.PayloadSender;
 import com.kneelawk.knet.api.util.RegistryNetByteBuf;
 import com.kneelawk.knet.impl.KNetLog;
-import com.kneelawk.knet.api.KNetSender;
 
 /**
  * Describes a {@link CustomPacketPayload} channel that can have payloads sent and received during the 'play' phase.
@@ -76,8 +74,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @return a new context-less channel.
      */
     public static <P extends CustomPacketPayload> NoContextPlayChannel<P> ofNetCodec(
-        @NotNull CustomPacketPayload.Type<P> id, @NotNull
-    StreamCodec<? super RegistryNetByteBuf, P> codec) {
+        CustomPacketPayload.Type<P> id, StreamCodec<? super RegistryNetByteBuf, P> codec) {
         return new NoContextPlayChannel<>(id, codec.mapStream(NetBufs::registryNetOf));
     }
 
@@ -90,14 +87,13 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @return a new context-less channel.
      */
     public static <P extends CustomPacketPayload> NoContextPlayChannel<P> ofRegistryCodec(
-        @NotNull CustomPacketPayload.Type<P> id,
-        @NotNull
+        CustomPacketPayload.Type<P> id,
         StreamCodec<? super NetRegistryByteBuf, P> codec) {
         return new NoContextPlayChannel<>(id, codec);
     }
 
-    private NoContextPlayChannel(@NotNull CustomPacketPayload.Type<P> id,
-                                 @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec) {
+    private NoContextPlayChannel(CustomPacketPayload.Type<P> id,
+                                 StreamCodec<? super NetRegistryByteBuf, P> codec) {
         this.id = id;
         this.codec = codec;
     }
@@ -110,7 +106,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextPlayChannel<P> recvOffThreadClient(@NotNull NoContextPlayPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvOffThreadClient(NoContextPlayPayloadHandler<P> handler) {
         clientHandler = debugWrap(handler);
         return this;
     }
@@ -123,7 +119,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextPlayChannel<P> recvOffThreadServer(@NotNull NoContextPlayPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvOffThreadServer(NoContextPlayPayloadHandler<P> handler) {
         serverHandler = debugWrap(handler);
         return this;
     }
@@ -136,7 +132,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextPlayChannel<P> recvOffThreadBoth(@NotNull NoContextPlayPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvOffThreadBoth(NoContextPlayPayloadHandler<P> handler) {
         serverHandler = clientHandler = debugWrap(handler);
         return this;
     }
@@ -149,7 +145,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextPlayChannel<P> recvClient(@NotNull NoContextPlayPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvClient(NoContextPlayPayloadHandler<P> handler) {
         clientHandler = sync(handler);
         return this;
     }
@@ -162,7 +158,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextPlayChannel<P> recvServer(@NotNull NoContextPlayPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvServer(NoContextPlayPayloadHandler<P> handler) {
         serverHandler = sync(handler);
         return this;
     }
@@ -175,7 +171,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param handler the payload handler.
      * @return this.
      */
-    public NoContextPlayChannel<P> recvBoth(@NotNull NoContextPlayPayloadHandler<P> handler) {
+    public NoContextPlayChannel<P> recvBoth(NoContextPlayPayloadHandler<P> handler) {
         serverHandler = clientHandler = sync(handler);
         return this;
     }
@@ -232,7 +228,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      *
      * @param payload the payload to send.
      */
-    public void sendToAll(@NotNull P payload) {
+    public void sendToAll(P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "all", payload);
@@ -246,7 +242,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param player  the player to send to.
      * @param payload the payload to send.
      */
-    public void send(@NotNull Player player, @NotNull P payload) {
+    public void send(Player player, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, player.getGameProfile().toString(), payload);
@@ -260,7 +256,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param players the players to send to.
      * @param payload the payload to send.
      */
-    public void sendToPlayers(@NotNull Collection<ServerPlayer> players, @NotNull P payload) {
+    public void sendToPlayers(Collection<ServerPlayer> players, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, players.stream().map(player -> player.getGameProfile().getName())
@@ -276,7 +272,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param payload the payload to send.
      */
     @Override
-    public void send(@NotNull PayloadSender sender, @NotNull P payload) {
+    public void send(PayloadSender sender, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, sender.toString(), payload);
@@ -291,7 +287,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param payload the payload to send.
      */
     @Override
-    public void sendToSenders(@NotNull Collection<PayloadSender> senders, @NotNull P payload) {
+    public void sendToSenders(Collection<PayloadSender> senders, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id,
@@ -307,7 +303,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      *
      * @param payload the payload to send.
      */
-    public void sendToServer(@NotNull P payload) {
+    public void sendToServer(P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "server", payload);
@@ -321,7 +317,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param dim     the dimension to send to.
      * @param payload the payload to send.
      */
-    public void sendToDimension(@NotNull ServerLevel dim, @NotNull P payload) {
+    public void sendToDimension(ServerLevel dim, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "dimension " + dim.dimension().location(), payload);
@@ -335,7 +331,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param entity  the entity that all receiver players should be tracking.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull Entity entity, @NotNull P payload) {
+    public void sendToTracking(Entity entity, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking entity " + entity, payload);
@@ -349,7 +345,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param entity  the entity that all receiver players should be tracking.
      * @param payload the payload to send.
      */
-    public void sendToTrackingAndSelf(@NotNull Entity entity, @NotNull P payload) {
+    public void sendToTrackingAndSelf(Entity entity, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking entity " + entity + " and self", payload);
@@ -364,7 +360,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param pos     the position of the chunk.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull ServerLevel level, @NotNull ChunkPos pos, @NotNull P payload) {
+    public void sendToTracking(ServerLevel level, ChunkPos pos, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking chunk " + pos, payload);
@@ -378,7 +374,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param be      the block entity that all receiver players should be tracking.
      * @param payload the payload.
      */
-    public void sendToTracking(@NotNull BlockEntity be, @NotNull P payload) {
+    public void sendToTracking(BlockEntity be, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking block-entity " + be + " @ " + be.getBlockPos(), payload);
@@ -393,7 +389,7 @@ public class NoContextPlayChannel<P extends CustomPacketPayload> implements Play
      * @param pos     the position of the block.
      * @param payload the payload to send.
      */
-    public void sendToTracking(@NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull P payload) {
+    public void sendToTracking(ServerLevel level, BlockPos pos, P payload) {
         checkPayload(payload);
         if (KNetLog.debug) {
             KNetLog.logSend(id, "tracking pos " + pos, payload);

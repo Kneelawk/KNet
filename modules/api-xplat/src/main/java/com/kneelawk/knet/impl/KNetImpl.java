@@ -27,6 +27,6 @@ package com.kneelawk.knet.impl;
 
 public class KNetImpl {
     public static final String MOD_ID = "knet_api";
-    
+
     public static final String CONFIG_DIR = "knet";
 }

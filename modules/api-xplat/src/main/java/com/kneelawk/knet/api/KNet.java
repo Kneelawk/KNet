@@ -25,6 +25,8 @@
 
 package com.kneelawk.knet.api;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -65,7 +67,7 @@ public interface KNet {
     /**
      * {@return the default KNet implementation or null if there are no KNet implementations loaded}
      */
-    static KNet tryGetDefault() {
+    static @Nullable KNet tryGetDefault() {
         return BackendManager.tryGetDefault();
     }
 
@@ -86,7 +88,7 @@ public interface KNet {
      * @param name the name of the KNet implementation to get.
      * @return the requested KNet implementation or {@code null} if it could not be found.
      */
-    static KNet tryGet(String name) {
+    static @Nullable KNet tryGet(String name) {
         return BackendManager.tryGet(name);
     }
 
@@ -205,6 +207,10 @@ public interface KNet {
 
     /**
      * Gets a registrar for registering channels from this backend for the given mod and network version.
+     * <p>
+     * Some backends may require that this channels only be registered during a certain timeframe. Some backends may
+     * have requirements for which threads channels are registered on. Using the {@link Loaded} event is generally
+     * the best way to make sure that all requirements are met.
      * <p>
      * Note: only some backends check network version compatibility.
      *

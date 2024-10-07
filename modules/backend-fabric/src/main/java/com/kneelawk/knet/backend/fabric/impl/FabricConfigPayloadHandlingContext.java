@@ -27,8 +27,6 @@ package com.kneelawk.knet.backend.fabric.impl;
 
 import java.util.concurrent.Executor;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 
 import net.minecraft.network.chat.Component;
@@ -42,7 +40,7 @@ import com.kneelawk.knet.api.util.ServerAccess;
 public record FabricConfigPayloadHandlingContext(ServerConfigurationNetworking.Context ctx) implements
     ConfigPayloadHandlingContext {
     @Override
-    public @NotNull Executor getExecutor() {
+    public Executor getExecutor() {
         // Configuration payload handling *is* actually done on a netty thread after all
         Executor executor = ServerAccess.tryGetServer();
         if (executor != null) return executor;
@@ -50,7 +48,7 @@ public record FabricConfigPayloadHandlingContext(ServerConfigurationNetworking.C
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         ctx.responseSender().disconnect(message);
     }
 
@@ -65,7 +63,7 @@ public record FabricConfigPayloadHandlingContext(ServerConfigurationNetworking.C
     }
 
     @Override
-    public void completeTask(@NotNull ResourceLocation taskId) {
+    public void completeTask(ResourceLocation taskId) {
         ctx.networkHandler().completeTask(new ConfigurationTask.Type(taskId.toString()));
     }
 }

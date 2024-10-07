@@ -27,7 +27,6 @@ package com.kneelawk.knet.backend.badpackets.impl;
 
 import java.util.concurrent.Executor;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import lol.bai.badpackets.api.play.ServerPlayContext;
@@ -45,12 +44,12 @@ public record BadPacketsPlayPayloadHandlingContext(ServerPlayContext context) im
     }
 
     @Override
-    public @NotNull Executor getExecutor() {
+    public Executor getExecutor() {
         return context.server();
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         context.handler().disconnect(message);
     }
 

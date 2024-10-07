@@ -27,14 +27,11 @@ package com.kneelawk.knet.backend.fabric.impl.client;
 
 import java.util.concurrent.Executor;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.network.ConfigurationTask;
 
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 import com.kneelawk.knet.backend.fabric.impl.proxy.CommonProxy;
@@ -42,13 +39,13 @@ import com.kneelawk.knet.backend.fabric.impl.proxy.CommonProxy;
 public record ClientFabricConfigPayloadHandlingContext(ClientConfigurationNetworking.Context ctx) implements
     ConfigPayloadHandlingContext {
     @Override
-    public @NotNull Executor getExecutor() {
+    public Executor getExecutor() {
         // Configuration payload handling *is* actually done on a netty thread after all
         return CommonProxy.getInstance().getClientExecutor();
     }
 
     @Override
-    public void disconnect(@NotNull Component message) {
+    public void disconnect(Component message) {
         ctx.responseSender().disconnect(message);
     }
 
@@ -63,7 +60,7 @@ public record ClientFabricConfigPayloadHandlingContext(ClientConfigurationNetwor
     }
 
     @Override
-    public void completeTask(@NotNull ResourceLocation taskId) {
+    public void completeTask(ResourceLocation taskId) {
         throw new UnsupportedOperationException("Configuration tasks cannot be completed from the client.");
     }
 }

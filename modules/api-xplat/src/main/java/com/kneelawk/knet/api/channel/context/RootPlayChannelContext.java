@@ -25,7 +25,6 @@
 
 package com.kneelawk.knet.api.channel.context;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -61,9 +60,10 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
      * @param <P>     the type of payload.
      * @return a new root channel context.
      */
-    public static <C, P> RootPlayChannelContext<C, P> ofNetCodec(@Nullable String prefix, @NotNull
-    StreamCodec<? super RegistryNetByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
-                                                                 @NotNull ContextEncoder<C, P> encoder) {
+    public static <C, P> RootPlayChannelContext<C, P> ofNetCodec(@Nullable String prefix,
+                                                                 StreamCodec<? super RegistryNetByteBuf, P> codec,
+                                                                 PlayContextDecoder<C, P> decoder,
+                                                                 ContextEncoder<C, P> encoder) {
         return new RootPlayChannelContext<>(prefix, codec.mapStream(NetBufs::registryNetOf), decoder, encoder);
     }
 
@@ -78,9 +78,10 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
      * @param <P>     the type of payload.
      * @return a new root channel context.
      */
-    public static <C, P> RootPlayChannelContext<C, P> ofRegistryCodec(@Nullable String prefix, @NotNull
-    StreamCodec<? super NetRegistryByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
-                                                                      @NotNull ContextEncoder<C, P> encoder) {
+    public static <C, P> RootPlayChannelContext<C, P> ofRegistryCodec(@Nullable String prefix,
+                                                                      StreamCodec<? super NetRegistryByteBuf, P> codec,
+                                                                      PlayContextDecoder<C, P> decoder,
+                                                                      ContextEncoder<C, P> encoder) {
         return new RootPlayChannelContext<>(prefix, codec, decoder, encoder);
     }
 
@@ -95,8 +96,8 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
      * @return a new root channel context.
      */
     public static <C, P> RootPlayChannelContext<C, P> ofNetCodec(
-        @NotNull StreamCodec<? super RegistryNetByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
-        @NotNull ContextEncoder<C, P> encoder) {
+        StreamCodec<? super RegistryNetByteBuf, P> codec, PlayContextDecoder<C, P> decoder,
+        ContextEncoder<C, P> encoder) {
         return new RootPlayChannelContext<>(null, codec.mapStream(NetBufs::registryNetOf), decoder, encoder);
     }
 
@@ -111,13 +112,13 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
      * @return a new root channel context.
      */
     public static <C, P> RootPlayChannelContext<C, P> ofRegistryCodec(
-        @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec, @NotNull PlayContextDecoder<C, P> decoder,
-        @NotNull ContextEncoder<C, P> encoder) {
+        StreamCodec<? super NetRegistryByteBuf, P> codec, PlayContextDecoder<C, P> decoder,
+        ContextEncoder<C, P> encoder) {
         return new RootPlayChannelContext<>(null, codec, decoder, encoder);
     }
 
-    private RootPlayChannelContext(@Nullable String prefix, @NotNull StreamCodec<? super NetRegistryByteBuf, P> codec,
-                                   @NotNull PlayContextDecoder<C, P> decoder, @NotNull ContextEncoder<C, P> encoder) {
+    private RootPlayChannelContext(@Nullable String prefix, StreamCodec<? super NetRegistryByteBuf, P> codec,
+                                   PlayContextDecoder<C, P> decoder, ContextEncoder<C, P> encoder) {
         this.prefix = prefix;
         this.codec = codec;
         this.decoder = decoder;
@@ -130,25 +131,25 @@ public class RootPlayChannelContext<C, P> implements PlayChannelContext<C> {
     }
 
     @Override
-    public @NotNull Object decodePayload(@NotNull NetRegistryByteBuf buf) {
+    public Object decodePayload(NetRegistryByteBuf buf) {
         return codec.decode(buf);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void encodePayload(@NotNull Object payload, @NotNull NetRegistryByteBuf buf) {
+    public void encodePayload(Object payload, NetRegistryByteBuf buf) {
         codec.encode(buf, (P) payload);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NotNull C decodeContext(@NotNull Object payload, @NotNull PlayPayloadHandlingContext ctx)
+    public C decodeContext(Object payload, PlayPayloadHandlingContext ctx)
         throws PayloadHandlingException {
         return decoder.decode((P) payload, ctx);
     }
 
     @Override
-    public @NotNull Object encodeContext(@NotNull C context) {
+    public Object encodeContext(C context) {
         return encoder.encode(context);
     }
 }

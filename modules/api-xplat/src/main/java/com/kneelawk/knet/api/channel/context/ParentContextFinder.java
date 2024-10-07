@@ -25,8 +25,6 @@
 
 package com.kneelawk.knet.api.channel.context;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Gets the parent context when given a child context.
  *
@@ -41,6 +39,5 @@ public interface ParentContextFinder<PARENT, CHILD> {
      * @param child the child to get the parent of.
      * @return the parent context.
      */
-    @NotNull
-    PARENT getParent(@NotNull CHILD child);
+    PARENT getParent(CHILD child);
 }
