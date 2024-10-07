@@ -62,7 +62,7 @@ public class BackendManager {
 
             KNetLog.LOG.info("[KNet] KNet backends loaded.");
 
-            KNet.LOADED.invoker().onLoaded(BackendLoadedContext.INSTANCE);
+            KNet.LOADED.invoker().onLoaded(BackendLoadedProvider.INSTANCE);
         }
     }
 

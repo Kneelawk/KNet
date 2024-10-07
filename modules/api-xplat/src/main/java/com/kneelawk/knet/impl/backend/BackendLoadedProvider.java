@@ -26,10 +26,9 @@
 package com.kneelawk.knet.impl.backend;
 
 import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.event.KNetLoadedCallback;
 
-public class BackendLoadedContext implements KNetLoadedCallback.Context {
-    public static final BackendLoadedContext INSTANCE = new BackendLoadedContext();
+public class BackendLoadedProvider implements KNet.Provider {
+    public static final BackendLoadedProvider INSTANCE = new BackendLoadedProvider();
 
     @Override
     public KNet getDefault() {

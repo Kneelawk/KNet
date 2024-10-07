@@ -31,9 +31,7 @@ import com.kneelawk.commonevents.api.Listen;
 import com.kneelawk.commonevents.api.Scan;
 import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.NoContextConfigChannel;
-import com.kneelawk.knet.api.event.KNetLoadedCallback;
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
-import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 import com.kneelawk.knet.example.KNetExample;
 
 @Scan
@@ -44,8 +42,8 @@ public class NetEventListeners {
         NoContextConfigChannel.of(PingPongPayload.ID, PingPongPayload.CODEC).recvClient(
             NetEventListeners::receiveClient).recvServer(NetEventListeners::receiveServer);
 
-    @Listen(KNetLoadedCallback.class)
-    public static void onLoad(KNetLoadedCallback.Context ctx) {
+    @Listen(KNet.Loaded.class)
+    public static void onLoad(KNet.Provider ctx) {
         KNet knet = ctx.getDefault();
         KNetExample.registerChannels(knet.getRegistrar(KNetExample.MOD_ID, NETWORK_VERSION));
         knet.registerConfigTask(PING_PONG_TASK, sender -> {

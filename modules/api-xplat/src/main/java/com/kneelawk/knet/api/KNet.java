@@ -35,7 +35,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import com.kneelawk.commonevents.api.Event;
 import com.kneelawk.knet.api.channel.context.PlayChannelContext;
 import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
-import com.kneelawk.knet.api.event.KNetLoadedCallback;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
 import com.kneelawk.knet.api.phase.config.ConfigTask;
 import com.kneelawk.knet.impl.KNetLog;
@@ -93,9 +92,50 @@ public interface KNet {
 
     /**
      * Event fired once all KNet backends have been loaded.
+     * <p>
+     * This event is not fired if no KNet backends could be loaded.
      */
-    Event<KNetLoadedCallback> LOADED =
-        Event.createSimple(KNetLoadedCallback.class, KNetLog.warn("Error in KNetLoaded event listener"));
+    Event<Loaded> LOADED =
+        Event.createSimple(Loaded.class, KNetLog.warn("Error in KNetLoaded event listener"));
+
+    /**
+     * Called when all KNet backends have been loaded and are available to have channels registered to them.
+     */
+    interface Loaded {
+        /**
+         * Called when all KNet backends have been loaded.
+         *
+         * @param ctx the context for this event, from which the current backend can be retrieved.
+         */
+        void onLoaded(Provider ctx);
+    }
+
+    /**
+     * Context for the loaded callback.
+     */
+    interface Provider {
+        /**
+         * {@return the default KNet backend}
+         */
+        KNet getDefault();
+
+        /**
+         * Gets the KNet backend with the given name.
+         *
+         * @param name the name of the KNet backend to get.
+         * @return the requested KNet backend.
+         * @throws RuntimeException if a KNet backend with the given name could not be found.
+         */
+        KNet get(String name);
+
+        /**
+         * Tries to get the KNet backend with the given name.
+         *
+         * @param name the name of the backend to get.
+         * @return the requested KNet backend or {@code null} if the requested backend was not found.
+         */
+        KNet tryGet(String name);
+    }
 
     /**
      * Channel context used for associating a channel with a block entity
