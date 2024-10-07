@@ -23,29 +23,17 @@
  *
  */
 
-package com.kneelawk.knet.backend.fabric.impl;
+package com.kneelawk.knet.fabric.impl;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
-import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
-import com.kneelawk.knet.backend.fabric.impl.phase.config.FabricConfigTaskQueue;
+import com.kneelawk.knet.impl.ServerHolder;
 
-public class KNetFabricMod implements ModInitializer {
+public class FabricMod implements ModInitializer {
     @Override
     public void onInitialize() {
-        KNBFLog.LOG.info("Initializing KNet {}",
-            FabricLoader.getInstance().getModContainer(KNBFConstants.MOD_ID).get().getMetadata().getVersion());
-
-        ServerConfigurationConnectionEvents.CONFIGURE.register(
-            (handler, server) -> {
-                KNet.load();
-                FabricKNet.INSTANCE.registerConfigTasks(handler);
-                ConnectionConfigCallback.EVENT.invoker().enqueueTasks(new FabricConfigTaskQueue(handler));
-            });
-
-        KNet.load();
+        ServerLifecycleEvents.SERVER_STARTING.register(ServerHolder::onServerStarting);
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ServerHolder.onServerStopped());
     }
 }

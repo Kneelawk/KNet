@@ -18,9 +18,9 @@ import com.kneelawk.knet.impl.KNetLog;
 
 @Scan(side = Scan.Side.CLIENT)
 public class BackendManager {
-    private static volatile Map<String, KNet> knetsByName;
-    private static volatile List<KNet> knetsByPriority;
-    private static volatile KNet defaultKNet;
+    private static Map<String, KNet> knetsByName;
+    private static List<KNet> knetsByPriority;
+    private static KNet defaultKNet;
 
     static {
         loadBackends();

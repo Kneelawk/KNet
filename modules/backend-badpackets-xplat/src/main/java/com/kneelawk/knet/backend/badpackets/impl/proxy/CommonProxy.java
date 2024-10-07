@@ -27,8 +27,22 @@ package com.kneelawk.knet.backend.badpackets.impl.proxy;
 
 import java.lang.reflect.InvocationTargetException;
 
-import net.minecraft.network.chat.Component;
+import lol.bai.badpackets.api.config.ConfigPackets;
+import lol.bai.badpackets.api.play.PlayPackets;
 
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+
+import com.kneelawk.knet.api.channel.ConfigChannel;
+import com.kneelawk.knet.api.channel.PlayChannel;
+import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
+import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
+import com.kneelawk.knet.api.util.NetCodecs;
+import com.kneelawk.knet.backend.badpackets.impl.BadPacketsConfigPayloadHandlingContext;
+import com.kneelawk.knet.backend.badpackets.impl.BadPacketsPlayPayloadHandlingContext;
 import com.kneelawk.knet.backend.badpackets.impl.KNBPLog;
 import com.kneelawk.knet.backend.badpackets.impl.Platform;
 
@@ -56,5 +70,57 @@ public class CommonProxy {
 
     public void disconnectFromServer(Component message) {
         KNBPLog.LOG.warn("Attempted to disconnect from the server on the server side, with the message: {}", message);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void registerPlayChannel(PlayChannel channel) {
+        if (channel.isToClient()) {
+            PlayPackets.registerClientChannel((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(
+                    channel.getCodec()));
+        }
+        if (channel.isToServer()) {
+            PlayPackets.registerServerChannel((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<RegistryFriendlyByteBuf, CustomPacketPayload>) NetCodecs.netRegToVanilla(
+                    channel.getCodec()));
+            PlayPackets.registerServerReceiver(channel.getId(), (context, payload) -> {
+                try {
+                    channel.handleServerPayload(payload, new BadPacketsPlayPayloadHandlingContext(context));
+                } catch (PayloadHandlingSilentException e) {
+                    // do nothing
+                } catch (PayloadHandlingDisconnectException e) {
+                    context.handler()
+                        .disconnect(Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
+                } catch (Exception e) {
+                    KNBPLog.LOG.error("Channel {} error:", channel.getId().id(), e);
+                }
+            });
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void registerConfigChannel(ConfigChannel channel) {
+        if (channel.isToClient()) {
+            ConfigPackets.registerClientChannel((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) NetCodecs.netToVanilla(
+                    channel.getCodec()));
+        }
+        if (channel.isToServer()) {
+            ConfigPackets.registerServerChannel((CustomPacketPayload.Type<CustomPacketPayload>) channel.getId(),
+                (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) NetCodecs.netToVanilla(
+                    channel.getCodec()));
+            ConfigPackets.registerServerReceiver(channel.getId(), (context, payload) -> {
+                try {
+                    channel.handleServerPayload(payload, new BadPacketsConfigPayloadHandlingContext(context));
+                } catch (PayloadHandlingSilentException e) {
+                    // do nothing
+                } catch (PayloadHandlingDisconnectException e) {
+                    context.handler()
+                        .disconnect(Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
+                } catch (Exception e) {
+                    KNBPLog.LOG.error("Channel {} error:", channel.getId().id(), e);
+                }
+            });
+        }
     }
 }

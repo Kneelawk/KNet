@@ -23,29 +23,45 @@
  *
  */
 
-package com.kneelawk.knet.backend.fabric.impl;
+package com.kneelawk.knet.backend.badpackets.impl;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
+import java.util.concurrent.Executor;
 
-import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
-import com.kneelawk.knet.backend.fabric.impl.phase.config.FabricConfigTaskQueue;
+import org.jetbrains.annotations.NotNull;
 
-public class KNetFabricMod implements ModInitializer {
+import lol.bai.badpackets.api.config.ServerConfigContext;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
+import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+
+public record BadPacketsConfigPayloadHandlingContext(ServerConfigContext context)
+    implements ConfigPayloadHandlingContext {
+
     @Override
-    public void onInitialize() {
-        KNBFLog.LOG.info("Initializing KNet {}",
-            FabricLoader.getInstance().getModContainer(KNBFConstants.MOD_ID).get().getMetadata().getVersion());
+    public @NotNull Executor getExecutor() {
+        return context.server();
+    }
 
-        ServerConfigurationConnectionEvents.CONFIGURE.register(
-            (handler, server) -> {
-                KNet.load();
-                FabricKNet.INSTANCE.registerConfigTasks(handler);
-                ConnectionConfigCallback.EVENT.invoker().enqueueTasks(new FabricConfigTaskQueue(handler));
-            });
+    @Override
+    public void disconnect(@NotNull Component message) {
+        context.handler().disconnect(message);
+    }
 
-        KNet.load();
+    @Override
+    public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
+        return context.canSend(channel);
+    }
+
+    @Override
+    public void sendPayload(CustomPacketPayload payload) {
+        context.send(payload);
+    }
+
+    @Override
+    public void completeTask(@NotNull ResourceLocation taskId) {
+        context.finishTask(taskId);
     }
 }

@@ -25,6 +25,7 @@
 
 package com.kneelawk.knet.api;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -34,10 +35,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import com.kneelawk.commonevents.api.Event;
 import com.kneelawk.knet.api.channel.context.PlayChannelContext;
 import com.kneelawk.knet.api.channel.context.RootPlayChannelContext;
-import com.kneelawk.knet.api.event.ChannelRegistrationCallback;
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
 import com.kneelawk.knet.api.event.KNetLoadedCallback;
 import com.kneelawk.knet.api.handling.PayloadHandlingErrorException;
+import com.kneelawk.knet.api.phase.config.ConfigTask;
 import com.kneelawk.knet.impl.KNetLog;
 import com.kneelawk.knet.impl.backend.BackendManager;
 import com.kneelawk.knet.impl.payload.BlockEntityPayload;
@@ -49,7 +49,8 @@ import com.kneelawk.knet.impl.payload.ScreenHandlerPayload;
  */
 public interface KNet {
     /**
-     * Called by backends to ensure that all backends are loaded and users have registered listeners on their preferred backends.
+     * Called by backends to ensure that all backends are loaded and users have registered channels with their
+     * preferred backends.
      */
     static void load() {
         BackendManager.load();
@@ -163,14 +164,25 @@ public interface KNet {
         }, context -> new ScreenHandlerPayload(context.containerId));
 
     /**
-     * {@return this backend's channel registration events, to which listeners can be registered}
+     * Gets a registrar for registering channels from this backend for the given mod and network version.
+     * <p>
+     * Note: only some backends check network version compatibility.
+     *
+     * @param modId          the mod id of the mod that the registrar will be associated with.
+     * @param networkVersion the network version of the mod that the registrar will be associated with.
+     * @return the requested registrar.
      */
-    Event<ChannelRegistrationCallback> channelRegistration();
+    KNetRegistrar getRegistrar(String modId, String networkVersion);
 
     /**
-     * {@return this backend's config-phase connection initiation events, to which listeners can be registered}
+     * Registers a config task that will be run every time a client connects.
+     * <p>
+     * If the task wishes to cancel early, it should return false from {@link ConfigTask#start(ConfigTask.Context)}.
+     *
+     * @param taskId the id of the task.
+     * @param task   the task itself.
      */
-    Event<ConnectionConfigCallback> connectionConfig();
+    void registerConfigTask(ResourceLocation taskId, ConfigTask task);
 
     /**
      * {@return the sender used by all channels, associated with this backend}

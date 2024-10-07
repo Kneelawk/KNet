@@ -25,31 +25,28 @@
 
 package com.kneelawk.knet.backend.badpackets.impl;
 
-import com.kneelawk.commonevents.api.Event;
+import lol.bai.badpackets.api.config.ConfigPackets;
+
+import net.minecraft.resources.ResourceLocation;
+
 import com.kneelawk.knet.api.KNet;
+import com.kneelawk.knet.api.KNetRegistrar;
 import com.kneelawk.knet.api.KNetSender;
-import com.kneelawk.knet.api.event.ChannelRegistrationCallback;
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
+import com.kneelawk.knet.api.phase.config.ConfigTask;
 
 public class BadPacketsKNet implements KNet {
     public static final BadPacketsKNet INSTANCE = new BadPacketsKNet();
 
-    private final BadPacketsKNetSender sender = new BadPacketsKNetSender();
-    private final Event<ChannelRegistrationCallback> channelRegistration =
-        Event.builderSimple(ChannelRegistrationCallback.class,
-            KNBPLog.warn("Error while firing channel registration event")).scanned(false).build();
-    private final Event<ConnectionConfigCallback> connectionConfig =
-        Event.builderSimple(ConnectionConfigCallback.class, KNBPLog.warn("Error while firing connection config event"))
-            .scanned(false).build();
+    private final KNetSenderBadPackets sender = new KNetSenderBadPackets();
 
     @Override
-    public Event<ChannelRegistrationCallback> channelRegistration() {
-        return channelRegistration;
+    public KNetRegistrar getRegistrar(String modId, String networkVersion) {
+        return new KNetRegistrarBadPackets();
     }
 
     @Override
-    public Event<ConnectionConfigCallback> connectionConfig() {
-        return connectionConfig;
+    public void registerConfigTask(ResourceLocation taskId, ConfigTask task) {
+        ConfigPackets.registerTask(taskId, context -> task.start(new BadPacketsConfigTaskContext(context)));
     }
 
     @Override

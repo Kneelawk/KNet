@@ -23,41 +23,43 @@
  *
  */
 
-package com.kneelawk.knet.api.event;
+package com.kneelawk.knet.backend.fabric.impl;
+
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
 
+import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.network.ConfigurationTask;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 
-import com.kneelawk.commonevents.api.Event;
-import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.phase.config.ConfigTask;
-import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
 
-/**
- * Callback for initiating configure tasks from the server during the 'configure' phase of player connection.
- *
- * @deprecated Use {@link KNet#registerConfigTask(ResourceLocation, ConfigTask)} to register a config task once all
- * backends are loaded instead of re-applying tasks every time a client connects.
- */
-@Deprecated
-@FunctionalInterface
-public interface ConnectionConfigCallback {
-    /**
-     * Used to listen for {@link ConnectionConfigCallback}s.
-     * <p>
-     * This event is fired on the server whenever a player connects to the server and enters the 'configure' stage.
-     */
-    Event<ConnectionConfigCallback> EVENT = Event.create(ConnectionConfigCallback.class, callbacks -> queue -> {
-        for (ConnectionConfigCallback callback : callbacks) {
-            callback.enqueueTasks(queue);
-        }
-    });
+public record FabricConfigTaskContext(ServerConfigurationPacketListenerImpl handler, Consumer<Packet<?>> sender)
+    implements ConfigTask.Context {
+    @Override
+    public void completeTask(ResourceLocation taskId) {
+        handler.completeTask(new ConfigurationTask.Type(taskId.toString()));
+    }
 
-    /**
-     * Used to enqueue tasks to the task queue.
-     *
-     * @param queue the queue to add tasks to.
-     */
-    void enqueueTasks(@NotNull ConnectionConfigTaskQueue queue);
+    @Override
+    public void disconnect(@NotNull Component message) {
+        handler.disconnect(message);
+    }
+
+    @Override
+    public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
+        return ServerConfigurationNetworking.canSend(handler, channel);
+    }
+
+    @Override
+    public void sendPayload(CustomPacketPayload payload) {
+        sender.accept(new ClientboundCustomPayloadPacket(payload));
+    }
 }

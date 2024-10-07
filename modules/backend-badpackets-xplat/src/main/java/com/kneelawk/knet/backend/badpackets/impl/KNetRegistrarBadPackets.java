@@ -25,24 +25,20 @@
 
 package com.kneelawk.knet.backend.badpackets.impl;
 
-import org.jetbrains.annotations.Nullable;
+import com.kneelawk.knet.api.KNetRegistrar;
+import com.kneelawk.knet.api.channel.ConfigChannel;
+import com.kneelawk.knet.api.channel.PlayChannel;
+import com.kneelawk.knet.backend.badpackets.impl.proxy.CommonProxy;
 
-import net.minecraft.server.MinecraftServer;
-
-public class ServerHolder {
-    private static @Nullable MinecraftServer server;
-
-    public static void serverStarting(MinecraftServer server) {
-        ServerHolder.server = server;
+public class KNetRegistrarBadPackets implements KNetRegistrar {
+    @Override
+    public void register(PlayChannel channel) {
+        channel.setBackend(BadPacketsKNet.INSTANCE.getSender());
+        CommonProxy.getInstance().registerPlayChannel(channel);
     }
 
-    public static void serverStopped(MinecraftServer server) {
-        ServerHolder.server = null;
-    }
-
-    public static MinecraftServer getCurrentServer() {
-        MinecraftServer server = ServerHolder.server;
-        if (server == null) throw new IllegalStateException("The server has not been started yet");
-        return server;
+    @Override
+    public void register(ConfigChannel channel) {
+        CommonProxy.getInstance().registerConfigChannel(channel);
     }
 }

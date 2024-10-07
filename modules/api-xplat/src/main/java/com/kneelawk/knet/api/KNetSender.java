@@ -32,14 +32,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import com.kneelawk.knet.api.util.PlayerUtils;
+
 /**
- * Sender part of a KNet backend. Usually you will want to use {@link com.kneelawk.knet.api.channel.Channel}s instead,
- * by listening for the {@link KNet#channelRegistration()} callback.
+ * Sender part of a KNet backend.
+ * <p>
+ * Usually you will want to use {@link com.kneelawk.knet.api.channel.Channel}.
  */
 public interface KNetSender {
     /**
@@ -49,7 +53,11 @@ public interface KNetSender {
      *
      * @param payload the payload to send.
      */
-    void sendPlayToAll(CustomPacketPayload payload);
+    default void sendPlayToAll(CustomPacketPayload payload) {
+        for (ServerPlayer player : PlayerUtils.getAllPlayers()) {
+            sendPlayToClient(player, payload);
+        }
+    }
 
     /**
      * Send a raw payload to the given player.
@@ -57,7 +65,23 @@ public interface KNetSender {
      * @param player  the player to send the payload to.
      * @param payload the paylod to send.
      */
-    void sendPlay(Player player, CustomPacketPayload payload);
+    default void sendPlay(Player player, CustomPacketPayload payload) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            sendPlayToClient(serverPlayer, payload);
+        } else if (player.level().isClientSide()) {
+            sendPlayToServer(payload);
+        }
+    }
+
+    /**
+     * Send a raw payload from the server to the client of a given player.
+     * <p>
+     * This can only be sent from the logical server.
+     *
+     * @param player  the player to send the payload to.
+     * @param payload the payload to send.
+     */
+    void sendPlayToClient(ServerPlayer player, CustomPacketPayload payload);
 
     /**
      * Send a raw payload from the client to the server.
@@ -76,7 +100,11 @@ public interface KNetSender {
      * @param dim     the level of the dimension to send the payload to all players in.
      * @param payload the payload to send.
      */
-    void sendPlayToDimension(ServerLevel dim, CustomPacketPayload payload);
+    default void sendPlayToDimension(ServerLevel dim, CustomPacketPayload payload) {
+        for (ServerPlayer player : dim.players()) {
+            sendPlayToClient(player, payload);
+        }
+    }
 
     /**
      * Send a raw payload to all players tracking an entity.
@@ -88,7 +116,14 @@ public interface KNetSender {
      * @param entity  the entity to send the payload to all the trackers of.
      * @param payload the payload to send.
      */
-    void sendPlayToTrackingEntity(Entity entity, CustomPacketPayload payload);
+    default void sendPlayToTrackingEntity(Entity entity, CustomPacketPayload payload) {
+        for (ServerPlayerConnection connection : PlayerUtils.getConnectionsTracking(entity)) {
+            ServerPlayer player = connection.getPlayer();
+            if (player != entity) {
+                sendPlayToClient(player, payload);
+            }
+        }
+    }
 
     /**
      * Send a raw payload to all players tracking an entity, including the given entity if it is a player.
@@ -98,7 +133,19 @@ public interface KNetSender {
      * @param entity  the entity to send the payload to all the trackers of.
      * @param payload the payload to send.
      */
-    void sendPlayToTrackingEntityAndSelf(Entity entity, CustomPacketPayload payload);
+    default void sendPlayToTrackingEntityAndSelf(Entity entity, CustomPacketPayload payload) {
+        boolean sentToSelf = false;
+        for (ServerPlayerConnection connection : PlayerUtils.getConnectionsTracking(entity)) {
+            ServerPlayer player = connection.getPlayer();
+            sendPlayToClient(player, payload);
+            if (player == entity) {
+                sentToSelf = true;
+            }
+        }
+        if (!sentToSelf && entity instanceof ServerPlayer player) {
+            sendPlayToClient(player, payload);
+        }
+    }
 
     /**
      * Send a raw payload to all players tracking a chunk.
@@ -109,7 +156,11 @@ public interface KNetSender {
      * @param pos     the position of the chunk.
      * @param payload the payload to send.
      */
-    void sendPlayToTrackingChunk(ServerLevel level, ChunkPos pos, CustomPacketPayload payload);
+    default void sendPlayToTrackingChunk(ServerLevel level, ChunkPos pos, CustomPacketPayload payload) {
+        for (ServerPlayer player : PlayerUtils.getPlayersTracking(level, pos)) {
+            sendPlayToClient(player, payload);
+        }
+    }
 
     /**
      * Send a raw payload to all players tracking a block entity.

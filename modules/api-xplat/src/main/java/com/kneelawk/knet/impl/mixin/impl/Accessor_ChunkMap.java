@@ -23,23 +23,17 @@
  *
  */
 
-package com.kneelawk.knet.backend.fabric.impl;
+package com.kneelawk.knet.impl.mixin.impl;
 
-import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.KNetRegistrar;
-import com.kneelawk.knet.api.event.ChannelRegistrationCallback;
-import com.kneelawk.knet.fabric.api.KNetRegistrarFabric;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-public class ChannelRegistrationContext implements ChannelRegistrationCallback.Context {
-    public static final ChannelRegistrationContext INSTANCE = new ChannelRegistrationContext();
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
-    @Override
-    public KNet getKNet() {
-        return FabricKNet.INSTANCE;
-    }
+import net.minecraft.server.level.ChunkMap;
 
-    @Override
-    public KNetRegistrar getRegistrar(String modId, String netVersion) {
-        return new KNetRegistrarFabric();
-    }
+@Mixin(ChunkMap.class)
+public interface Accessor_ChunkMap {
+    @Accessor("entityMap")
+    Int2ObjectMap<Accessor_TrackedEntity> knet_backend_badpackets$entityMap();
 }

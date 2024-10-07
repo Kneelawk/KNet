@@ -1,3 +1,5 @@
 {
-  "scan": [ ]
+  "scan": [
+    "com.kneelawk.knet.backend.badpackets.impl.BadPacketsBackendProvider"
+  ]
 }

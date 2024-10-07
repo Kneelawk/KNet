@@ -23,46 +23,45 @@
  *
  */
 
-package com.kneelawk.knet.backend.fabric.impl;
+package com.kneelawk.knet.backend.badpackets.impl.client;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import java.util.concurrent.Executor;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import lol.bai.badpackets.api.play.ClientPlayContext;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
-import com.kneelawk.knet.api.KNetSender;
-import com.kneelawk.knet.backend.fabric.impl.proxy.CommonProxy;
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
 
-public class KNetSenderFabric implements KNetSender {
-
+public record ClientBadPacketsPlayPayloadHandlingContext(ClientPlayContext context)
+    implements PlayPayloadHandlingContext {
     @Override
-    public void sendPlayToClient(ServerPlayer player, CustomPacketPayload payload) {
-        ServerPlayNetworking.send(player, payload);
+    public @Nullable Player getPlayer() {
+        return context.client().player;
     }
 
     @Override
-    public void sendPlayToServer(CustomPacketPayload payload) {
-        if (CommonProxy.getInstance().isPhysicalClient()) {
-            ClientPlayNetworking.send(payload);
-        } else {
-            KNBFLog.LOG.warn("Attempted to send payload {} to the server from the server-side.", payload.type().id());
-        }
+    public @NotNull Executor getExecutor() {
+        return context.client();
     }
 
     @Override
-    public void disconnectFromServer(Component message) {
-        CommonProxy.getInstance().disconnectFromServer(message);
+    public void disconnect(@NotNull Component message) {
+        context.handler().getConnection().disconnect(message);
     }
 
     @Override
-    public boolean clientHasPlayChannel(ServerPlayer player, CustomPacketPayload.Type<?> channel) {
-        return ServerPlayNetworking.canSend(player, channel);
+    public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
+        return context.canSend(channel);
     }
 
     @Override
-    public boolean serverHasPlayChannel(CustomPacketPayload.Type<?> channel) {
-        return CommonProxy.getInstance().serverHasPlayChannel(channel);
+    public void sendPayload(CustomPacketPayload payload) {
+        context.send(payload);
     }
 }

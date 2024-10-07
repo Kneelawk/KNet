@@ -23,59 +23,27 @@
  *
  */
 
-package com.kneelawk.knet.backend.neoforge.impl;
+package com.kneelawk.knet.backend.badpackets.impl;
 
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.PacketDistributor;
+import lol.bai.badpackets.api.PacketSender;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.ChunkPos;
 
 import com.kneelawk.knet.api.KNetSender;
-import com.kneelawk.knet.backend.neoforge.impl.proxy.CommonProxy;
+import com.kneelawk.knet.backend.badpackets.impl.proxy.CommonProxy;
 
-public class KNetSenderNeoForge implements KNetSender {
-    @Override
-    public void sendPlayToAll(CustomPacketPayload payload) {
-        PacketDistributor.sendToAllPlayers(payload);
-    }
+public class KNetSenderBadPackets implements KNetSender {
 
     @Override
     public void sendPlayToClient(ServerPlayer player, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayer(player, payload);
+        PacketSender.s2c(player).send(payload);
     }
 
     @Override
     public void sendPlayToServer(CustomPacketPayload payload) {
-        if (FMLEnvironment.dist.isClient()) {
-            PacketDistributor.sendToServer(payload);
-        } else {
-            KNBNFLog.LOG.warn("Attempted to send payload {} to the server from the server-side.", payload.type());
-        }
-    }
-
-    @Override
-    public void sendPlayToDimension(ServerLevel dim, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayersInDimension(dim, payload);
-    }
-
-    @Override
-    public void sendPlayToTrackingEntity(Entity entity, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
-    }
-
-    @Override
-    public void sendPlayToTrackingEntityAndSelf(Entity entity, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
-    }
-
-    @Override
-    public void sendPlayToTrackingChunk(ServerLevel level, ChunkPos pos, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayersTrackingChunk(level, pos, payload);
+        PacketSender.c2s().send(payload);
     }
 
     @Override
@@ -85,11 +53,11 @@ public class KNetSenderNeoForge implements KNetSender {
 
     @Override
     public boolean clientHasPlayChannel(ServerPlayer player, CustomPacketPayload.Type<?> channel) {
-        return player.connection.hasChannel(channel);
+        return PacketSender.s2c(player).canSend(channel);
     }
 
     @Override
     public boolean serverHasPlayChannel(CustomPacketPayload.Type<?> channel) {
-        return CommonProxy.getInstance().serverHasPlayChannel(channel);
+        return PacketSender.c2s().canSend(channel);
     }
 }

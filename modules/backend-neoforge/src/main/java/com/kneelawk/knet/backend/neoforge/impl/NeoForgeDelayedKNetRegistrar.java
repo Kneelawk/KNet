@@ -23,29 +23,42 @@
  *
  */
 
-package com.kneelawk.knet.backend.fabric.impl;
+package com.kneelawk.knet.backend.neoforge.impl;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
+import java.util.Set;
 
-import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
-import com.kneelawk.knet.backend.fabric.impl.phase.config.FabricConfigTaskQueue;
+import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 
-public class KNetFabricMod implements ModInitializer {
+import com.kneelawk.knet.api.KNetRegistrar;
+import com.kneelawk.knet.api.channel.ConfigChannel;
+import com.kneelawk.knet.api.channel.PlayChannel;
+
+public class NeoForgeDelayedKNetRegistrar implements KNetRegistrar {
+    private final String networkVersion;
+    private final Set<PlayChannel> playChannels = new ReferenceLinkedOpenHashSet<>();
+    private final Set<ConfigChannel> configChannels = new ReferenceLinkedOpenHashSet<>();
+
+    public NeoForgeDelayedKNetRegistrar(String networkVersion) {this.networkVersion = networkVersion;}
+
     @Override
-    public void onInitialize() {
-        KNBFLog.LOG.info("Initializing KNet {}",
-            FabricLoader.getInstance().getModContainer(KNBFConstants.MOD_ID).get().getMetadata().getVersion());
+    public void register(PlayChannel channel) {
+        playChannels.add(channel);
+    }
 
-        ServerConfigurationConnectionEvents.CONFIGURE.register(
-            (handler, server) -> {
-                KNet.load();
-                FabricKNet.INSTANCE.registerConfigTasks(handler);
-                ConnectionConfigCallback.EVENT.invoker().enqueueTasks(new FabricConfigTaskQueue(handler));
-            });
+    @Override
+    public void register(ConfigChannel channel) {
+        configChannels.add(channel);
+    }
 
-        KNet.load();
+    public String getNetworkVersion() {
+        return networkVersion;
+    }
+
+    public Set<PlayChannel> getPlayChannels() {
+        return playChannels;
+    }
+
+    public Set<ConfigChannel> getConfigChannels() {
+        return configChannels;
     }
 }

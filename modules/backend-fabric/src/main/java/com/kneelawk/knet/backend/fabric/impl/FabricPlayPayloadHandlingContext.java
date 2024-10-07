@@ -36,13 +36,14 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 
 import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+import com.kneelawk.knet.api.util.ServerAccess;
 
 public record FabricPlayPayloadHandlingContext(ServerPlayNetworking.Context ctx) implements PlayPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
         // Fabric currently invokes the handlers on the main thread, but I'm not sure if that's part of the API contract.
         // Client and server executors will run immediately if on the main thread.
-        Executor executor = KNetFabricMod.currentServer;
+        Executor executor = ServerAccess.tryGetServer();
         if (executor != null) return executor;
         return Runnable::run;
     }

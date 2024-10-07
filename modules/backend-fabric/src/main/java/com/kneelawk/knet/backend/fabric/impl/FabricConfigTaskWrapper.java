@@ -23,17 +23,27 @@
  *
  */
 
-package com.kneelawk.knet.backend.badpackets.impl.mixin.impl;
+package com.kneelawk.knet.backend.fabric.impl;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import java.util.function.Consumer;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.network.ConfigurationTask;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 
-import net.minecraft.server.level.ChunkMap;
+import com.kneelawk.knet.api.phase.config.ConfigTask;
 
-@Mixin(ChunkMap.class)
-public interface Accessor_ChunkMap {
-    @Accessor("entityMap")
-    Int2ObjectMap<Accessor_TrackedEntity> knet_backend_badpackets$entityMap();
+public record FabricConfigTaskWrapper(Type type, ConfigTask task, ServerConfigurationPacketListenerImpl handler)
+    implements ConfigurationTask {
+    @Override
+    public void start(Consumer<Packet<?>> sender) {
+        if (!task.start(new FabricConfigTaskContext(handler, sender))) {
+            handler.completeTask(type);
+        }
+    }
+
+    @Override
+    public Type type() {
+        return type;
+    }
 }

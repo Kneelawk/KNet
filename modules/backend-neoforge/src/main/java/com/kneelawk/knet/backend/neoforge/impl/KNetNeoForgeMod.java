@@ -47,14 +47,12 @@ public class KNetNeoForgeMod {
 
     private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
         KNet.load();
-        NeoForgeKNet.INSTANCE.channelRegistration().invoker().registerChannels(new ChannelRegistrationContext(event));
+        NeoForgeKNet.INSTANCE.registerPayloads(event);
     }
 
     private void onRegisterConfigurationTasks(RegisterConfigurationTasksEvent event) {
-        KNBNFLog.LOG.info("Starting config tasks...");
-        NeoForgeConfigTaskQueue queue = new NeoForgeConfigTaskQueue(event);
         KNet.load();
-        NeoForgeKNet.INSTANCE.connectionConfig().invoker().enqueueTasks(queue);
-        ConnectionConfigCallback.EVENT.invoker().enqueueTasks(queue);
+        NeoForgeKNet.INSTANCE.registerConfigTasks(event);
+        ConnectionConfigCallback.EVENT.invoker().enqueueTasks(new NeoForgeConfigTaskQueue(event));
     }
 }

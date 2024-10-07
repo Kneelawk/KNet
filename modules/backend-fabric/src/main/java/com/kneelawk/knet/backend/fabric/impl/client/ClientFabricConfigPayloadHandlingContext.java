@@ -33,6 +33,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworkin
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
 
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
@@ -62,7 +63,7 @@ public record ClientFabricConfigPayloadHandlingContext(ClientConfigurationNetwor
     }
 
     @Override
-    public void completeTask(ConfigurationTask.@NotNull Type taskId) {
+    public void completeTask(@NotNull ResourceLocation taskId) {
         throw new UnsupportedOperationException("Configuration tasks cannot be completed from the client.");
     }
 }

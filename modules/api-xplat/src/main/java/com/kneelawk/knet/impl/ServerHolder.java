@@ -23,17 +23,20 @@
  *
  */
 
-package com.kneelawk.knet.backend.badpackets.impl.mixin.impl;
+package com.kneelawk.knet.impl;
 
-import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import net.minecraft.server.MinecraftServer;
 
-import net.minecraft.server.network.ServerPlayerConnection;
+public class ServerHolder {
+    public static @Nullable MinecraftServer server;
 
-@Mixin(targets = "net/minecraft/server/level/ChunkMap$TrackedEntity")
-public interface Accessor_TrackedEntity {
-    @Accessor("seenBy")
-    Set<ServerPlayerConnection> knet_backend_badpackets$seenBy();
+    public static void onServerStarting(MinecraftServer server) {
+        ServerHolder.server = server;
+    }
+
+    public static void onServerStopped() {
+        ServerHolder.server = null;
+    }
 }

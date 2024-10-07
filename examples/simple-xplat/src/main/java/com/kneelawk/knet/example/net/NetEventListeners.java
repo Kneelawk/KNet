@@ -29,6 +29,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import com.kneelawk.commonevents.api.Listen;
 import com.kneelawk.commonevents.api.Scan;
+import com.kneelawk.knet.api.KNet;
 import com.kneelawk.knet.api.channel.NoContextConfigChannel;
 import com.kneelawk.knet.api.event.KNetLoadedCallback;
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
@@ -45,16 +46,12 @@ public class NetEventListeners {
 
     @Listen(KNetLoadedCallback.class)
     public static void onLoad(KNetLoadedCallback.Context ctx) {
-        ctx.getDefault().channelRegistration()
-            .register(ctx1 -> KNetExample.registerChannels(ctx1.getRegistrar(KNetExample.MOD_ID, NETWORK_VERSION)));
-        ctx.getDefault().connectionConfig().register(NetEventListeners::enqueueTasks);
-    }
-
-    private static void enqueueTasks(ConnectionConfigTaskQueue queue) {
-        KNetExample.LOGGER.info("Enqueueing configuration tasks...");
-        queue.enqueue(PING_PONG_TASK, sender -> {
+        KNet knet = ctx.getDefault();
+        KNetExample.registerChannels(knet.getRegistrar(KNetExample.MOD_ID, NETWORK_VERSION));
+        knet.registerConfigTask(PING_PONG_TASK, sender -> {
             KNetExample.LOGGER.info("Server sending config payload...");
             CONFIG_CHANNEL.send(sender, new PingPongPayload("ping"));
+            return true;
         });
     }
 

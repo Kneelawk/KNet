@@ -41,14 +41,14 @@ public interface ConfigPayloadHandlingContext extends PayloadHandlingContext {
      *
      * @param taskId the id of the task that has been completed.
      */
-    void completeTask(@NotNull ConfigurationTask.Type taskId);
+    void completeTask(@NotNull ResourceLocation taskId);
 
     /**
      * Marks the given task as completed, so that the configuration can continue with the next task.
      *
      * @param taskId the id of the task that has been completed.
      */
-    default void completeTask(@NotNull ResourceLocation taskId) {
-        completeTask(new ConfigurationTask.Type(taskId.toString()));
+    default void completeTask(ConfigurationTask.Type taskId) {
+        completeTask(ResourceLocation.parse(taskId.id()));
     }
 }

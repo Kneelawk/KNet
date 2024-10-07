@@ -35,6 +35,7 @@ import net.minecraft.server.network.ConfigurationTask;
 import com.kneelawk.knet.api.phase.config.ConnectionConfigTask;
 import com.kneelawk.knet.api.util.PayloadSender;
 
+@Deprecated
 public record ConnectionConfigTaskWrapper(Type key, ConnectionConfigTask task) implements ConfigurationTask {
     @Override
     public void start(Consumer<Packet<?>> sender) {

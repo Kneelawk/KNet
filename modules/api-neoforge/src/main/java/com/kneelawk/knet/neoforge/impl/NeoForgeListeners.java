@@ -23,29 +23,25 @@
  *
  */
 
-package com.kneelawk.knet.backend.fabric.impl;
+package com.kneelawk.knet.neoforge.impl;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 
-import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
-import com.kneelawk.knet.backend.fabric.impl.phase.config.FabricConfigTaskQueue;
+import com.kneelawk.knet.impl.KNetImpl;
+import com.kneelawk.knet.impl.ServerHolder;
 
-public class KNetFabricMod implements ModInitializer {
-    @Override
-    public void onInitialize() {
-        KNBFLog.LOG.info("Initializing KNet {}",
-            FabricLoader.getInstance().getModContainer(KNBFConstants.MOD_ID).get().getMetadata().getVersion());
+@EventBusSubscriber(modid = KNetImpl.MOD_ID)
+public class NeoForgeListeners {
+    @SubscribeEvent
+    public static void onServerStarting(ServerAboutToStartEvent event) {
+        ServerHolder.onServerStarting(event.getServer());
+    }
 
-        ServerConfigurationConnectionEvents.CONFIGURE.register(
-            (handler, server) -> {
-                KNet.load();
-                FabricKNet.INSTANCE.registerConfigTasks(handler);
-                ConnectionConfigCallback.EVENT.invoker().enqueueTasks(new FabricConfigTaskQueue(handler));
-            });
-
-        KNet.load();
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        ServerHolder.onServerStopped();
     }
 }

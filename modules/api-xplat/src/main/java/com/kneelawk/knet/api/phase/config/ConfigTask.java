@@ -27,25 +27,40 @@ package com.kneelawk.knet.api.phase.config;
 
 import net.minecraft.resources.ResourceLocation;
 
+import com.kneelawk.knet.api.channel.Channel;
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
-import com.kneelawk.knet.api.util.PayloadSender;
+import com.kneelawk.knet.api.util.PayloadConnection;
 
 /**
- * Simplified version of {@link net.minecraft.server.network.ConfigurationTask}.
+ * Implemented to create a custom configuration-phase task.
  * <p>
  * This is used to initiate a chain of back-and-forth messages to configure a specific aspect of the client. When
  * configuration is complete, the implementor must call either {@link ConnectionConfigTaskQueue#completeTask(ResourceLocation)}
  * or {@link ConfigPayloadHandlingContext#completeTask(ResourceLocation)}, to allow configuration to proceed to the next task.
- *
- * @deprecated Use {@link ConfigTask} instead as that is compatible with more backends.
  */
-@Deprecated
 @FunctionalInterface
-public interface ConnectionConfigTask {
+public interface ConfigTask {
     /**
-     * Sends the initial payload to the client.
+     * Called every time a client connects to run this config task.
+     * <p>
+     * This task can use {@link Context#receiverHasChannel(Channel)} to check if the client has the given
+     * channel. Then can return {@code false} to cancel this task if the client does not have the given channel.
      *
-     * @param sender the payload sender that can send the payload to the client.
+     * @param ctx the context that this config task can use to send packets, check for channels, disconnect the client,
+     *            and finish the task.
+     * @return whether to continue this task.
      */
-    void sendInitialPayload(PayloadSender sender);
+    boolean start(Context ctx);
+
+    /**
+     * Context for a {@link ConfigTask}, used to manage a configuration task's lifecycle.
+     */
+    interface Context extends PayloadConnection {
+        /**
+         * Finishes the task with the given id, allowing the connection to progress.
+         *
+         * @param taskId the task id to finish.
+         */
+        void completeTask(ResourceLocation taskId);
+    }
 }

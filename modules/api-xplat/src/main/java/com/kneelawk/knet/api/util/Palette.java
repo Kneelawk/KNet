@@ -175,8 +175,7 @@ public class Palette<T> {
      * @param writer the function for encoding palette'd objects into the buffer.
      * @param <B>    the type of buffer to write to.
      */
-    public <B extends FriendlyByteBuf> void encode(@NotNull B buf,
-                                                                       @NotNull StreamEncoder<? super B, T> writer) {
+    public <B extends FriendlyByteBuf> void encode(@NotNull B buf, @NotNull StreamEncoder<? super B, T> writer) {
         buf.writeVarInt(palette.size());
         for (Int2ObjectMap.Entry<T> entry : palette.int2ObjectEntrySet()) {
             buf.writeVarInt(entry.getIntKey());

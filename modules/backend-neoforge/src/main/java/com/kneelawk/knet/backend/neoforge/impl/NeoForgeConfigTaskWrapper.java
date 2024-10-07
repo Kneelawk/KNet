@@ -23,29 +23,27 @@
  *
  */
 
-package com.kneelawk.knet.backend.fabric.impl;
+package com.kneelawk.knet.backend.neoforge.impl;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
+import java.util.function.Consumer;
 
-import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
-import com.kneelawk.knet.backend.fabric.impl.phase.config.FabricConfigTaskQueue;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
+import net.minecraft.server.network.ConfigurationTask;
 
-public class KNetFabricMod implements ModInitializer {
+import com.kneelawk.knet.api.phase.config.ConfigTask;
+
+public record NeoForgeConfigTaskWrapper(Type type, ConfigTask task, ServerConfigurationPacketListener listener)
+    implements ConfigurationTask {
     @Override
-    public void onInitialize() {
-        KNBFLog.LOG.info("Initializing KNet {}",
-            FabricLoader.getInstance().getModContainer(KNBFConstants.MOD_ID).get().getMetadata().getVersion());
+    public void start(Consumer<Packet<?>> sender) {
+        if (!task.start(new NeoForgeConfigTaskContext(listener, sender))) {
+            listener.finishCurrentTask(type);
+        }
+    }
 
-        ServerConfigurationConnectionEvents.CONFIGURE.register(
-            (handler, server) -> {
-                KNet.load();
-                FabricKNet.INSTANCE.registerConfigTasks(handler);
-                ConnectionConfigCallback.EVENT.invoker().enqueueTasks(new FabricConfigTaskQueue(handler));
-            });
-
-        KNet.load();
+    @Override
+    public Type type() {
+        return type;
     }
 }

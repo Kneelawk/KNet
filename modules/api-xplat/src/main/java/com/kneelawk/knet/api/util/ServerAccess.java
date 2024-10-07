@@ -23,24 +23,39 @@
  *
  */
 
-package com.kneelawk.knet.backend.neoforge.impl;
+package com.kneelawk.knet.api.util;
 
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import org.jetbrains.annotations.Nullable;
 
-import com.kneelawk.knet.api.KNet;
-import com.kneelawk.knet.api.KNetRegistrar;
-import com.kneelawk.knet.api.event.ChannelRegistrationCallback;
-import com.kneelawk.knet.neoforge.api.KNetRegistrarNeoForge;
+import net.minecraft.server.MinecraftServer;
 
-public record ChannelRegistrationContext(RegisterPayloadHandlersEvent event)
-    implements ChannelRegistrationCallback.Context {
-    @Override
-    public KNet getKNet() {
-        return NeoForgeKNet.INSTANCE;
+import com.kneelawk.knet.impl.ServerHolder;
+
+/**
+ * Provides access to the currently running {@link MinecraftServer}.
+ */
+public final class ServerAccess {
+    private ServerAccess() {}
+
+    /**
+     * Gets the currently running {@link MinecraftServer} if one is running or {@code null} if there is no minecraft
+     * server running.
+     *
+     * @return the currently running {@link MinecraftServer} if available.
+     */
+    public static @Nullable MinecraftServer tryGetServer() {
+        return ServerHolder.server;
     }
 
-    @Override
-    public KNetRegistrar getRegistrar(String modId, String netVersion) {
-        return new KNetRegistrarNeoForge(event.registrar(netVersion));
+    /**
+     * Gets the currently running {@link MinecraftServer} if one is running or throws an exception if there is no
+     * minecraft server running.
+     *
+     * @return the currently running {@link MinecraftServer} if available.
+     */
+    public static MinecraftServer getServer() {
+        MinecraftServer server = tryGetServer();
+        if (server == null) throw new IllegalStateException("The MinecraftServer has not been started yet");
+        return server;
     }
 }

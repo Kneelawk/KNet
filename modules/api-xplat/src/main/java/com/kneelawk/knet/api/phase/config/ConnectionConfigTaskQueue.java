@@ -38,7 +38,11 @@ import com.kneelawk.knet.impl.phase.config.ConnectionConfigTaskWrapper;
 
 /**
  * Used for enqueueing connection-configure tasks.
+ *
+ * @deprecated Use {@link com.kneelawk.knet.api.KNet#registerConfigTask(ResourceLocation, ConfigTask)} to directly
+ * register config tasks once all backends are loaded instead of re-applying them every time a player connects.
  */
+@Deprecated
 public interface ConnectionConfigTaskQueue {
     /**
      * Gets whether the client has declared the ability to receive on the given channel.

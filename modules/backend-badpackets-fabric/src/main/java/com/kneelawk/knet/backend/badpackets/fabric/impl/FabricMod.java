@@ -26,17 +26,12 @@
 package com.kneelawk.knet.backend.badpackets.fabric.impl;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
-import com.kneelawk.knet.backend.badpackets.impl.ServerHolder;
 import com.kneelawk.knet.backend.badpackets.impl.init.Init;
 
 public class FabricMod implements ModInitializer {
     @Override
     public void onInitialize() {
-        ServerLifecycleEvents.SERVER_STARTING.register(ServerHolder::serverStarting);
-        ServerLifecycleEvents.SERVER_STOPPED.register(ServerHolder::serverStopped);
-
         Init.load();
     }
 }

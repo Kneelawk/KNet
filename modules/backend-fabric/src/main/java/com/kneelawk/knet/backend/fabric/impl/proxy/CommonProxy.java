@@ -94,10 +94,10 @@ public class CommonProxy {
                     // do nothing
                 } catch (PayloadHandlingDisconnectException e) {
                     ctx.responseSender()
-                        .disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                        .disconnect(Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
                 } catch (Exception e) {
                     // just log as an error by default
-                    KNBFLog.LOG.error("Channel {} error:", channel.getId(), e);
+                    KNBFLog.LOG.error("Channel {} error:", channel.getId().id(), e);
                 }
             });
         }
@@ -122,10 +122,10 @@ public class CommonProxy {
                     // do nothing
                 } catch (PayloadHandlingDisconnectException e) {
                     ctx.responseSender()
-                        .disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+                        .disconnect(Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
                 } catch (Exception e) {
                     // just log as an error by default
-                    KNBFLog.LOG.error("Channel {} error:", channel.getId(), e);
+                    KNBFLog.LOG.error("Channel {} error:", channel.getId().id(), e);
                 }
             });
         }

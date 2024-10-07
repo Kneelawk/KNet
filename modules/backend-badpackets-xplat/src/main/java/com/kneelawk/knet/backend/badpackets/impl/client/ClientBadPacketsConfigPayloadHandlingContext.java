@@ -23,36 +23,44 @@
  *
  */
 
-package com.kneelawk.knet.backend.badpackets.impl;
+package com.kneelawk.knet.backend.badpackets.impl.client;
+
+import java.util.concurrent.Executor;
 
 import org.jetbrains.annotations.NotNull;
 
-import lol.bai.badpackets.api.config.ServerConfigContext;
+import lol.bai.badpackets.api.config.ClientConfigContext;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.network.ConfigurationTask;
+import net.minecraft.resources.ResourceLocation;
 
-import com.kneelawk.knet.api.phase.config.ConnectionConfigTaskQueue;
+import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
 
-public record BadPacketsConfigTaskQueue(ServerConfigContext context) implements ConnectionConfigTaskQueue {
+public record ClientBadPacketsConfigPayloadHandlingContext(ClientConfigContext context)
+    implements ConfigPayloadHandlingContext {
     @Override
-    public boolean clientHasChannel(CustomPacketPayload.@NotNull Type<?> channel) {
-        return context.canSend(channel);
+    public void completeTask(@NotNull ResourceLocation taskId) {
+        throw new UnsupportedOperationException("Configuration tasks cannot be completed from the client.");
+    }
+
+    @Override
+    public @NotNull Executor getExecutor() {
+        return context.client();
     }
 
     @Override
     public void disconnect(@NotNull Component message) {
-        context.handler().disconnect(message);
+        context.disconnect(message);
     }
 
     @Override
-    public void enqueueRaw(@NotNull ConfigurationTask task) {
-//        context.
+    public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
+        return context.canSend(channel);
     }
 
     @Override
-    public void completeTask(ConfigurationTask.@NotNull Type taskId) {
-
+    public void sendPayload(CustomPacketPayload payload) {
+        context.send(payload);
     }
 }

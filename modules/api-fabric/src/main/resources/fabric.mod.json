@@ -15,8 +15,14 @@
   "license": "MIT",
   "icon": "assets/${mod_id}/icon.png",
   "environment": "*",
-  "entrypoints": { },
-  "mixins": [ ],
+  "entrypoints": {
+    "main": [
+      "com.kneelawk.knet.fabric.impl.FabricMod"
+    ]
+  },
+  "mixins": [
+    "knet_api.xplat.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.15.0",
     "fabric-api": "*",

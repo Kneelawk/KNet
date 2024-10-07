@@ -25,31 +25,60 @@
 
 package com.kneelawk.knet.backend.neoforge.impl;
 
-import com.kneelawk.commonevents.api.Event;
+import java.util.Map;
+
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.network.ConfigurationTask;
+
 import com.kneelawk.knet.api.KNet;
+import com.kneelawk.knet.api.KNetRegistrar;
 import com.kneelawk.knet.api.KNetSender;
-import com.kneelawk.knet.api.event.ChannelRegistrationCallback;
-import com.kneelawk.knet.api.event.ConnectionConfigCallback;
+import com.kneelawk.knet.api.channel.ConfigChannel;
+import com.kneelawk.knet.api.channel.PlayChannel;
+import com.kneelawk.knet.api.phase.config.ConfigTask;
+import com.kneelawk.knet.neoforge.api.KNetNeoForge;
 
 public class NeoForgeKNet implements KNet {
     public static final NeoForgeKNet INSTANCE = new NeoForgeKNet();
 
     private final KNetSenderNeoForge sender = new KNetSenderNeoForge();
-    private final Event<ChannelRegistrationCallback> channelRegistration =
-        Event.builderSimple(ChannelRegistrationCallback.class,
-            KNBNFLog.warn("Error while firing channel registration event")).scanned(false).build();
-    private final Event<ConnectionConfigCallback> connectionConfig =
-        Event.builderSimple(ConnectionConfigCallback.class, KNBNFLog.warn("Error while firing connection config event"))
-            .scanned(false).build();
+    private final Map<String, NeoForgeDelayedKNetRegistrar> registrars = new Object2ObjectLinkedOpenHashMap<>();
+    private final Map<ResourceLocation, ConfigTask> configTasks = new Object2ObjectLinkedOpenHashMap<>();
 
-    @Override
-    public Event<ChannelRegistrationCallback> channelRegistration() {
-        return channelRegistration;
+    public void registerPayloads(RegisterPayloadHandlersEvent event) {
+        for (NeoForgeDelayedKNetRegistrar registrar : registrars.values()) {
+            PayloadRegistrar neoRegistrar = event.registrar(registrar.getNetworkVersion());
+            for (PlayChannel playChannel : registrar.getPlayChannels()) {
+                KNetNeoForge.registerPlay(neoRegistrar, playChannel);
+            }
+            for (ConfigChannel configChannel : registrar.getConfigChannels()) {
+                KNetNeoForge.registerConfig(neoRegistrar, configChannel);
+            }
+        }
+    }
+
+    public void registerConfigTasks(RegisterConfigurationTasksEvent event) {
+        for (var entry : configTasks.entrySet()) {
+            event.register(
+                new NeoForgeConfigTaskWrapper(new ConfigurationTask.Type(entry.getKey().toString()), entry.getValue(),
+                    event.getListener()));
+        }
     }
 
     @Override
-    public Event<ConnectionConfigCallback> connectionConfig() {
-        return connectionConfig;
+    public KNetRegistrar getRegistrar(String modId, String networkVersion) {
+        return registrars.computeIfAbsent(modId, k -> new NeoForgeDelayedKNetRegistrar(networkVersion));
+    }
+
+    @Override
+    public void registerConfigTask(ResourceLocation taskId, ConfigTask task) {
+        configTasks.putIfAbsent(taskId, task);
     }
 
     @Override

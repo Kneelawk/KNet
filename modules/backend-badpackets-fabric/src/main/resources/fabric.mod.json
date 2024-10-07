@@ -20,9 +20,7 @@
       "com.kneelawk.knet.backend.badpackets.fabric.impl.FabricMod"
     ]
   },
-  "mixins": [
-    "knet_backend_badpackets.xplat.mixins.json"
-  ],
+  "mixins": [ ],
   "depends": {
     "fabricloader": ">=0.15.0",
     "fabric-api": "*",

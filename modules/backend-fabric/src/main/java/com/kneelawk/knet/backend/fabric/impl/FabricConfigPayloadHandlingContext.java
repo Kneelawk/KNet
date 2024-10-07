@@ -33,16 +33,18 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
 
 import com.kneelawk.knet.api.handling.ConfigPayloadHandlingContext;
+import com.kneelawk.knet.api.util.ServerAccess;
 
 public record FabricConfigPayloadHandlingContext(ServerConfigurationNetworking.Context ctx) implements
     ConfigPayloadHandlingContext {
     @Override
     public @NotNull Executor getExecutor() {
         // Configuration payload handling *is* actually done on a netty thread after all
-        Executor executor = KNetFabricMod.currentServer;
+        Executor executor = ServerAccess.tryGetServer();
         if (executor != null) return executor;
         return Runnable::run;
     }
@@ -63,7 +65,7 @@ public record FabricConfigPayloadHandlingContext(ServerConfigurationNetworking.C
     }
 
     @Override
-    public void completeTask(ConfigurationTask.@NotNull Type taskId) {
-        ctx.networkHandler().completeTask(taskId);
+    public void completeTask(@NotNull ResourceLocation taskId) {
+        ctx.networkHandler().completeTask(new ConfigurationTask.Type(taskId.toString()));
     }
 }

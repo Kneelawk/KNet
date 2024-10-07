@@ -25,9 +25,20 @@
 
 package com.kneelawk.knet.backend.badpackets.impl.proxy;
 
+import lol.bai.badpackets.api.config.ConfigPackets;
+import lol.bai.badpackets.api.play.PlayPackets;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.chat.Component;
+
+import com.kneelawk.knet.api.channel.ConfigChannel;
+import com.kneelawk.knet.api.channel.PlayChannel;
+import com.kneelawk.knet.api.handling.PayloadHandlingDisconnectException;
+import com.kneelawk.knet.api.handling.PayloadHandlingSilentException;
+import com.kneelawk.knet.backend.badpackets.impl.KNBPLog;
+import com.kneelawk.knet.backend.badpackets.impl.client.ClientBadPacketsConfigPayloadHandlingContext;
+import com.kneelawk.knet.backend.badpackets.impl.client.ClientBadPacketsPlayPayloadHandlingContext;
 
 public class ClientProxy extends CommonProxy {
     @Override
@@ -35,6 +46,44 @@ public class ClientProxy extends CommonProxy {
         ClientPacketListener networkHandler = Minecraft.getInstance().getConnection();
         if (networkHandler != null) {
             networkHandler.getConnection().disconnect(message);
+        }
+    }
+
+    @Override
+    public void registerPlayChannel(PlayChannel channel) {
+        super.registerPlayChannel(channel);
+        if (channel.isToClient()) {
+            PlayPackets.registerClientReceiver(channel.getId(), (context, payload) -> {
+                try {
+                    channel.handleClientPayload(payload, new ClientBadPacketsPlayPayloadHandlingContext(context));
+                } catch (PayloadHandlingSilentException e) {
+                    // do nothing
+                } catch (PayloadHandlingDisconnectException e) {
+                    context.handler().getConnection()
+                        .disconnect(Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
+                } catch (Exception e) {
+                    KNBPLog.LOG.error("Channel {} error:", channel.getId().id(), e);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void registerConfigChannel(ConfigChannel channel) {
+        super.registerConfigChannel(channel);
+        if (channel.isToClient()) {
+            ConfigPackets.registerClientReceiver(channel.getId(), (context, payload) -> {
+                try {
+                    channel.handleClientPayload(payload, new ClientBadPacketsConfigPayloadHandlingContext(context));
+                } catch (PayloadHandlingSilentException e) {
+                    // do nothing
+                } catch (PayloadHandlingDisconnectException e) {
+                    context.disconnect(
+                        Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
+                } catch (Exception e) {
+                    KNBPLog.LOG.error("Channel {} error:", channel.getId().id(), e);
+                }
+            });
         }
     }
 }

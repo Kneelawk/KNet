@@ -92,10 +92,10 @@ public class KNetNeoForge {
         } catch (PayloadHandlingSilentException e) {
             // do nothing
         } catch (PayloadHandlingDisconnectException e) {
-            ctx.disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+            ctx.disconnect(Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
         } catch (Exception e) {
             // just log as an error by default
-            KNBNFLog.LOG.error("Channel {} error:", channel.getId(), e);
+            KNBNFLog.LOG.error("Channel {} error:", channel.getId().id(), e);
         }
     }
 
@@ -105,10 +105,10 @@ public class KNetNeoForge {
         } catch (PayloadHandlingSilentException e) {
             // do nothing
         } catch (PayloadHandlingDisconnectException e) {
-            ctx.disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+            ctx.disconnect(Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
         } catch (Exception e) {
             // just log as an error by default
-            KNBNFLog.LOG.error("Channel {} error:", channel.getId(), e);
+            KNBNFLog.LOG.error("Channel {} error:", channel.getId().id(), e);
         }
     }
 
@@ -148,10 +148,10 @@ public class KNetNeoForge {
         } catch (PayloadHandlingSilentException e) {
             // do nothing
         } catch (PayloadHandlingDisconnectException e) {
-            ctx.disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+            ctx.disconnect(Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
         } catch (Exception e) {
             // just log as an error by default
-            KNBNFLog.LOG.error("Channel {} error:", channel.getId(), e);
+            KNBNFLog.LOG.error("Channel {} error:", channel.getId().id(), e);
         }
     }
 
@@ -161,10 +161,10 @@ public class KNetNeoForge {
         } catch (PayloadHandlingSilentException e) {
             // do nothing
         } catch (PayloadHandlingDisconnectException e) {
-            ctx.disconnect(Component.literal("Channel " + channel.getId() + " error: " + e.getMessage()));
+            ctx.disconnect(Component.literal("Channel " + channel.getId().id() + " error: " + e.getMessage()));
         } catch (Exception e) {
             // just log as an error by default
-            KNBNFLog.LOG.error("Channel {} error:", channel.getId(), e);
+            KNBNFLog.LOG.error("Channel {} error:", channel.getId().id(), e);
         }
     }
 }

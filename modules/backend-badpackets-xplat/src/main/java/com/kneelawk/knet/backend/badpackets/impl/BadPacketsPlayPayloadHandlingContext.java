@@ -23,25 +23,44 @@
  *
  */
 
-package com.kneelawk.knet.backend.badpackets.neoforge.impl;
+package com.kneelawk.knet.backend.badpackets.impl;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import java.util.concurrent.Executor;
 
-import com.kneelawk.knet.backend.badpackets.impl.KNBPConstants;
-import com.kneelawk.knet.backend.badpackets.impl.ServerHolder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-@EventBusSubscriber(modid = KNBPConstants.MOD_ID)
-public class NeoForgeListeners {
-    @SubscribeEvent
-    public static void serverStarting(ServerAboutToStartEvent event) {
-        ServerHolder.serverStarting(event.getServer());
+import lol.bai.badpackets.api.play.ServerPlayContext;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
+
+import com.kneelawk.knet.api.handling.PlayPayloadHandlingContext;
+
+public record BadPacketsPlayPayloadHandlingContext(ServerPlayContext context) implements PlayPayloadHandlingContext {
+    @Override
+    public @Nullable Player getPlayer() {
+        return context.player();
     }
 
-    @SubscribeEvent
-    public static void serverStopped(ServerStoppedEvent event) {
-        ServerHolder.serverStopped(event.getServer());
+    @Override
+    public @NotNull Executor getExecutor() {
+        return context.server();
+    }
+
+    @Override
+    public void disconnect(@NotNull Component message) {
+        context.handler().disconnect(message);
+    }
+
+    @Override
+    public boolean receiverHasChannel(CustomPacketPayload.Type<?> channel) {
+        return context.canSend(channel);
+    }
+
+    @Override
+    public void sendPayload(CustomPacketPayload payload) {
+        context.send(payload);
     }
 }
