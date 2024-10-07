@@ -6,7 +6,7 @@ plugins {
 
 submodule {
     setRefmaps("knet_backend_badpackets")
-    xplatProjectDependency(":api")
+    xplatProjectDependency(":api", include = false)
     setupJavadoc()
 }
 

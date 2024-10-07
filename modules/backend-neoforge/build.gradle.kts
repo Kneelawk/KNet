@@ -6,7 +6,7 @@ plugins {
 
 submodule {
     setLibsDirectory()
-    neoforgeProjectDependency(":api")
+    neoforgeProjectDependency(":api", include = false)
     setupJavadoc()
 }
 

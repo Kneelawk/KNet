@@ -5,6 +5,7 @@ plugins {
 
 submodule {
     xplatProjectDependency(":")
+    xplatProjectDependency(":api", api = false, include = false, addMods = false)
 }
 
 loom {

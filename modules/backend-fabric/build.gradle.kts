@@ -6,7 +6,7 @@ plugins {
 
 submodule {
     setLibsDirectory()
-    fabricProjectDependency(":api")
+    fabricProjectDependency(":api", include = false)
     setupJavadoc()
 }
 
