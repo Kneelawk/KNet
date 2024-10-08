@@ -25,8 +25,25 @@
 
 /**
  * KNet contextual channel package.
- *
- * @see com.kneelawk.knet.api.channel.context
+ * <p>
+ * This channel contains the contextual channels and the channel context systems.
+ * <p>
+ * Channel context is a mechanism by which senders can send extra context (e.g. the block entity, menu, block, entity,
+ * etc. sending the message) with the message being sent, allowing the object on the receiver that corresponds to the
+ * sender object to be the object that receives the message.
+ * <p>
+ * There are various context implementations that can provide context for many of Minecraft's built-in types. These
+ * built-in context types can be accessed from {@link com.kneelawk.knet.api.KNet}. You can make contexts for custom
+ * types by creating a new instance of {@link com.kneelawk.knet.api.channel.context.RootPlayChannelContext},
+ * or using {@link com.kneelawk.knet.api.channel.context.ChildPlayChannelContext} if your custom type extends from a
+ * type that already has a context implementation. You can use a {@link com.kneelawk.knet.api.channel.context.CastPlayChannelContext}
+ * to cast from a superclass context type to a subclass context type. Most derivative context types can be created via
+ * utility method on {@link com.kneelawk.knet.api.channel.context.PlayChannelContext} itself.
+ * <p>
+ * An example of a contextual channel might be:
+ * <pre>{@code
+ * public static final ContextualPlayChannel<MyBlockEntity, MyUpdatePayload> UPDATE = ContextualPlayChannel.ofNetCodec(ResourceLocation.parse("my_mod:my_update"), KNet.BLOCK_ENTITY_CONTEXT.cast(MyBlockEntity.class), MyUpdatePayload.CODEC).recvClient(MyBlockEntity::recv);
+ * }</pre>
  */
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
