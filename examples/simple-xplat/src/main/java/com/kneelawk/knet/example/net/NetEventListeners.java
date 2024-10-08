@@ -45,7 +45,7 @@ public class NetEventListeners {
     @Listen(KNet.Loaded.class)
     public static void onLoad(KNet.Provider ctx) {
         KNet knet = ctx.getDefault();
-        KNetExample.registerChannels(knet.getRegistrar(KNetExample.MOD_ID, NETWORK_VERSION));
+        KNetExample.registerChannels(knet.getRegistrar(NETWORK_VERSION));
         knet.registerConfigTask(PING_PONG_TASK, sender -> {
             KNetExample.LOGGER.info("Server sending config payload...");
             CONFIG_CHANNEL.send(sender, new PingPongPayload("ping"));

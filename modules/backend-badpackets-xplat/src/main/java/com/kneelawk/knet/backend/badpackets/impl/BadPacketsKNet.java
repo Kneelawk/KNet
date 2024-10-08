@@ -40,7 +40,7 @@ public class BadPacketsKNet implements KNet {
     private final KNetSenderBadPackets sender = new KNetSenderBadPackets();
 
     @Override
-    public KNetRegistrar getRegistrar(String modId, String networkVersion) {
+    public KNetRegistrar getRegistrar(String networkVersion) {
         return new KNetRegistrarBadPackets();
     }
 

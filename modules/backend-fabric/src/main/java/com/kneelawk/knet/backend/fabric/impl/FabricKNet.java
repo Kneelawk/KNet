@@ -54,7 +54,7 @@ public class FabricKNet implements KNet {
     }
 
     @Override
-    public KNetRegistrar getRegistrar(String modId, String networkVersion) {
+    public KNetRegistrar getRegistrar(String networkVersion) {
         return new KNetRegistrarFabric();
     }
 

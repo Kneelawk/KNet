@@ -214,11 +214,10 @@ public interface KNet {
      * <p>
      * Note: only some backends check network version compatibility.
      *
-     * @param modId          the mod id of the mod that the registrar will be associated with.
      * @param networkVersion the network version of the mod that the registrar will be associated with.
      * @return the requested registrar.
      */
-    KNetRegistrar getRegistrar(String modId, String networkVersion);
+    KNetRegistrar getRegistrar(String networkVersion);
 
     /**
      * Registers a config task that will be run every time a client connects.

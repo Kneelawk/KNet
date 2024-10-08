@@ -25,6 +25,7 @@
 
 package com.kneelawk.knet.backend.neoforge.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
@@ -32,6 +33,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ConfigurationTask;
@@ -48,11 +50,11 @@ public class NeoForgeKNet implements KNet {
     public static final NeoForgeKNet INSTANCE = new NeoForgeKNet();
 
     private final KNetSenderNeoForge sender = new KNetSenderNeoForge();
-    private final Map<String, NeoForgeDelayedKNetRegistrar> registrars = new Object2ObjectLinkedOpenHashMap<>();
+    private final List<NeoForgeDelayedKNetRegistrar> registrars = new ObjectArrayList<>();
     private final Map<ResourceLocation, ConfigTask> configTasks = new Object2ObjectLinkedOpenHashMap<>();
 
     public void registerPayloads(RegisterPayloadHandlersEvent event) {
-        for (NeoForgeDelayedKNetRegistrar registrar : registrars.values()) {
+        for (NeoForgeDelayedKNetRegistrar registrar : registrars) {
             PayloadRegistrar neoRegistrar = event.registrar(registrar.getNetworkVersion());
             for (PlayChannel playChannel : registrar.getPlayChannels()) {
                 KNetNeoForge.registerPlay(neoRegistrar, playChannel);
@@ -72,9 +74,11 @@ public class NeoForgeKNet implements KNet {
     }
 
     @Override
-    public KNetRegistrar getRegistrar(String modId, String networkVersion) {
+    public KNetRegistrar getRegistrar(String networkVersion) {
         synchronized (registrars) {
-            return registrars.computeIfAbsent(modId, k -> new NeoForgeDelayedKNetRegistrar(networkVersion));
+            NeoForgeDelayedKNetRegistrar registrar = new NeoForgeDelayedKNetRegistrar(networkVersion);
+            registrars.add(registrar);
+            return registrar;
         }
     }
 

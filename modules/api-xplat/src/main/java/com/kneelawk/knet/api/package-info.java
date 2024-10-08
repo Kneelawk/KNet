@@ -27,7 +27,7 @@
  * KNet API root package, providing access to KNet's initialization and registration APIs.
  * <p>
  * Use common-events to listen for {@link com.kneelawk.knet.api.KNet.Loaded}, then register your channels with
- * {@link com.kneelawk.knet.api.KNet#getRegistrar(java.lang.String, java.lang.String)}:
+ * {@link com.kneelawk.knet.api.KNet#getRegistrar(String)}:
  * <pre>{@code
  * @Scan
  * public class MyNetEventListeners {
@@ -36,7 +36,7 @@
  *     @Listen(KNet.Loaded.class)
  *     public static void onLoad(KNet.Provider ctx) {
  *         KNet knet = ctx.getDefault();
- *         KNetRegistrar registrar = knet.getRegistrar(MyMod.MOD_ID, NETWORK_VERSION);
+ *         KNetRegistrar registrar = knet.getRegistrar(NETWORK_VERSION);
  *         registrar.register(MY_CHANNEL);
  *     }
  * }
