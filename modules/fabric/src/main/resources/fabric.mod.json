@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "KNet",
+  "description": "Kneelawk's networking abstraction and utilities.",
+  "authors": [
+    "Kneelawk"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Kneelawk/KNet",
+    "issues": "https://github.com/Kneelawk/KNet/issues",
+    "sources": "https://github.com/Kneelawk/KNet"
+  },
+  "license": "MIT",
+  "icon": "assets/${mod_id}/icon.png",
+  "environment": "*",
+  "entrypoints": { },
+  "mixins": [ ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "fabric-api": "*",
+    "minecraft": ">=1.21- <1.22-",
+    "java": ">=17",
+    "common_events": "*",
+    "knet_api": "*",
+    "knet_backend_fabric": "*",
+    "knet_backend_badpackets": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [ "library" ]
+    }
+  }
+}

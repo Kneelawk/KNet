@@ -1,0 +1,5 @@
+{
+  "scan": [
+    "com.kneelawk.knet.backend.fabric.impl.FabricBackendProvider"
+  ]
+}
